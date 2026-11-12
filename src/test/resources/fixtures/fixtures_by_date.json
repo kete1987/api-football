@@ -1,0 +1,365 @@
+{
+  "get": "fixtures",
+  "parameters": {
+    "date": "2026-11-12",
+    "timezone": "Europe/Madrid"
+  },
+  "errors": [],
+  "results": 100,
+  "paging": {
+    "current": 1,
+    "total": 1
+  },
+  "response": [
+    {
+      "fixture": {
+        "id": 1645267,
+        "referee": null,
+        "timezone": "Europe/Madrid",
+        "date": "2026-11-12T00:00:00+01:00",
+        "timestamp": 1794438000,
+        "periods": {
+          "first": 1794438000,
+          "second": 1794441600
+        },
+        "venue": {
+          "id": null,
+          "name": null,
+          "city": null
+        },
+        "status": {
+          "long": "Match Finished",
+          "short": "FT",
+          "elapsed": 90,
+          "extra": null
+        }
+      },
+      "league": {
+        "id": 568,
+        "name": "Eerste Divisie",
+        "country": "Suriname",
+        "logo": "https://media.api-sports.io/football/leagues/568.png",
+        "flag": "https://media.api-sports.io/flags/sr.svg",
+        "season": 2026,
+        "round": "Group Stage",
+        "standings": false
+      },
+      "teams": {
+        "home": {
+          "id": 12214,
+          "name": "FC Inter Wanica",
+          "logo": "https://media.api-sports.io/football/teams/12214.png",
+          "winner": false
+        },
+        "away": {
+          "id": 12219,
+          "name": "Transvaal",
+          "logo": "https://media.api-sports.io/football/teams/12219.png",
+          "winner": true
+        }
+      },
+      "goals": {
+        "home": 0,
+        "away": 1
+      },
+      "score": {
+        "halftime": {
+          "home": 0,
+          "away": 0
+        },
+        "fulltime": {
+          "home": 0,
+          "away": 1
+        },
+        "extratime": {
+          "home": null,
+          "away": null
+        },
+        "penalty": {
+          "home": null,
+          "away": null
+        }
+      }
+    },
+    {
+      "fixture": {
+        "id": 1647450,
+        "referee": null,
+        "timezone": "Europe/Madrid",
+        "date": "2026-11-12T00:00:00+01:00",
+        "timestamp": 1794438000,
+        "periods": {
+          "first": 1794438000,
+          "second": 1794441600
+        },
+        "venue": {
+          "id": null,
+          "name": "Estadio Municipal de Mosquera",
+          "city": "Mosquera"
+        },
+        "status": {
+          "long": "Match Finished",
+          "short": "FT",
+          "elapsed": 90,
+          "extra": 8
+        }
+      },
+      "league": {
+        "id": 240,
+        "name": "Primera B",
+        "country": "Colombia",
+        "logo": "https://media.api-sports.io/football/leagues/240.png",
+        "flag": "https://media.api-sports.io/flags/co.svg",
+        "season": 2026,
+        "round": "Clausura - Quadrangular - 4",
+        "standings": true
+      },
+      "teams": {
+        "home": {
+          "id": 22099,
+          "name": "Real Cundinamarca",
+          "logo": "https://media.api-sports.io/football/teams/22099.png",
+          "winner": null
+        },
+        "away": {
+          "id": 1459,
+          "name": "Real Cartagena",
+          "logo": "https://media.api-sports.io/football/teams/1459.png",
+          "winner": null
+        }
+      },
+      "goals": {
+        "home": 2,
+        "away": 2
+      },
+      "score": {
+        "halftime": {
+          "home": 2,
+          "away": 0
+        },
+        "fulltime": {
+          "home": 2,
+          "away": 2
+        },
+        "extratime": {
+          "home": null,
+          "away": null
+        },
+        "penalty": {
+          "home": null,
+          "away": null
+        }
+      }
+    },
+    {
+      "fixture": {
+        "id": 1649008,
+        "referee": null,
+        "timezone": "Europe/Madrid",
+        "date": "2026-11-12T09:00:00+01:00",
+        "timestamp": 1794470400,
+        "periods": {
+          "first": 1794470400,
+          "second": null
+        },
+        "venue": {
+          "id": null,
+          "name": "Pleiku Stadium",
+          "city": "Pleiku"
+        },
+        "status": {
+          "long": "First Half",
+          "short": "1H",
+          "elapsed": 14,
+          "extra": null
+        }
+      },
+      "league": {
+        "id": 10,
+        "name": "Friendlies",
+        "country": "World",
+        "logo": "https://media.api-sports.io/football/leagues/10.png",
+        "flag": null,
+        "season": 2026,
+        "round": "Friendly International",
+        "standings": false
+      },
+      "teams": {
+        "home": {
+          "id": 10960,
+          "name": "Thailand U23",
+          "logo": "https://media.api-sports.io/football/teams/10960.png",
+          "winner": false
+        },
+        "away": {
+          "id": 10954,
+          "name": "Qatar U23",
+          "logo": "https://media.api-sports.io/football/teams/10954.png",
+          "winner": true
+        }
+      },
+      "goals": {
+        "home": 0,
+        "away": 1
+      },
+      "score": {
+        "halftime": {
+          "home": 0,
+          "away": 1
+        },
+        "fulltime": {
+          "home": null,
+          "away": null
+        },
+        "extratime": {
+          "home": null,
+          "away": null
+        },
+        "penalty": {
+          "home": null,
+          "away": null
+        }
+      }
+    },
+    {
+      "fixture": {
+        "id": 1528958,
+        "referee": "Sandro Schärer",
+        "timezone": "Europe/Madrid",
+        "date": "2026-11-12T18:00:00+01:00",
+        "timestamp": 1794502800,
+        "periods": {
+          "first": null,
+          "second": null
+        },
+        "venue": {
+          "id": 22441,
+          "name": "Gürsel Aksel Stadium",
+          "city": "Izmir"
+        },
+        "status": {
+          "long": "Not Started",
+          "short": "NS",
+          "elapsed": null,
+          "extra": null
+        }
+      },
+      "league": {
+        "id": 5,
+        "name": "UEFA Nations League",
+        "country": "World",
+        "logo": "https://media.api-sports.io/football/leagues/5.png",
+        "flag": null,
+        "season": 2026,
+        "round": "League A - 5",
+        "standings": true
+      },
+      "teams": {
+        "home": {
+          "id": 777,
+          "name": "Türkiye",
+          "logo": "https://media.api-sports.io/football/teams/777.png",
+          "winner": null
+        },
+        "away": {
+          "id": 1,
+          "name": "Belgium",
+          "logo": "https://media.api-sports.io/football/teams/1.png",
+          "winner": null
+        }
+      },
+      "goals": {
+        "home": null,
+        "away": null
+      },
+      "score": {
+        "halftime": {
+          "home": null,
+          "away": null
+        },
+        "fulltime": {
+          "home": null,
+          "away": null
+        },
+        "extratime": {
+          "home": null,
+          "away": null
+        },
+        "penalty": {
+          "home": null,
+          "away": null
+        }
+      }
+    },
+    {
+      "fixture": {
+        "id": 1648325,
+        "referee": null,
+        "timezone": "Europe/Madrid",
+        "date": "2026-11-12T19:00:00+01:00",
+        "timestamp": 1794506400,
+        "periods": {
+          "first": null,
+          "second": null
+        },
+        "venue": {
+          "id": null,
+          "name": null,
+          "city": null
+        },
+        "status": {
+          "long": "Match Postponed",
+          "short": "PST",
+          "elapsed": null,
+          "extra": null
+        }
+      },
+      "league": {
+        "id": 134,
+        "name": "Torneo Federal A",
+        "country": "Argentina",
+        "logo": "https://media.api-sports.io/football/leagues/134.png",
+        "flag": "https://media.api-sports.io/flags/ar.svg",
+        "season": 2026,
+        "round": "Quarter-finals",
+        "standings": true
+      },
+      "teams": {
+        "home": {
+          "id": 3975,
+          "name": "Kimberley Mar del Plata",
+          "logo": "https://media.api-sports.io/football/teams/3975.png",
+          "winner": null
+        },
+        "away": {
+          "id": 443,
+          "name": "Olimpo Bahia Blanca",
+          "logo": "https://media.api-sports.io/football/teams/443.png",
+          "winner": null
+        }
+      },
+      "goals": {
+        "home": null,
+        "away": null
+      },
+      "score": {
+        "halftime": {
+          "home": null,
+          "away": null
+        },
+        "fulltime": {
+          "home": null,
+          "away": null
+        },
+        "extratime": {
+          "home": null,
+          "away": null
+        },
+        "penalty": {
+          "home": null,
+          "away": null
+        }
+      }
+    }
+  ]
+}

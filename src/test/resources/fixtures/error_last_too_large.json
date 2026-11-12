@@ -1,0 +1,16 @@
+{
+  "get": "fixtures",
+  "parameters": {
+    "team": "541",
+    "last": "100"
+  },
+  "errors": {
+    "last": "The Last field cannot be used with Last field."
+  },
+  "results": 0,
+  "paging": {
+    "current": 1,
+    "total": 1
+  },
+  "response": []
+}

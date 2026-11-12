@@ -1,0 +1,75 @@
+{
+  "get": "teams",
+  "parameters": {
+    "league": "140",
+    "season": "2026"
+  },
+  "errors": [],
+  "results": 20,
+  "paging": {
+    "current": 1,
+    "total": 1
+  },
+  "response": [
+    {
+      "team": {
+        "id": 529,
+        "name": "Barcelona",
+        "code": "BAR",
+        "country": "Spain",
+        "founded": 1899,
+        "national": false,
+        "logo": "https://media.api-sports.io/football/teams/529.png"
+      },
+      "venue": {
+        "id": 19939,
+        "name": "Camp Nou",
+        "address": "Les Corts, 08028",
+        "city": "Barcelona",
+        "capacity": 55926,
+        "surface": "grass",
+        "image": "https://media.api-sports.io/football/venues/19939.png"
+      }
+    },
+    {
+      "team": {
+        "id": 797,
+        "name": "Elche",
+        "code": "ELC",
+        "country": "Spain",
+        "founded": 1923,
+        "national": false,
+        "logo": "https://media.api-sports.io/football/teams/797.png"
+      },
+      "venue": {
+        "id": 1473,
+        "name": "Estadio Manuel Martínez Valero",
+        "address": "Avenida Manuel Martínez Valero 3",
+        "city": "Elche",
+        "capacity": 36017,
+        "surface": "grass",
+        "image": "https://media.api-sports.io/football/venues/1473.png"
+      }
+    },
+    {
+      "team": {
+        "id": 4665,
+        "name": "Racing Santander",
+        "code": "SAN",
+        "country": "Spain",
+        "founded": 1913,
+        "national": false,
+        "logo": "https://media.api-sports.io/football/teams/4665.png"
+      },
+      "venue": {
+        "id": 3516,
+        "name": "Campos de Sport de El Sardinero",
+        "address": "Calle del Real Racing Club",
+        "city": "Santander",
+        "capacity": 22271,
+        "surface": "grass",
+        "image": "https://media.api-sports.io/football/venues/3516.png"
+      }
+    }
+  ]
+}

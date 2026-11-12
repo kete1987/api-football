@@ -1,0 +1,24 @@
+{
+  "get": "odds/live/bets",
+  "parameters": [],
+  "errors": [],
+  "results": 266,
+  "paging": {
+    "current": 1,
+    "total": 1
+  },
+  "response": [
+    {
+      "id": 1,
+      "name": "Over/Under Extra Time"
+    },
+    {
+      "id": 265,
+      "name": "Corners over/under between 20:01 m and 30:00 m"
+    },
+    {
+      "id": 266,
+      "name": "Corners over/under between 10:01 m and 20:00 m"
+    }
+  ]
+}

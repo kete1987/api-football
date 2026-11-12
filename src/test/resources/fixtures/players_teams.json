@@ -1,0 +1,44 @@
+{
+  "get": "players/teams",
+  "parameters": {
+    "player": "278"
+  },
+  "errors": [],
+  "results": 7,
+  "paging": {
+    "current": 1,
+    "total": 1
+  },
+  "response": [
+    {
+      "team": {
+        "id": 541,
+        "name": "Real Madrid",
+        "logo": "https://media.api-sports.io/football/teams/541.png"
+      },
+      "seasons": [
+        2026,
+        2025,
+        2024
+      ]
+    },
+    {
+      "team": {
+        "id": 10334,
+        "name": "France U19",
+        "logo": "https://media.api-sports.io/football/teams/10334.png"
+      },
+      "seasons": [
+        2016
+      ]
+    },
+    {
+      "team": {
+        "id": 9258,
+        "name": "Monaco II",
+        "logo": "https://media.api-sports.io/football/teams/9258.png"
+      },
+      "seasons": []
+    }
+  ]
+}

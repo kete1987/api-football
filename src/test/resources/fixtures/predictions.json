@@ -1,0 +1,899 @@
+{
+  "get": "predictions",
+  "parameters": {
+    "fixture": "1570461"
+  },
+  "errors": [],
+  "results": 1,
+  "paging": {
+    "current": 1,
+    "total": 1
+  },
+  "response": [
+    {
+      "predictions": {
+        "winner": {
+          "id": 541,
+          "name": "Real Madrid",
+          "comment": null
+        },
+        "win_or_draw": false,
+        "under_over": "-3.5",
+        "goals": {
+          "home": "-3.5",
+          "away": "-1.5"
+        },
+        "advice": "Combo Winner : Real Madrid and -3.5 goals",
+        "percent": {
+          "home": "50%",
+          "draw": "50%",
+          "away": "0%"
+        }
+      },
+      "league": {
+        "id": 140,
+        "name": "La Liga",
+        "country": "Spain",
+        "logo": "https://media.api-sports.io/football/leagues/140.png",
+        "flag": "https://media.api-sports.io/flags/es.svg",
+        "season": 2026
+      },
+      "teams": {
+        "home": {
+          "id": 541,
+          "name": "Real Madrid",
+          "logo": "https://media.api-sports.io/football/teams/541.png",
+          "last_5": {
+            "played": 5,
+            "form": "100%",
+            "att": "100%",
+            "def": "75%",
+            "goals": {
+              "for": {
+                "total": 13,
+                "average": "2.6"
+              },
+              "against": {
+                "total": 2,
+                "average": "0.4"
+              }
+            }
+          },
+          "league": {
+            "form": "WWWLWWLWWWWW",
+            "fixtures": {
+              "played": {
+                "home": 5,
+                "away": 7,
+                "total": 12
+              },
+              "wins": {
+                "home": 5,
+                "away": 5,
+                "total": 10
+              },
+              "draws": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "loses": {
+                "home": 0,
+                "away": 2,
+                "total": 2
+              }
+            },
+            "goals": {
+              "for": {
+                "total": {
+                  "home": 17,
+                  "away": 14,
+                  "total": 31
+                },
+                "average": {
+                  "home": "3.4",
+                  "away": "2.0",
+                  "total": "2.6"
+                },
+                "minute": {
+                  "0-15": {
+                    "total": 3,
+                    "percentage": "10.34%"
+                  },
+                  "16-30": {
+                    "total": 6,
+                    "percentage": "20.69%"
+                  },
+                  "31-45": {
+                    "total": 7,
+                    "percentage": "24.14%"
+                  },
+                  "46-60": {
+                    "total": 1,
+                    "percentage": "3.45%"
+                  },
+                  "61-75": {
+                    "total": 4,
+                    "percentage": "13.79%"
+                  },
+                  "76-90": {
+                    "total": 8,
+                    "percentage": "27.59%"
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "under_over": {
+                  "0.5": {
+                    "over": 11,
+                    "under": 1
+                  },
+                  "1.5": {
+                    "over": 9,
+                    "under": 3
+                  },
+                  "2.5": {
+                    "over": 7,
+                    "under": 5
+                  },
+                  "3.5": {
+                    "over": 4,
+                    "under": 8
+                  },
+                  "4.5": {
+                    "over": 0,
+                    "under": 12
+                  }
+                }
+              },
+              "against": {
+                "total": {
+                  "home": 3,
+                  "away": 7,
+                  "total": 10
+                },
+                "average": {
+                  "home": "0.6",
+                  "away": "1.0",
+                  "total": "0.8"
+                },
+                "minute": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": 3,
+                    "percentage": "25.00%"
+                  },
+                  "31-45": {
+                    "total": 1,
+                    "percentage": "8.33%"
+                  },
+                  "46-60": {
+                    "total": 3,
+                    "percentage": "25.00%"
+                  },
+                  "61-75": {
+                    "total": 2,
+                    "percentage": "16.67%"
+                  },
+                  "76-90": {
+                    "total": 3,
+                    "percentage": "25.00%"
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "under_over": {
+                  "0.5": {
+                    "over": 8,
+                    "under": 4
+                  },
+                  "1.5": {
+                    "over": 2,
+                    "under": 10
+                  },
+                  "2.5": {
+                    "over": 0,
+                    "under": 12
+                  },
+                  "3.5": {
+                    "over": 0,
+                    "under": 12
+                  },
+                  "4.5": {
+                    "over": 0,
+                    "under": 12
+                  }
+                }
+              }
+            },
+            "biggest": {
+              "streak": {
+                "wins": 3,
+                "draws": 0,
+                "loses": 1
+              },
+              "wins": {
+                "home": "4-0",
+                "away": "0-3"
+              },
+              "loses": {
+                "home": null,
+                "away": "2-1"
+              },
+              "goals": {
+                "for": {
+                  "home": 4,
+                  "away": 3
+                },
+                "against": {
+                  "home": 1,
+                  "away": 2
+                }
+              }
+            },
+            "clean_sheet": {
+              "home": 2,
+              "away": 2,
+              "total": 4
+            },
+            "failed_to_score": {
+              "home": 0,
+              "away": 1,
+              "total": 1
+            },
+            "penalty": {
+              "scored": {
+                "total": 3,
+                "percentage": "75.00%"
+              },
+              "missed": {
+                "total": 1,
+                "percentage": "25.00%"
+              },
+              "total": 4
+            },
+            "lineups": [
+              {
+                "formation": "4-2-3-1",
+                "played": 12
+              }
+            ],
+            "cards": {
+              "yellow": {
+                "0-15": {
+                  "total": 2,
+                  "percentage": "8.00%"
+                },
+                "16-30": {
+                  "total": 2,
+                  "percentage": "8.00%"
+                },
+                "31-45": {
+                  "total": 2,
+                  "percentage": "8.00%"
+                },
+                "46-60": {
+                  "total": 4,
+                  "percentage": "16.00%"
+                },
+                "61-75": {
+                  "total": 4,
+                  "percentage": "16.00%"
+                },
+                "76-90": {
+                  "total": 6,
+                  "percentage": "24.00%"
+                },
+                "91-105": {
+                  "total": 5,
+                  "percentage": "20.00%"
+                },
+                "106-120": {
+                  "total": null,
+                  "percentage": null
+                }
+              },
+              "red": {
+                "0-15": {
+                  "total": null,
+                  "percentage": null
+                },
+                "16-30": {
+                  "total": null,
+                  "percentage": null
+                },
+                "31-45": {
+                  "total": null,
+                  "percentage": null
+                },
+                "46-60": {
+                  "total": 1,
+                  "percentage": "50.00%"
+                },
+                "61-75": {
+                  "total": 1,
+                  "percentage": "50.00%"
+                },
+                "76-90": {
+                  "total": null,
+                  "percentage": null
+                },
+                "91-105": {
+                  "total": null,
+                  "percentage": null
+                },
+                "106-120": {
+                  "total": null,
+                  "percentage": null
+                }
+              }
+            }
+          }
+        },
+        "away": {
+          "id": 538,
+          "name": "Celta Vigo",
+          "logo": "https://media.api-sports.io/football/teams/538.png",
+          "last_5": {
+            "played": 5,
+            "form": "40%",
+            "att": "25%",
+            "def": "50%",
+            "goals": {
+              "for": {
+                "total": 2,
+                "average": "0.4"
+              },
+              "against": {
+                "total": 4,
+                "average": "0.8"
+              }
+            }
+          },
+          "league": {
+            "form": "DLLDDDWDWDLD",
+            "fixtures": {
+              "played": {
+                "home": 7,
+                "away": 5,
+                "total": 12
+              },
+              "wins": {
+                "home": 2,
+                "away": 0,
+                "total": 2
+              },
+              "draws": {
+                "home": 3,
+                "away": 4,
+                "total": 7
+              },
+              "loses": {
+                "home": 2,
+                "away": 1,
+                "total": 3
+              }
+            },
+            "goals": {
+              "for": {
+                "total": {
+                  "home": 9,
+                  "away": 1,
+                  "total": 10
+                },
+                "average": {
+                  "home": "1.3",
+                  "away": "0.2",
+                  "total": "0.8"
+                },
+                "minute": {
+                  "0-15": {
+                    "total": 1,
+                    "percentage": "10.00%"
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": 3,
+                    "percentage": "30.00%"
+                  },
+                  "46-60": {
+                    "total": 2,
+                    "percentage": "20.00%"
+                  },
+                  "61-75": {
+                    "total": 2,
+                    "percentage": "20.00%"
+                  },
+                  "76-90": {
+                    "total": 2,
+                    "percentage": "20.00%"
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "under_over": {
+                  "0.5": {
+                    "over": 5,
+                    "under": 7
+                  },
+                  "1.5": {
+                    "over": 2,
+                    "under": 10
+                  },
+                  "2.5": {
+                    "over": 1,
+                    "under": 11
+                  },
+                  "3.5": {
+                    "over": 1,
+                    "under": 11
+                  },
+                  "4.5": {
+                    "over": 1,
+                    "under": 11
+                  }
+                }
+              },
+              "against": {
+                "total": {
+                  "home": 6,
+                  "away": 4,
+                  "total": 10
+                },
+                "average": {
+                  "home": "0.9",
+                  "away": "0.8",
+                  "total": "0.8"
+                },
+                "minute": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": 3,
+                    "percentage": "30.00%"
+                  },
+                  "31-45": {
+                    "total": 1,
+                    "percentage": "10.00%"
+                  },
+                  "46-60": {
+                    "total": 2,
+                    "percentage": "20.00%"
+                  },
+                  "61-75": {
+                    "total": 2,
+                    "percentage": "20.00%"
+                  },
+                  "76-90": {
+                    "total": 2,
+                    "percentage": "20.00%"
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "under_over": {
+                  "0.5": {
+                    "over": 6,
+                    "under": 6
+                  },
+                  "1.5": {
+                    "over": 3,
+                    "under": 9
+                  },
+                  "2.5": {
+                    "over": 1,
+                    "under": 11
+                  },
+                  "3.5": {
+                    "over": 0,
+                    "under": 12
+                  },
+                  "4.5": {
+                    "over": 0,
+                    "under": 12
+                  }
+                }
+              }
+            },
+            "biggest": {
+              "streak": {
+                "wins": 1,
+                "draws": 3,
+                "loses": 2
+              },
+              "wins": {
+                "home": "5-0",
+                "away": null
+              },
+              "loses": {
+                "home": "0-2",
+                "away": "3-0"
+              },
+              "goals": {
+                "for": {
+                  "home": 5,
+                  "away": 1
+                },
+                "against": {
+                  "home": 2,
+                  "away": 3
+                }
+              }
+            },
+            "clean_sheet": {
+              "home": 3,
+              "away": 3,
+              "total": 6
+            },
+            "failed_to_score": {
+              "home": 3,
+              "away": 4,
+              "total": 7
+            },
+            "penalty": {
+              "scored": {
+                "total": 1,
+                "percentage": "100.00%"
+              },
+              "missed": {
+                "total": 0,
+                "percentage": "0%"
+              },
+              "total": 1
+            },
+            "lineups": [
+              {
+                "formation": "3-4-3",
+                "played": 12
+              }
+            ],
+            "cards": {
+              "yellow": {
+                "0-15": {
+                  "total": 1,
+                  "percentage": "5.26%"
+                },
+                "16-30": {
+                  "total": 2,
+                  "percentage": "10.53%"
+                },
+                "31-45": {
+                  "total": 1,
+                  "percentage": "5.26%"
+                },
+                "46-60": {
+                  "total": 5,
+                  "percentage": "26.32%"
+                },
+                "61-75": {
+                  "total": 2,
+                  "percentage": "10.53%"
+                },
+                "76-90": {
+                  "total": 8,
+                  "percentage": "42.11%"
+                },
+                "91-105": {
+                  "total": null,
+                  "percentage": null
+                },
+                "106-120": {
+                  "total": null,
+                  "percentage": null
+                }
+              },
+              "red": {
+                "0-15": {
+                  "total": null,
+                  "percentage": null
+                },
+                "16-30": {
+                  "total": null,
+                  "percentage": null
+                },
+                "31-45": {
+                  "total": null,
+                  "percentage": null
+                },
+                "46-60": {
+                  "total": 1,
+                  "percentage": "100.00%"
+                },
+                "61-75": {
+                  "total": null,
+                  "percentage": null
+                },
+                "76-90": {
+                  "total": null,
+                  "percentage": null
+                },
+                "91-105": {
+                  "total": null,
+                  "percentage": null
+                },
+                "106-120": {
+                  "total": null,
+                  "percentage": null
+                }
+              }
+            }
+          }
+        }
+      },
+      "comparison": {
+        "form": {
+          "home": "71%",
+          "away": "29%"
+        },
+        "att": {
+          "home": "87%",
+          "away": "13%"
+        },
+        "def": {
+          "home": "67%",
+          "away": "33%"
+        },
+        "poisson_distribution": {
+          "home": "95%",
+          "away": "5%"
+        },
+        "h2h": {
+          "home": "80%",
+          "away": "20%"
+        },
+        "goals": {
+          "home": "60%",
+          "away": "40%"
+        },
+        "total": {
+          "home": "76.7%",
+          "away": "23.3%"
+        }
+      },
+      "h2h": [
+        {
+          "fixture": {
+            "id": 1391081,
+            "referee": "I. Diaz",
+            "timezone": "UTC",
+            "date": "2026-03-06T20:00:00+00:00",
+            "timestamp": 1772827200,
+            "periods": {
+              "first": 1772827200,
+              "second": 1772830800
+            },
+            "venue": {
+              "id": 22784,
+              "name": "Estadio Abanca Balaídos",
+              "city": "Vigo"
+            },
+            "status": {
+              "long": "Match Finished",
+              "short": "FT",
+              "elapsed": 90,
+              "extra": 6
+            }
+          },
+          "league": {
+            "id": 140,
+            "name": "La Liga",
+            "country": "Spain",
+            "logo": "https://media.api-sports.io/football/leagues/140.png",
+            "flag": "https://media.api-sports.io/flags/es.svg",
+            "season": 2025,
+            "round": "Regular Season - 27",
+            "standings": true
+          },
+          "teams": {
+            "home": {
+              "id": 538,
+              "name": "Celta Vigo",
+              "logo": "https://media.api-sports.io/football/teams/538.png",
+              "winner": false
+            },
+            "away": {
+              "id": 541,
+              "name": "Real Madrid",
+              "logo": "https://media.api-sports.io/football/teams/541.png",
+              "winner": true
+            }
+          },
+          "goals": {
+            "home": 1,
+            "away": 2
+          },
+          "score": {
+            "halftime": {
+              "home": 1,
+              "away": 1
+            },
+            "fulltime": {
+              "home": 1,
+              "away": 2
+            },
+            "extratime": {
+              "home": null,
+              "away": null
+            },
+            "penalty": {
+              "home": null,
+              "away": null
+            }
+          }
+        },
+        {
+          "fixture": {
+            "id": 1334037,
+            "referee": "José Munuera",
+            "timezone": "UTC",
+            "date": "2025-01-16T20:30:00+00:00",
+            "timestamp": 1737059400,
+            "periods": {
+              "first": 1737059400,
+              "second": 1737063000
+            },
+            "venue": {
+              "id": 1456,
+              "name": "Estadio Santiago Bernabéu",
+              "city": "Madrid"
+            },
+            "status": {
+              "long": "Match Finished",
+              "short": "AET",
+              "elapsed": 120,
+              "extra": null
+            }
+          },
+          "league": {
+            "id": 143,
+            "name": "Copa del Rey",
+            "country": "Spain",
+            "logo": "https://media.api-sports.io/football/leagues/143.png",
+            "flag": "https://media.api-sports.io/flags/es.svg",
+            "season": 2024,
+            "round": "Round of 16",
+            "standings": false
+          },
+          "teams": {
+            "home": {
+              "id": 541,
+              "name": "Real Madrid",
+              "logo": "https://media.api-sports.io/football/teams/541.png",
+              "winner": true
+            },
+            "away": {
+              "id": 538,
+              "name": "Celta Vigo",
+              "logo": "https://media.api-sports.io/football/teams/538.png",
+              "winner": false
+            }
+          },
+          "goals": {
+            "home": 5,
+            "away": 2
+          },
+          "score": {
+            "halftime": {
+              "home": 1,
+              "away": 0
+            },
+            "fulltime": {
+              "home": 2,
+              "away": 2
+            },
+            "extratime": {
+              "home": 3,
+              "away": 0
+            },
+            "penalty": {
+              "home": null,
+              "away": null
+            }
+          }
+        },
+        {
+          "fixture": {
+            "id": 721033,
+            "referee": "Pablo González",
+            "timezone": "UTC",
+            "date": "2022-04-02T16:30:00+00:00",
+            "timestamp": 1648917000,
+            "periods": {
+              "first": 1648917000,
+              "second": 1648920600
+            },
+            "venue": {
+              "id": 1467,
+              "name": "Abanca-Balaídos",
+              "city": "Vigo"
+            },
+            "status": {
+              "long": "Match Finished",
+              "short": "FT",
+              "elapsed": 90,
+              "extra": null
+            }
+          },
+          "league": {
+            "id": 140,
+            "name": "La Liga",
+            "country": "Spain",
+            "logo": "https://media.api-sports.io/football/leagues/140.png",
+            "flag": "https://media.api-sports.io/flags/es.svg",
+            "season": 2021,
+            "round": "Regular Season - 30",
+            "standings": true
+          },
+          "teams": {
+            "home": {
+              "id": 538,
+              "name": "Celta Vigo",
+              "logo": "https://media.api-sports.io/football/teams/538.png",
+              "winner": false
+            },
+            "away": {
+              "id": 541,
+              "name": "Real Madrid",
+              "logo": "https://media.api-sports.io/football/teams/541.png",
+              "winner": true
+            }
+          },
+          "goals": {
+            "home": 1,
+            "away": 2
+          },
+          "score": {
+            "halftime": {
+              "home": 0,
+              "away": 1
+            },
+            "fulltime": {
+              "home": 1,
+              "away": 2
+            },
+            "extratime": {
+              "home": null,
+              "away": null
+            },
+            "penalty": {
+              "home": null,
+              "away": null
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

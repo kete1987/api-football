@@ -1,0 +1,26 @@
+{
+  "get": "status",
+  "parameters": [],
+  "errors": [],
+  "results": 0,
+  "paging": {
+    "current": 1,
+    "total": 1
+  },
+  "response": {
+    "account": {
+      "firstname": "John",
+      "lastname": "Doe",
+      "email": "john.doe@example.com"
+    },
+    "subscription": {
+      "plan": "Pro",
+      "end": "2027-11-12T07:46:56+00:00",
+      "active": true
+    },
+    "requests": {
+      "current": 0,
+      "limit_day": 7500
+    }
+  }
+}

@@ -1,0 +1,490 @@
+{
+  "get": "players",
+  "parameters": {
+    "league": "140",
+    "season": "2026"
+  },
+  "errors": [],
+  "results": 20,
+  "paging": {
+    "current": 1,
+    "total": 31
+  },
+  "response": [
+    {
+      "player": {
+        "id": 23,
+        "name": "Sergio Gómez",
+        "firstname": "Sergio",
+        "lastname": "Gómez Martín",
+        "age": 25,
+        "birth": {
+          "date": "2000-09-04",
+          "place": "Badalona",
+          "country": "Spain"
+        },
+        "nationality": "Spain",
+        "height": "173",
+        "weight": "71",
+        "injured": false,
+        "photo": "https://media.api-sports.io/football/players/23.png"
+      },
+      "statistics": [
+        {
+          "team": {
+            "id": 548,
+            "name": "Real Sociedad",
+            "logo": "https://media.api-sports.io/football/teams/548.png"
+          },
+          "league": {
+            "id": 140,
+            "name": "La Liga",
+            "country": "Spain",
+            "logo": "https://media.api-sports.io/football/leagues/140.png",
+            "flag": "https://media.api-sports.io/flags/es.svg",
+            "season": 2026
+          },
+          "games": {
+            "appearences": 12,
+            "lineups": 10,
+            "minutes": 886,
+            "number": 17,
+            "position": "Defender",
+            "rating": "6.71",
+            "captain": false
+          },
+          "substitutes": {
+            "in": 2,
+            "out": 2,
+            "bench": 2
+          },
+          "shots": {
+            "total": 5,
+            "on": 1
+          },
+          "goals": {
+            "total": 0,
+            "conceded": 0,
+            "assists": 0,
+            "saves": 0
+          },
+          "passes": {
+            "total": 516,
+            "key": 11,
+            "accuracy": 89
+          },
+          "tackles": {
+            "total": 20,
+            "blocks": 4,
+            "interceptions": 10
+          },
+          "duels": {
+            "total": 58,
+            "won": 34
+          },
+          "dribbles": {
+            "attempts": 8,
+            "success": 6,
+            "past": null
+          },
+          "fouls": {
+            "drawn": 3,
+            "committed": 5
+          },
+          "cards": {
+            "yellow": 1,
+            "yellowred": 0,
+            "red": 0
+          },
+          "penalty": {
+            "won": 0,
+            "commited": 0,
+            "scored": 0,
+            "missed": 0,
+            "saved": null
+          }
+        }
+      ]
+    },
+    {
+      "player": {
+        "id": 29,
+        "name": "J. Oblak",
+        "firstname": "Jan",
+        "lastname": "Oblak",
+        "age": 33,
+        "birth": {
+          "date": "1993-01-07",
+          "place": "Škofja Loka",
+          "country": "Slovenia"
+        },
+        "nationality": "Slovenia",
+        "height": "188",
+        "weight": "87",
+        "injured": false,
+        "photo": "https://media.api-sports.io/football/players/29.png"
+      },
+      "statistics": [
+        {
+          "team": {
+            "id": 530,
+            "name": "Atletico Madrid",
+            "logo": "https://media.api-sports.io/football/teams/530.png"
+          },
+          "league": {
+            "id": 140,
+            "name": "La Liga",
+            "country": "Spain",
+            "logo": "https://media.api-sports.io/football/leagues/140.png",
+            "flag": "https://media.api-sports.io/flags/es.svg",
+            "season": 2026
+          },
+          "games": {
+            "appearences": 12,
+            "lineups": 12,
+            "minutes": 1080,
+            "number": 13,
+            "position": "Goalkeeper",
+            "rating": "7.11",
+            "captain": false
+          },
+          "substitutes": {
+            "in": 0,
+            "out": 0,
+            "bench": 0
+          },
+          "shots": {
+            "total": 0,
+            "on": 0
+          },
+          "goals": {
+            "total": 0,
+            "conceded": 5,
+            "assists": 0,
+            "saves": 32
+          },
+          "passes": {
+            "total": 329,
+            "key": 0,
+            "accuracy": 75
+          },
+          "tackles": {
+            "total": 0,
+            "blocks": 0,
+            "interceptions": 1
+          },
+          "duels": {
+            "total": 2,
+            "won": 2
+          },
+          "dribbles": {
+            "attempts": 0,
+            "success": 0,
+            "past": null
+          },
+          "fouls": {
+            "drawn": 1,
+            "committed": 0
+          },
+          "cards": {
+            "yellow": 0,
+            "yellowred": 0,
+            "red": 0
+          },
+          "penalty": {
+            "won": 0,
+            "commited": 0,
+            "scored": 0,
+            "missed": 0,
+            "saved": 0
+          }
+        }
+      ]
+    },
+    {
+      "player": {
+        "id": 44,
+        "name": "Rodri",
+        "firstname": "Rodrigo",
+        "lastname": "Hernández Cascante",
+        "age": 29,
+        "birth": {
+          "date": "1996-06-22",
+          "place": "Madrid",
+          "country": "Spain"
+        },
+        "nationality": "Spain",
+        "height": "190",
+        "weight": "82",
+        "injured": false,
+        "photo": "https://media.api-sports.io/football/players/44.png"
+      },
+      "statistics": [
+        {
+          "team": {
+            "id": 529,
+            "name": "Barcelona",
+            "logo": "https://media.api-sports.io/football/teams/529.png"
+          },
+          "league": {
+            "id": 140,
+            "name": "La Liga",
+            "country": "Spain",
+            "logo": "https://media.api-sports.io/football/leagues/140.png",
+            "flag": "https://media.api-sports.io/flags/es.svg",
+            "season": 2026
+          },
+          "games": {
+            "appearences": 10,
+            "lineups": 8,
+            "minutes": 697,
+            "number": 16,
+            "position": "Midfielder",
+            "rating": "7.7",
+            "captain": false
+          },
+          "substitutes": {
+            "in": 2,
+            "out": 3,
+            "bench": 2
+          },
+          "shots": {
+            "total": 5,
+            "on": 2
+          },
+          "goals": {
+            "total": 1,
+            "conceded": 0,
+            "assists": 1,
+            "saves": 0
+          },
+          "passes": {
+            "total": 869,
+            "key": 11,
+            "accuracy": 94
+          },
+          "tackles": {
+            "total": 20,
+            "blocks": 0,
+            "interceptions": 12
+          },
+          "duels": {
+            "total": 55,
+            "won": 37
+          },
+          "dribbles": {
+            "attempts": 3,
+            "success": 1,
+            "past": null
+          },
+          "fouls": {
+            "drawn": 8,
+            "committed": 8
+          },
+          "cards": {
+            "yellow": 1,
+            "yellowred": 0,
+            "red": 0
+          },
+          "penalty": {
+            "won": null,
+            "commited": null,
+            "scored": 0,
+            "missed": 0,
+            "saved": null
+          }
+        }
+      ]
+    },
+    {
+      "player": {
+        "id": 278,
+        "name": "Kylian Mbappé",
+        "firstname": "Kylian",
+        "lastname": "Mbappé Lottin",
+        "age": 27,
+        "birth": {
+          "date": "1998-12-20",
+          "place": "Paris",
+          "country": "France"
+        },
+        "nationality": "France",
+        "height": "178",
+        "weight": "75",
+        "injured": false,
+        "photo": "https://media.api-sports.io/football/players/278.png"
+      },
+      "statistics": [
+        {
+          "team": {
+            "id": 541,
+            "name": "Real Madrid",
+            "logo": "https://media.api-sports.io/football/teams/541.png"
+          },
+          "league": {
+            "id": 140,
+            "name": "La Liga",
+            "country": "Spain",
+            "logo": "https://media.api-sports.io/football/leagues/140.png",
+            "flag": "https://media.api-sports.io/flags/es.svg",
+            "season": 2026
+          },
+          "games": {
+            "appearences": 12,
+            "lineups": 12,
+            "minutes": 1073,
+            "number": 10,
+            "position": "Attacker",
+            "rating": "8.03",
+            "captain": false
+          },
+          "substitutes": {
+            "in": 0,
+            "out": 2,
+            "bench": 0
+          },
+          "shots": {
+            "total": 51,
+            "on": 34
+          },
+          "goals": {
+            "total": 13,
+            "conceded": 0,
+            "assists": 2,
+            "saves": 0
+          },
+          "passes": {
+            "total": 378,
+            "key": 20,
+            "accuracy": 86
+          },
+          "tackles": {
+            "total": 3,
+            "blocks": 2,
+            "interceptions": 2
+          },
+          "duels": {
+            "total": 114,
+            "won": 62
+          },
+          "dribbles": {
+            "attempts": 60,
+            "success": 35,
+            "past": null
+          },
+          "fouls": {
+            "drawn": 23,
+            "committed": 9
+          },
+          "cards": {
+            "yellow": 3,
+            "yellowred": 0,
+            "red": 0
+          },
+          "penalty": {
+            "won": 2,
+            "commited": 0,
+            "scored": 2,
+            "missed": 1,
+            "saved": null
+          }
+        }
+      ]
+    },
+    {
+      "player": {
+        "id": 433,
+        "name": "Marcão",
+        "firstname": "Marcos",
+        "lastname": "do Nascimento Teixeira",
+        "age": 30,
+        "birth": {
+          "date": "1996-06-05",
+          "place": "Londrina",
+          "country": "Brazil"
+        },
+        "nationality": "Brazil",
+        "height": "185",
+        "weight": "80",
+        "injured": false,
+        "photo": "https://media.api-sports.io/football/players/433.png"
+      },
+      "statistics": [
+        {
+          "team": {
+            "id": 536,
+            "name": "Sevilla",
+            "logo": "https://media.api-sports.io/football/teams/536.png"
+          },
+          "league": {
+            "id": 140,
+            "name": "La Liga",
+            "country": "Spain",
+            "logo": "https://media.api-sports.io/football/leagues/140.png",
+            "flag": "https://media.api-sports.io/flags/es.svg",
+            "season": 2026
+          },
+          "games": {
+            "appearences": 0,
+            "lineups": 0,
+            "minutes": null,
+            "number": 23,
+            "position": "Defender",
+            "rating": null,
+            "captain": false
+          },
+          "substitutes": {
+            "in": 0,
+            "out": 0,
+            "bench": 3
+          },
+          "shots": {
+            "total": null,
+            "on": null
+          },
+          "goals": {
+            "total": 0,
+            "conceded": 0,
+            "assists": 0,
+            "saves": null
+          },
+          "passes": {
+            "total": null,
+            "key": null,
+            "accuracy": null
+          },
+          "tackles": {
+            "total": null,
+            "blocks": null,
+            "interceptions": null
+          },
+          "duels": {
+            "total": null,
+            "won": null
+          },
+          "dribbles": {
+            "attempts": null,
+            "success": null,
+            "past": null
+          },
+          "fouls": {
+            "drawn": null,
+            "committed": null
+          },
+          "cards": {
+            "yellow": 0,
+            "yellowred": 0,
+            "red": 0
+          },
+          "penalty": {
+            "won": null,
+            "commited": null,
+            "scored": 0,
+            "missed": 0,
+            "saved": null
+          }
+        }
+      ]
+    }
+  ]
+}

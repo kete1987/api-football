@@ -1,0 +1,27 @@
+{
+  "get": "countries",
+  "parameters": [],
+  "errors": [],
+  "results": 171,
+  "paging": {
+    "current": 1,
+    "total": 1
+  },
+  "response": [
+    {
+      "name": "Albania",
+      "code": "AL",
+      "flag": "https://media.api-sports.io/flags/al.svg"
+    },
+    {
+      "name": "World",
+      "code": null,
+      "flag": null
+    },
+    {
+      "name": "Zimbabwe",
+      "code": "ZW",
+      "flag": "https://media.api-sports.io/flags/zw.svg"
+    }
+  ]
+}

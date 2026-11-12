@@ -1,0 +1,490 @@
+{
+  "get": "players/topredcards",
+  "parameters": {
+    "league": "140",
+    "season": "2025"
+  },
+  "errors": [],
+  "results": 20,
+  "paging": {
+    "current": 1,
+    "total": 1
+  },
+  "response": [
+    {
+      "player": {
+        "id": 51530,
+        "name": "F. Viñas",
+        "firstname": "Federico Sebastián",
+        "lastname": "Viñas Barboza",
+        "age": 27,
+        "birth": {
+          "date": "1998-06-30",
+          "place": "Montevideo",
+          "country": "Uruguay"
+        },
+        "nationality": "Uruguay",
+        "height": "180",
+        "weight": "81",
+        "injured": false,
+        "photo": "https://media.api-sports.io/football/players/51530.png"
+      },
+      "statistics": [
+        {
+          "team": {
+            "id": 718,
+            "name": "Oviedo",
+            "logo": "https://media.api-sports.io/football/teams/718.png"
+          },
+          "league": {
+            "id": 140,
+            "name": "La Liga",
+            "country": "Spain",
+            "logo": "https://media.api-sports.io/football/leagues/140.png",
+            "flag": "https://media.api-sports.io/flags/es.svg",
+            "season": 2025
+          },
+          "games": {
+            "appearences": 33,
+            "lineups": 28,
+            "minutes": 2451,
+            "number": 9,
+            "position": "Attacker",
+            "rating": "6.95",
+            "captain": false
+          },
+          "substitutes": {
+            "in": 5,
+            "out": 14,
+            "bench": 5
+          },
+          "shots": {
+            "total": 48,
+            "on": 21
+          },
+          "goals": {
+            "total": 9,
+            "conceded": 0,
+            "assists": 1,
+            "saves": null
+          },
+          "passes": {
+            "total": 517,
+            "key": 27,
+            "accuracy": 71
+          },
+          "tackles": {
+            "total": 50,
+            "blocks": 4,
+            "interceptions": 14
+          },
+          "duels": {
+            "total": 494,
+            "won": 260
+          },
+          "dribbles": {
+            "attempts": 72,
+            "success": 49,
+            "past": null
+          },
+          "fouls": {
+            "drawn": 69,
+            "committed": 46
+          },
+          "cards": {
+            "yellow": 6,
+            "yellowred": 1,
+            "red": 2
+          },
+          "penalty": {
+            "won": 1,
+            "commited": null,
+            "scored": 2,
+            "missed": 0,
+            "saved": null
+          }
+        }
+      ]
+    },
+    {
+      "player": {
+        "id": 47250,
+        "name": "D. Dakonam",
+        "firstname": "Djené",
+        "lastname": "Dakonam Ortega",
+        "age": 34,
+        "birth": {
+          "date": "1991-12-31",
+          "place": "Lomé",
+          "country": "Togo"
+        },
+        "nationality": "Togo",
+        "height": "178",
+        "weight": "71",
+        "injured": false,
+        "photo": "https://media.api-sports.io/football/players/47250.png"
+      },
+      "statistics": [
+        {
+          "team": {
+            "id": 546,
+            "name": "Getafe",
+            "logo": "https://media.api-sports.io/football/teams/546.png"
+          },
+          "league": {
+            "id": 140,
+            "name": "La Liga",
+            "country": "Spain",
+            "logo": "https://media.api-sports.io/football/leagues/140.png",
+            "flag": "https://media.api-sports.io/flags/es.svg",
+            "season": 2025
+          },
+          "games": {
+            "appearences": 34,
+            "lineups": 32,
+            "minutes": 2585,
+            "number": 2,
+            "position": "Defender",
+            "rating": "6.61",
+            "captain": false
+          },
+          "substitutes": {
+            "in": 2,
+            "out": 9,
+            "bench": 2
+          },
+          "shots": {
+            "total": 2,
+            "on": null
+          },
+          "goals": {
+            "total": 0,
+            "conceded": 0,
+            "assists": 0,
+            "saves": null
+          },
+          "passes": {
+            "total": 795,
+            "key": 2,
+            "accuracy": 78
+          },
+          "tackles": {
+            "total": 35,
+            "blocks": 10,
+            "interceptions": 37
+          },
+          "duels": {
+            "total": 197,
+            "won": 112
+          },
+          "dribbles": {
+            "attempts": 9,
+            "success": 8,
+            "past": null
+          },
+          "fouls": {
+            "drawn": 26,
+            "committed": 35
+          },
+          "cards": {
+            "yellow": 10,
+            "yellowred": 0,
+            "red": 2
+          },
+          "penalty": {
+            "won": 1,
+            "commited": null,
+            "scored": 0,
+            "missed": 0,
+            "saved": null
+          }
+        }
+      ]
+    },
+    {
+      "player": {
+        "id": 41552,
+        "name": "P. Ciss",
+        "firstname": "Pathé Ismaël",
+        "lastname": "Ciss",
+        "age": 31,
+        "birth": {
+          "date": "1994-03-16",
+          "place": "Dakar",
+          "country": "Senegal"
+        },
+        "nationality": "Senegal",
+        "height": "186",
+        "weight": "71",
+        "injured": false,
+        "photo": "https://media.api-sports.io/football/players/41552.png"
+      },
+      "statistics": [
+        {
+          "team": {
+            "id": 728,
+            "name": "Rayo Vallecano",
+            "logo": "https://media.api-sports.io/football/teams/728.png"
+          },
+          "league": {
+            "id": 140,
+            "name": "La Liga",
+            "country": "Spain",
+            "logo": "https://media.api-sports.io/football/leagues/140.png",
+            "flag": "https://media.api-sports.io/flags/es.svg",
+            "season": 2025
+          },
+          "games": {
+            "appearences": 29,
+            "lineups": 20,
+            "minutes": 2003,
+            "number": 6,
+            "position": "Midfielder",
+            "rating": "7.01",
+            "captain": false
+          },
+          "substitutes": {
+            "in": 9,
+            "out": 2,
+            "bench": 9
+          },
+          "shots": {
+            "total": 18,
+            "on": 8
+          },
+          "goals": {
+            "total": 2,
+            "conceded": 0,
+            "assists": 1,
+            "saves": null
+          },
+          "passes": {
+            "total": 1192,
+            "key": 12,
+            "accuracy": 89
+          },
+          "tackles": {
+            "total": 53,
+            "blocks": 16,
+            "interceptions": 36
+          },
+          "duels": {
+            "total": 192,
+            "won": 107
+          },
+          "dribbles": {
+            "attempts": 13,
+            "success": 9,
+            "past": null
+          },
+          "fouls": {
+            "drawn": 13,
+            "committed": 30
+          },
+          "cards": {
+            "yellow": 9,
+            "yellowred": 0,
+            "red": 2
+          },
+          "penalty": {
+            "won": null,
+            "commited": null,
+            "scored": 0,
+            "missed": 0,
+            "saved": null
+          }
+        }
+      ]
+    },
+    {
+      "player": {
+        "id": 48555,
+        "name": "C. Pickel",
+        "firstname": "Charles",
+        "lastname": "Monginda Pickel",
+        "age": 29,
+        "birth": {
+          "date": "1997-05-15",
+          "place": "Solothurn",
+          "country": "Switzerland"
+        },
+        "nationality": "Switzerland",
+        "height": "187",
+        "weight": "76",
+        "injured": false,
+        "photo": "https://media.api-sports.io/football/players/48555.png"
+      },
+      "statistics": [
+        {
+          "team": {
+            "id": 540,
+            "name": "Espanyol",
+            "logo": "https://media.api-sports.io/football/teams/540.png"
+          },
+          "league": {
+            "id": 140,
+            "name": "La Liga",
+            "country": "Spain",
+            "logo": "https://media.api-sports.io/football/leagues/140.png",
+            "flag": "https://media.api-sports.io/flags/es.svg",
+            "season": 2025
+          },
+          "games": {
+            "appearences": 24,
+            "lineups": 16,
+            "minutes": 712,
+            "number": null,
+            "position": "Midfielder",
+            "rating": "6.526086",
+            "captain": false
+          },
+          "substitutes": {
+            "in": 8,
+            "out": null,
+            "bench": null
+          },
+          "shots": {
+            "total": 6,
+            "on": 4
+          },
+          "goals": {
+            "total": 1,
+            "conceded": 0,
+            "assists": 0,
+            "saves": null
+          },
+          "passes": {
+            "total": 250,
+            "key": 2,
+            "accuracy": null
+          },
+          "tackles": {
+            "total": 13,
+            "blocks": 3,
+            "interceptions": 6
+          },
+          "duels": {
+            "total": 87,
+            "won": 39
+          },
+          "dribbles": {
+            "attempts": 6,
+            "success": 5,
+            "past": null
+          },
+          "fouls": {
+            "drawn": 2,
+            "committed": 15
+          },
+          "cards": {
+            "yellow": 4,
+            "yellowred": null,
+            "red": 2
+          },
+          "penalty": {
+            "won": null,
+            "commited": null,
+            "scored": 0,
+            "missed": 0,
+            "saved": null
+          }
+        }
+      ]
+    },
+    {
+      "player": {
+        "id": 47276,
+        "name": "Lekue",
+        "firstname": "Íñigo",
+        "lastname": "Lekue Martínez",
+        "age": 32,
+        "birth": {
+          "date": "1993-05-04",
+          "place": "Bilbao",
+          "country": "Spain"
+        },
+        "nationality": "Spain",
+        "height": "180",
+        "weight": "70",
+        "injured": false,
+        "photo": "https://media.api-sports.io/football/players/47276.png"
+      },
+      "statistics": [
+        {
+          "team": {
+            "id": 531,
+            "name": "Athletic Club",
+            "logo": "https://media.api-sports.io/football/teams/531.png"
+          },
+          "league": {
+            "id": 140,
+            "name": "La Liga",
+            "country": "Spain",
+            "logo": "https://media.api-sports.io/football/leagues/140.png",
+            "flag": "https://media.api-sports.io/flags/es.svg",
+            "season": 2025
+          },
+          "games": {
+            "appearences": 11,
+            "lineups": 8,
+            "minutes": 600,
+            "number": 15,
+            "position": "Defender",
+            "rating": "6.3",
+            "captain": false
+          },
+          "substitutes": {
+            "in": 3,
+            "out": 4,
+            "bench": 21
+          },
+          "shots": {
+            "total": 1,
+            "on": 1
+          },
+          "goals": {
+            "total": 0,
+            "conceded": 0,
+            "assists": 0,
+            "saves": null
+          },
+          "passes": {
+            "total": 251,
+            "key": 1,
+            "accuracy": 77
+          },
+          "tackles": {
+            "total": 15,
+            "blocks": null,
+            "interceptions": 4
+          },
+          "duels": {
+            "total": 67,
+            "won": 22
+          },
+          "dribbles": {
+            "attempts": 17,
+            "success": 6,
+            "past": null
+          },
+          "fouls": {
+            "drawn": null,
+            "committed": 12
+          },
+          "cards": {
+            "yellow": 2,
+            "yellowred": 0,
+            "red": 2
+          },
+          "penalty": {
+            "won": null,
+            "commited": 1,
+            "scored": 0,
+            "missed": 0,
+            "saved": null
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,125 @@
+{
+  "get": "odds/live",
+  "parameters": [],
+  "errors": [],
+  "results": 1,
+  "paging": {
+    "current": 1,
+    "total": 1
+  },
+  "response": [
+    {
+      "fixture": {
+        "id": 1649008,
+        "status": {
+          "long": "First Half",
+          "elapsed": 14,
+          "seconds": "14:19"
+        }
+      },
+      "league": {
+        "id": 10,
+        "season": 2026
+      },
+      "teams": {
+        "home": {
+          "id": 10960,
+          "goals": 0
+        },
+        "away": {
+          "id": 10954,
+          "goals": 1
+        }
+      },
+      "status": {
+        "stopped": false,
+        "blocked": false,
+        "finished": false
+      },
+      "update": "2026-11-12T08:14:29+00:00",
+      "odds": [
+        {
+          "id": 33,
+          "name": "Asian Handicap",
+          "values": [
+            {
+              "value": "Home",
+              "odd": "1.7",
+              "handicap": "1.5",
+              "main": false,
+              "suspended": false
+            },
+            {
+              "value": "Home",
+              "odd": "1.5",
+              "handicap": "1.75",
+              "main": false,
+              "suspended": false
+            },
+            {
+              "value": "Away",
+              "odd": "2.5",
+              "handicap": "-1.75",
+              "main": false,
+              "suspended": false
+            }
+          ]
+        },
+        {
+          "id": 19,
+          "name": "1x2 (1st Half)",
+          "values": [
+            {
+              "value": "Home",
+              "odd": "26",
+              "handicap": null,
+              "main": null,
+              "suspended": false
+            },
+            {
+              "value": "Draw",
+              "odd": "5.5",
+              "handicap": null,
+              "main": null,
+              "suspended": false
+            },
+            {
+              "value": "Away",
+              "odd": "1.166",
+              "handicap": null,
+              "main": null,
+              "suspended": false
+            }
+          ]
+        },
+        {
+          "id": 67,
+          "name": "How many goals will Home Team score?",
+          "values": [
+            {
+              "value": "No goal",
+              "odd": "2.25",
+              "handicap": null,
+              "main": null,
+              "suspended": false
+            },
+            {
+              "value": "2",
+              "odd": "5",
+              "handicap": null,
+              "main": null,
+              "suspended": false
+            },
+            {
+              "value": "3 or more",
+              "odd": "13",
+              "handicap": null,
+              "main": null,
+              "suspended": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

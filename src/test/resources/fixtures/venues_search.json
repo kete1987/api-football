@@ -1,0 +1,44 @@
+{
+  "get": "venues",
+  "parameters": {
+    "search": "madrid"
+  },
+  "errors": [],
+  "results": 23,
+  "paging": {
+    "current": 1,
+    "total": 1
+  },
+  "response": [
+    {
+      "id": 1456,
+      "name": "Estadio Santiago Bernabéu",
+      "address": "Avenida de Concha Espina 1, Chamartín",
+      "city": "Madrid",
+      "country": "Spain",
+      "capacity": 85454,
+      "surface": "grass",
+      "image": "https://media.api-sports.io/football/venues/1456.png"
+    },
+    {
+      "id": 6982,
+      "name": "Campo de Fútbol Nuevo",
+      "address": null,
+      "city": "Madridejos",
+      "country": "Spain",
+      "capacity": 4000,
+      "surface": "artificial turf",
+      "image": "https://media.api-sports.io/football/venues/6982.png"
+    },
+    {
+      "id": 22055,
+      "name": "Ciudad Deportiva Real Madrid Campo 11",
+      "address": "Parque de Valdebebas, 402",
+      "city": "Madrid",
+      "country": "Spain",
+      "capacity": 3000,
+      "surface": "artificial turf",
+      "image": "https://media.api-sports.io/football/venues/22055.png"
+    }
+  ]
+}

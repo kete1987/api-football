@@ -1,0 +1,15 @@
+{
+  "get": "fixtures",
+  "parameters": {
+    "ids": "1-2-3-4-5-6-7-8-9-10-11-12-13-14-15-16-17-18-19-20-21"
+  },
+  "errors": {
+    "ids": "The Ids field does not match the regular expression: [id-id-id...] or integer. Maximum of 20 ids allowed."
+  },
+  "results": 0,
+  "paging": {
+    "current": 1,
+    "total": 1
+  },
+  "response": []
+}

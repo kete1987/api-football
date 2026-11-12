@@ -14,6 +14,7 @@ import es.com.kete1987.apifootball.library.common.model.RateLimit;
 import es.com.kete1987.apifootball.library.common.query.Query;
 import es.com.kete1987.apifootball.library.common.util.ApiFootballException;
 import es.com.kete1987.apifootball.library.common.util.Constants;
+import es.com.kete1987.apifootball.library.common.util.LenientNumberAdapters;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -37,7 +38,12 @@ import java.util.concurrent.TimeUnit;
  */
 abstract class ApiFootballBase {
 
-    private static final Gson GSON = new GsonBuilder().create();
+    private static final Gson GSON = new GsonBuilder()
+            .registerTypeAdapter(Integer.class, LenientNumberAdapters.INTEGER)
+            .registerTypeAdapter(int.class, LenientNumberAdapters.INTEGER)
+            .registerTypeAdapter(Double.class, LenientNumberAdapters.DOUBLE)
+            .registerTypeAdapter(double.class, LenientNumberAdapters.DOUBLE)
+            .create();
 
     final OkHttpClient httpClient;
     final String baseUrl;

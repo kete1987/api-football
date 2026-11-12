@@ -1,0 +1,74 @@
+{
+  "get": "sidelined",
+  "parameters": {
+    "players": "278-730"
+  },
+  "errors": [],
+  "results": 2,
+  "paging": {
+    "current": 1,
+    "total": 1
+  },
+  "response": [
+    {
+      "id": 278,
+      "sidelined": [
+        {
+          "type": "Bowel Disease",
+          "start": "2025-06-18",
+          "end": "2025-06-28"
+        },
+        {
+          "type": "Ankle Injury",
+          "start": "2025-04-17",
+          "end": "2025-04-22"
+        },
+        {
+          "type": "Mouth Injury",
+          "start": "2025-02-25",
+          "end": "2025-02-27"
+        },
+        {
+          "type": "Calf Injury",
+          "start": "2025-02-04",
+          "end": "2025-02-06"
+        },
+        {
+          "type": "Unknown",
+          "start": "2024-12-20",
+          "end": "2024-12-21"
+        }
+      ]
+    },
+    {
+      "id": 730,
+      "sidelined": [
+        {
+          "type": "Back Injury",
+          "start": "2025-06-01",
+          "end": "2025-06-09"
+        },
+        {
+          "type": "Muscle Injury",
+          "start": "2025-03-24",
+          "end": "2025-04-05"
+        },
+        {
+          "type": "Knee Injury",
+          "start": "2025-03-08",
+          "end": "2025-03-10"
+        },
+        {
+          "type": "Thigh Injury",
+          "start": "2024-10-23",
+          "end": "2024-11-21"
+        },
+        {
+          "type": "Hamstring Muscle Injury",
+          "start": "2026-07-09",
+          "end": null
+        }
+      ]
+    }
+  ]
+}

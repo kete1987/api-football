@@ -1,0 +1,112 @@
+{
+  "get": "players/profiles",
+  "parameters": [],
+  "errors": [],
+  "results": 250,
+  "paging": {
+    "current": 1,
+    "total": 2771
+  },
+  "response": [
+    {
+      "player": {
+        "id": 1,
+        "name": "R. Bürki",
+        "firstname": "Roman",
+        "lastname": "Bürki",
+        "age": 35,
+        "birth": {
+          "date": "1990-11-14",
+          "place": "Münsingen",
+          "country": "Switzerland"
+        },
+        "nationality": "Switzerland",
+        "height": "187",
+        "weight": "85",
+        "number": 1,
+        "position": "Goalkeeper",
+        "photo": "https://media.api-sports.io/football/players/1.png"
+      }
+    },
+    {
+      "player": {
+        "id": 5,
+        "name": "M. Akanji",
+        "firstname": "Manuel Obafemi",
+        "lastname": "Akanji",
+        "age": 31,
+        "birth": {
+          "date": "1995-07-19",
+          "place": "Neftenbach",
+          "country": "Switzerland"
+        },
+        "nationality": "Switzerland",
+        "height": "188",
+        "weight": "91",
+        "number": 25,
+        "position": "Defender",
+        "photo": "https://media.api-sports.io/football/players/5.png"
+      }
+    },
+    {
+      "player": {
+        "id": 14,
+        "name": "M. Dahoud",
+        "firstname": "Mahmoud",
+        "lastname": "Dahoud",
+        "age": 30,
+        "birth": {
+          "date": "1996-01-01",
+          "place": "Amouda",
+          "country": "Syria"
+        },
+        "nationality": "Germany",
+        "height": "178",
+        "weight": "68",
+        "number": 81,
+        "position": "Midfielder",
+        "photo": "https://media.api-sports.io/football/players/14.png"
+      }
+    },
+    {
+      "player": {
+        "id": 18,
+        "name": "J. Sancho",
+        "firstname": "Jadon Malik",
+        "lastname": "Sancho",
+        "age": 26,
+        "birth": {
+          "date": "2000-03-25",
+          "place": "London",
+          "country": "England"
+        },
+        "nationality": "England",
+        "height": "180",
+        "weight": "76",
+        "number": 19,
+        "position": "Attacker",
+        "photo": "https://media.api-sports.io/football/players/18.png"
+      }
+    },
+    {
+      "player": {
+        "id": 117,
+        "name": "William Vainqueur",
+        "firstname": null,
+        "lastname": null,
+        "age": null,
+        "birth": {
+          "date": null,
+          "place": null,
+          "country": null
+        },
+        "nationality": null,
+        "height": null,
+        "weight": null,
+        "number": null,
+        "position": null,
+        "photo": "https://media.api-sports.io/football/players/117.png"
+      }
+    }
+  ]
+}

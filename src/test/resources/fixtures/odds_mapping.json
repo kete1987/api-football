@@ -1,0 +1,48 @@
+{
+  "get": "odds/mapping",
+  "parameters": [],
+  "errors": [],
+  "results": 100,
+  "paging": {
+    "current": 1,
+    "total": 31
+  },
+  "response": [
+    {
+      "league": {
+        "id": 253,
+        "season": 2026
+      },
+      "fixture": {
+        "id": 1490600,
+        "date": "2026-11-07T21:00:00+00:00",
+        "timestamp": 1794085200
+      },
+      "update": "2026-11-07T20:01:18+00:00"
+    },
+    {
+      "league": {
+        "id": 564,
+        "season": 2026
+      },
+      "fixture": {
+        "id": 1504605,
+        "date": "2026-11-07T14:00:00+00:00",
+        "timestamp": 1794060000
+      },
+      "update": "2026-11-07T12:16:17+00:00"
+    },
+    {
+      "league": {
+        "id": 564,
+        "season": 2026
+      },
+      "fixture": {
+        "id": 1504606,
+        "date": "2026-11-07T14:00:00+00:00",
+        "timestamp": 1794060000
+      },
+      "update": "2026-11-07T12:16:17+00:00"
+    }
+  ]
+}

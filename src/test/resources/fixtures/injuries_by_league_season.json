@@ -1,0 +1,99 @@
+{
+  "get": "injuries",
+  "parameters": {
+    "league": "140",
+    "season": "2026"
+  },
+  "errors": [],
+  "results": 962,
+  "paging": {
+    "current": 1,
+    "total": 1
+  },
+  "response": [
+    {
+      "player": {
+        "id": 6638,
+        "name": "F. Garces",
+        "photo": "https://media.api-sports.io/football/players/6638.png",
+        "type": "Missing Fixture",
+        "reason": "Suspended"
+      },
+      "team": {
+        "id": 542,
+        "name": "Alaves",
+        "logo": "https://media.api-sports.io/football/teams/542.png"
+      },
+      "fixture": {
+        "id": 1570333,
+        "timezone": "UTC",
+        "date": "2026-08-15T17:30:00+00:00",
+        "timestamp": 1786815000
+      },
+      "league": {
+        "id": 140,
+        "season": 2026,
+        "name": "La Liga",
+        "country": "Spain",
+        "logo": "https://media.api-sports.io/football/leagues/140.png",
+        "flag": "https://media.api-sports.io/flags/es.svg"
+      }
+    },
+    {
+      "player": {
+        "id": 185398,
+        "name": "I. Romero",
+        "photo": "https://media.api-sports.io/football/players/185398.png",
+        "type": "Questionable",
+        "reason": "Knee Injury"
+      },
+      "team": {
+        "id": 536,
+        "name": "Sevilla",
+        "logo": "https://media.api-sports.io/football/teams/536.png"
+      },
+      "fixture": {
+        "id": 1570450,
+        "timezone": "UTC",
+        "date": "2026-11-06T20:00:00+00:00",
+        "timestamp": 1793995200
+      },
+      "league": {
+        "id": 140,
+        "season": 2026,
+        "name": "La Liga",
+        "country": "Spain",
+        "logo": "https://media.api-sports.io/football/leagues/140.png",
+        "flag": "https://media.api-sports.io/flags/es.svg"
+      }
+    },
+    {
+      "player": {
+        "id": 332645,
+        "name": "M. Rodriguez",
+        "photo": "https://media.api-sports.io/football/players/332645.png",
+        "type": "Missing Fixture",
+        "reason": "Ankle Injury"
+      },
+      "team": {
+        "id": 542,
+        "name": "Alaves",
+        "logo": "https://media.api-sports.io/football/teams/542.png"
+      },
+      "fixture": {
+        "id": 1570450,
+        "timezone": "UTC",
+        "date": "2026-11-06T20:00:00+00:00",
+        "timestamp": 1793995200
+      },
+      "league": {
+        "id": 140,
+        "season": 2026,
+        "name": "La Liga",
+        "country": "Spain",
+        "logo": "https://media.api-sports.io/football/leagues/140.png",
+        "flag": "https://media.api-sports.io/flags/es.svg"
+      }
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "get": "sidelined",
+  "parameters": {
+    "player": "278"
+  },
+  "errors": [],
+  "results": 27,
+  "paging": {
+    "current": 1,
+    "total": 1
+  },
+  "response": [
+    {
+      "type": "Bowel Disease",
+      "start": "2025-06-18",
+      "end": "2025-06-28"
+    },
+    {
+      "type": "Ankle Injury",
+      "start": "2025-04-17",
+      "end": "2025-04-22"
+    },
+    {
+      "type": "Mouth Injury",
+      "start": "2025-02-25",
+      "end": "2025-02-27"
+    },
+    {
+      "type": "Calf Injury",
+      "start": "2025-02-04",
+      "end": "2025-02-06"
+    },
+    {
+      "type": "Unknown",
+      "start": "2024-12-20",
+      "end": "2024-12-21"
+    }
+  ]
+}

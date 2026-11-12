@@ -1,0 +1,36 @@
+{
+  "get": "fixtures/rounds",
+  "parameters": {
+    "league": "140",
+    "season": "2026",
+    "dates": "true"
+  },
+  "errors": [],
+  "results": 38,
+  "paging": {
+    "current": 1,
+    "total": 1
+  },
+  "response": [
+    {
+      "round": "Regular Season - 1",
+      "dates": [
+        "2026-08-15",
+        "2026-08-26",
+        "2026-08-27"
+      ]
+    },
+    {
+      "round": "Regular Season - 37",
+      "dates": [
+        "2027-05-23"
+      ]
+    },
+    {
+      "round": "Regular Season - 38",
+      "dates": [
+        "2027-05-30"
+      ]
+    }
+  ]
+}

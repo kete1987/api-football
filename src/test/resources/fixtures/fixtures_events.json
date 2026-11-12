@@ -1,0 +1,124 @@
+{
+  "get": "fixtures/events",
+  "parameters": {
+    "fixture": "1570443"
+  },
+  "errors": [],
+  "results": 17,
+  "paging": {
+    "current": 1,
+    "total": 1
+  },
+  "response": [
+    {
+      "time": {
+        "elapsed": 10,
+        "extra": null
+      },
+      "team": {
+        "id": 530,
+        "name": "Atletico Madrid",
+        "logo": "https://media.api-sports.io/football/teams/530.png"
+      },
+      "player": {
+        "id": 323935,
+        "name": "Giuliano Simeone Baldini"
+      },
+      "assist": {
+        "id": 6009,
+        "name": "Julián Álvarez"
+      },
+      "type": "Goal",
+      "detail": "Normal Goal",
+      "comments": null
+    },
+    {
+      "time": {
+        "elapsed": 45,
+        "extra": null
+      },
+      "team": {
+        "id": 529,
+        "name": "Barcelona",
+        "logo": "https://media.api-sports.io/football/teams/529.png"
+      },
+      "player": {
+        "id": 574799,
+        "name": "Brian Farinas"
+      },
+      "assist": {
+        "id": 538,
+        "name": "Frenkie de Jong"
+      },
+      "type": "subst",
+      "detail": "Substitution 1",
+      "comments": null
+    },
+    {
+      "time": {
+        "elapsed": 60,
+        "extra": null
+      },
+      "team": {
+        "id": 529,
+        "name": "Barcelona",
+        "logo": "https://media.api-sports.io/football/teams/529.png"
+      },
+      "player": {
+        "id": 855,
+        "name": "João Cancelo"
+      },
+      "assist": {
+        "id": 2282,
+        "name": "Andreas Christensen"
+      },
+      "type": "subst",
+      "detail": "Substitution 2",
+      "comments": null
+    },
+    {
+      "time": {
+        "elapsed": 72,
+        "extra": null
+      },
+      "team": {
+        "id": 530,
+        "name": "Atletico Madrid",
+        "logo": "https://media.api-sports.io/football/teams/530.png"
+      },
+      "player": {
+        "id": 182219,
+        "name": "Alejandro Baena Rodríguez"
+      },
+      "assist": {
+        "id": 133185,
+        "name": "Johnny Cardoso"
+      },
+      "type": "subst",
+      "detail": "Substitution 3",
+      "comments": null
+    },
+    {
+      "time": {
+        "elapsed": 90,
+        "extra": 4
+      },
+      "team": {
+        "id": 530,
+        "name": "Atletico Madrid",
+        "logo": "https://media.api-sports.io/football/teams/530.png"
+      },
+      "player": {
+        "id": 7712,
+        "name": "Morten Hjulmand"
+      },
+      "assist": {
+        "id": null,
+        "name": null
+      },
+      "type": "Card",
+      "detail": "Yellow Card",
+      "comments": "Dissent"
+    }
+  ]
+}

@@ -1,0 +1,126 @@
+{
+  "get": "leagues",
+  "parameters": {
+    "country": "Spain",
+    "current": "true"
+  },
+  "errors": [],
+  "results": 39,
+  "paging": {
+    "current": 1,
+    "total": 1
+  },
+  "response": [
+    {
+      "league": {
+        "id": 437,
+        "name": "Primera División RFEF - Group 3",
+        "type": "League",
+        "logo": "https://media.api-sports.io/football/leagues/437.png"
+      },
+      "country": {
+        "name": "Spain",
+        "code": "ES",
+        "flag": "https://media.api-sports.io/flags/es.svg"
+      },
+      "seasons": [
+        {
+          "year": 2020,
+          "start": "2020-10-17",
+          "end": "2021-05-23",
+          "current": true,
+          "coverage": {
+            "fixtures": {
+              "events": true,
+              "lineups": true,
+              "statistics_fixtures": false,
+              "statistics_players": false
+            },
+            "standings": true,
+            "players": true,
+            "top_scorers": true,
+            "top_assists": true,
+            "top_cards": true,
+            "injuries": false,
+            "predictions": true,
+            "odds": false
+          }
+        }
+      ]
+    },
+    {
+      "league": {
+        "id": 556,
+        "name": "Super Cup",
+        "type": "Cup",
+        "logo": "https://media.api-sports.io/football/leagues/556.png"
+      },
+      "country": {
+        "name": "Spain",
+        "code": "ES",
+        "flag": "https://media.api-sports.io/flags/es.svg"
+      },
+      "seasons": [
+        {
+          "year": 2026,
+          "start": "2027-02-02",
+          "end": "2027-02-02",
+          "current": true,
+          "coverage": {
+            "fixtures": {
+              "events": false,
+              "lineups": false,
+              "statistics_fixtures": false,
+              "statistics_players": false
+            },
+            "standings": false,
+            "players": true,
+            "top_scorers": true,
+            "top_assists": true,
+            "top_cards": true,
+            "injuries": false,
+            "predictions": true,
+            "odds": false
+          }
+        }
+      ]
+    },
+    {
+      "league": {
+        "id": 1248,
+        "name": "Copa de la Reina",
+        "type": "Cup",
+        "logo": "https://media.api-sports.io/football/leagues/1248.png"
+      },
+      "country": {
+        "name": "Spain",
+        "code": "ES",
+        "flag": "https://media.api-sports.io/flags/es.svg"
+      },
+      "seasons": [
+        {
+          "year": 2026,
+          "start": "2026-09-08",
+          "end": "2026-11-05",
+          "current": true,
+          "coverage": {
+            "fixtures": {
+              "events": false,
+              "lineups": false,
+              "statistics_fixtures": false,
+              "statistics_players": false
+            },
+            "standings": false,
+            "players": true,
+            "top_scorers": true,
+            "top_assists": true,
+            "top_cards": true,
+            "injuries": false,
+            "predictions": true,
+            "odds": false
+          }
+        }
+      ]
+    }
+  ]
+}

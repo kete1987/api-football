@@ -1,0 +1,17 @@
+{
+  "get": "teams/seasons",
+  "parameters": {
+    "team": "541"
+  },
+  "errors": [],
+  "results": 17,
+  "paging": {
+    "current": 1,
+    "total": 1
+  },
+  "response": [
+    2010,
+    2025,
+    2026
+  ]
+}

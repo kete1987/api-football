@@ -1,0 +1,365 @@
+{
+  "get": "fixtures",
+  "parameters": {
+    "date": "2026-11-12",
+    "timezone": "UTC"
+  },
+  "errors": [],
+  "results": 100,
+  "paging": {
+    "current": 1,
+    "total": 1
+  },
+  "response": [
+    {
+      "fixture": {
+        "id": 1557232,
+        "referee": null,
+        "timezone": "UTC",
+        "date": "2026-11-12T00:00:00+00:00",
+        "timestamp": 1794441600,
+        "periods": {
+          "first": 1794441600,
+          "second": 1794445200
+        },
+        "venue": {
+          "id": null,
+          "name": "Audi Field",
+          "city": null
+        },
+        "status": {
+          "long": "Match Finished",
+          "short": "FT",
+          "elapsed": 90,
+          "extra": 3
+        }
+      },
+      "league": {
+        "id": 1130,
+        "name": "USL Super League",
+        "country": "USA",
+        "logo": "https://media.api-sports.io/football/leagues/1130.png",
+        "flag": "https://media.api-sports.io/flags/us.svg",
+        "season": 2026,
+        "round": "Group Stage",
+        "standings": true
+      },
+      "teams": {
+        "home": {
+          "id": 24659,
+          "name": "DC Power W",
+          "logo": "https://media.api-sports.io/football/teams/24659.png",
+          "winner": true
+        },
+        "away": {
+          "id": 24657,
+          "name": "Brooklyn W",
+          "logo": "https://media.api-sports.io/football/teams/24657.png",
+          "winner": false
+        }
+      },
+      "goals": {
+        "home": 4,
+        "away": 0
+      },
+      "score": {
+        "halftime": {
+          "home": 3,
+          "away": 0
+        },
+        "fulltime": {
+          "home": 4,
+          "away": 0
+        },
+        "extratime": {
+          "home": null,
+          "away": null
+        },
+        "penalty": {
+          "home": null,
+          "away": null
+        }
+      }
+    },
+    {
+      "fixture": {
+        "id": 1600657,
+        "referee": null,
+        "timezone": "UTC",
+        "date": "2026-11-12T01:00:00+00:00",
+        "timestamp": 1794445200,
+        "periods": {
+          "first": 1794445200,
+          "second": 1794448800
+        },
+        "venue": {
+          "id": 3286,
+          "name": "Estadio Oscar Quiteno",
+          "city": "Santa Ana"
+        },
+        "status": {
+          "long": "Match Finished",
+          "short": "FT",
+          "elapsed": 90,
+          "extra": 13
+        }
+      },
+      "league": {
+        "id": 370,
+        "name": "Primera Division",
+        "country": "El-Salvador",
+        "logo": "https://media.api-sports.io/football/leagues/370.png",
+        "flag": "https://media.api-sports.io/flags/sv.svg",
+        "season": 2026,
+        "round": "Apertura - 20",
+        "standings": true
+      },
+      "teams": {
+        "home": {
+          "id": 4302,
+          "name": "FAS",
+          "logo": "https://media.api-sports.io/football/teams/4302.png",
+          "winner": null
+        },
+        "away": {
+          "id": 26154,
+          "name": "Inter",
+          "logo": "https://media.api-sports.io/football/teams/26154.png",
+          "winner": null
+        }
+      },
+      "goals": {
+        "home": 2,
+        "away": 2
+      },
+      "score": {
+        "halftime": {
+          "home": 2,
+          "away": 1
+        },
+        "fulltime": {
+          "home": 2,
+          "away": 2
+        },
+        "extratime": {
+          "home": null,
+          "away": null
+        },
+        "penalty": {
+          "home": null,
+          "away": null
+        }
+      }
+    },
+    {
+      "fixture": {
+        "id": 1649008,
+        "referee": null,
+        "timezone": "UTC",
+        "date": "2026-11-12T08:00:00+00:00",
+        "timestamp": 1794470400,
+        "periods": {
+          "first": 1794470400,
+          "second": null
+        },
+        "venue": {
+          "id": null,
+          "name": "Pleiku Stadium",
+          "city": "Pleiku"
+        },
+        "status": {
+          "long": "First Half",
+          "short": "1H",
+          "elapsed": 14,
+          "extra": null
+        }
+      },
+      "league": {
+        "id": 10,
+        "name": "Friendlies",
+        "country": "World",
+        "logo": "https://media.api-sports.io/football/leagues/10.png",
+        "flag": null,
+        "season": 2026,
+        "round": "Friendly International",
+        "standings": false
+      },
+      "teams": {
+        "home": {
+          "id": 10960,
+          "name": "Thailand U23",
+          "logo": "https://media.api-sports.io/football/teams/10960.png",
+          "winner": false
+        },
+        "away": {
+          "id": 10954,
+          "name": "Qatar U23",
+          "logo": "https://media.api-sports.io/football/teams/10954.png",
+          "winner": true
+        }
+      },
+      "goals": {
+        "home": 0,
+        "away": 1
+      },
+      "score": {
+        "halftime": {
+          "home": 0,
+          "away": 1
+        },
+        "fulltime": {
+          "home": null,
+          "away": null
+        },
+        "extratime": {
+          "home": null,
+          "away": null
+        },
+        "penalty": {
+          "home": null,
+          "away": null
+        }
+      }
+    },
+    {
+      "fixture": {
+        "id": 1635820,
+        "referee": "M. Boskovic",
+        "timezone": "UTC",
+        "date": "2026-11-12T13:00:00+00:00",
+        "timestamp": 1794488400,
+        "periods": {
+          "first": null,
+          "second": null
+        },
+        "venue": {
+          "id": null,
+          "name": null,
+          "city": "Anadia"
+        },
+        "status": {
+          "long": "Not Started",
+          "short": "NS",
+          "elapsed": null,
+          "extra": null
+        }
+      },
+      "league": {
+        "id": 893,
+        "name": "UEFA U19 Championship - Qualification",
+        "country": "World",
+        "logo": "https://media.api-sports.io/football/leagues/893.png",
+        "flag": null,
+        "season": 2027,
+        "round": "Group Stage",
+        "standings": true
+      },
+      "teams": {
+        "home": {
+          "id": 10336,
+          "name": "Germany U19",
+          "logo": "https://media.api-sports.io/football/teams/10336.png",
+          "winner": null
+        },
+        "away": {
+          "id": 10380,
+          "name": "Sweden U19",
+          "logo": "https://media.api-sports.io/football/teams/10380.png",
+          "winner": null
+        }
+      },
+      "goals": {
+        "home": null,
+        "away": null
+      },
+      "score": {
+        "halftime": {
+          "home": null,
+          "away": null
+        },
+        "fulltime": {
+          "home": null,
+          "away": null
+        },
+        "extratime": {
+          "home": null,
+          "away": null
+        },
+        "penalty": {
+          "home": null,
+          "away": null
+        }
+      }
+    },
+    {
+      "fixture": {
+        "id": 1648325,
+        "referee": null,
+        "timezone": "UTC",
+        "date": "2026-11-12T18:00:00+00:00",
+        "timestamp": 1794506400,
+        "periods": {
+          "first": null,
+          "second": null
+        },
+        "venue": {
+          "id": null,
+          "name": null,
+          "city": null
+        },
+        "status": {
+          "long": "Match Postponed",
+          "short": "PST",
+          "elapsed": null,
+          "extra": null
+        }
+      },
+      "league": {
+        "id": 134,
+        "name": "Torneo Federal A",
+        "country": "Argentina",
+        "logo": "https://media.api-sports.io/football/leagues/134.png",
+        "flag": "https://media.api-sports.io/flags/ar.svg",
+        "season": 2026,
+        "round": "Quarter-finals",
+        "standings": true
+      },
+      "teams": {
+        "home": {
+          "id": 3975,
+          "name": "Kimberley Mar del Plata",
+          "logo": "https://media.api-sports.io/football/teams/3975.png",
+          "winner": null
+        },
+        "away": {
+          "id": 443,
+          "name": "Olimpo Bahia Blanca",
+          "logo": "https://media.api-sports.io/football/teams/443.png",
+          "winner": null
+        }
+      },
+      "goals": {
+        "home": null,
+        "away": null
+      },
+      "score": {
+        "halftime": {
+          "home": null,
+          "away": null
+        },
+        "fulltime": {
+          "home": null,
+          "away": null
+        },
+        "extratime": {
+          "home": null,
+          "away": null
+        },
+        "penalty": {
+          "home": null,
+          "away": null
+        }
+      }
+    }
+  ]
+}

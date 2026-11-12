@@ -1,0 +1,24 @@
+{
+  "get": "venues",
+  "parameters": {
+    "id": "1456"
+  },
+  "errors": [],
+  "results": 1,
+  "paging": {
+    "current": 1,
+    "total": 1
+  },
+  "response": [
+    {
+      "id": 1456,
+      "name": "Estadio Santiago Bernabéu",
+      "address": "Avenida de Concha Espina 1, Chamartín",
+      "city": "Madrid",
+      "country": "Spain",
+      "capacity": 85454,
+      "surface": "grass",
+      "image": "https://media.api-sports.io/football/venues/1456.png"
+    }
+  ]
+}

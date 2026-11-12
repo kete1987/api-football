@@ -1,0 +1,15 @@
+{
+  "get": "timezone",
+  "parameters": [],
+  "errors": [],
+  "results": 427,
+  "paging": {
+    "current": 1,
+    "total": 1
+  },
+  "response": [
+    "Africa/Abidjan",
+    "Pacific/Wake",
+    "Pacific/Wallis"
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "get": "odds/bets",
+  "parameters": [],
+  "errors": [],
+  "results": 338,
+  "paging": {
+    "current": 1,
+    "total": 1
+  },
+  "response": [
+    {
+      "id": 1,
+      "name": "Match Winner"
+    },
+    {
+      "id": 341,
+      "name": null
+    },
+    {
+      "id": 349,
+      "name": "Number Of Goals In Match"
+    }
+  ]
+}

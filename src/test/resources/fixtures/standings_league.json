@@ -1,0 +1,164 @@
+{
+  "get": "standings",
+  "parameters": {
+    "league": "140",
+    "season": "2026"
+  },
+  "errors": [],
+  "results": 1,
+  "paging": {
+    "current": 1,
+    "total": 1
+  },
+  "response": [
+    {
+      "league": {
+        "id": 140,
+        "name": "La Liga",
+        "country": "Spain",
+        "logo": "https://media.api-sports.io/football/leagues/140.png",
+        "flag": "https://media.api-sports.io/flags/es.svg",
+        "season": 2026,
+        "standings": [
+          [
+            {
+              "rank": 1,
+              "team": {
+                "id": 529,
+                "name": "Barcelona",
+                "logo": "https://media.api-sports.io/football/teams/529.png"
+              },
+              "points": 33,
+              "goalsDiff": 35,
+              "group": "Primera División",
+              "form": "WWLWW",
+              "status": "same",
+              "description": "Promotion - Champions League (League phase)",
+              "all": {
+                "played": 12,
+                "win": 11,
+                "draw": 0,
+                "lose": 1,
+                "goals": {
+                  "for": 48,
+                  "against": 13
+                }
+              },
+              "home": {
+                "played": 6,
+                "win": 5,
+                "draw": 0,
+                "lose": 1,
+                "goals": {
+                  "for": 24,
+                  "against": 7
+                }
+              },
+              "away": {
+                "played": 6,
+                "win": 6,
+                "draw": 0,
+                "lose": 0,
+                "goals": {
+                  "for": 24,
+                  "against": 6
+                }
+              },
+              "update": "2026-11-10T00:00:00+00:00"
+            },
+            {
+              "rank": 7,
+              "team": {
+                "id": 531,
+                "name": "Athletic Club",
+                "logo": "https://media.api-sports.io/football/teams/531.png"
+              },
+              "points": 16,
+              "goalsDiff": 4,
+              "group": "Primera División",
+              "form": "DWWLD",
+              "status": "same",
+              "description": null,
+              "all": {
+                "played": 11,
+                "win": 4,
+                "draw": 4,
+                "lose": 3,
+                "goals": {
+                  "for": 15,
+                  "against": 11
+                }
+              },
+              "home": {
+                "played": 6,
+                "win": 3,
+                "draw": 2,
+                "lose": 1,
+                "goals": {
+                  "for": 11,
+                  "against": 5
+                }
+              },
+              "away": {
+                "played": 5,
+                "win": 1,
+                "draw": 2,
+                "lose": 2,
+                "goals": {
+                  "for": 4,
+                  "against": 6
+                }
+              },
+              "update": "2026-11-10T00:00:00+00:00"
+            },
+            {
+              "rank": 20,
+              "team": {
+                "id": 535,
+                "name": "Malaga",
+                "logo": "https://media.api-sports.io/football/teams/535.png"
+              },
+              "points": 5,
+              "goalsDiff": -14,
+              "group": "Primera División",
+              "form": "LLDLD",
+              "status": "same",
+              "description": "Relegation - LaLiga2",
+              "all": {
+                "played": 12,
+                "win": 0,
+                "draw": 5,
+                "lose": 7,
+                "goals": {
+                  "for": 9,
+                  "against": 23
+                }
+              },
+              "home": {
+                "played": 6,
+                "win": 0,
+                "draw": 3,
+                "lose": 3,
+                "goals": {
+                  "for": 6,
+                  "against": 12
+                }
+              },
+              "away": {
+                "played": 6,
+                "win": 0,
+                "draw": 2,
+                "lose": 4,
+                "goals": {
+                  "for": 3,
+                  "against": 11
+                }
+              },
+              "update": "2026-11-10T00:00:00+00:00"
+            }
+          ]
+        ]
+      }
+    }
+  ]
+}

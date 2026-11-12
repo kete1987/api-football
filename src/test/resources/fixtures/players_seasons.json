@@ -1,0 +1,15 @@
+{
+  "get": "players/seasons",
+  "parameters": [],
+  "errors": [],
+  "results": 46,
+  "paging": {
+    "current": 1,
+    "total": 1
+  },
+  "response": [
+    1962,
+    2026,
+    2027
+  ]
+}

@@ -1,0 +1,114 @@
+{
+  "get": "coachs",
+  "parameters": {
+    "team": "541"
+  },
+  "errors": [],
+  "results": 2,
+  "paging": {
+    "current": 1,
+    "total": 1
+  },
+  "response": [
+    {
+      "id": 1584,
+      "name": "Z. Zidane",
+      "firstname": "Zinédine",
+      "lastname": "Zidane",
+      "age": 53,
+      "birth": {
+        "date": "1972-06-23",
+        "place": "Marseille",
+        "country": "France"
+      },
+      "nationality": "France",
+      "height": "185 cm",
+      "weight": "78 kg",
+      "photo": "https://media.api-sports.io/football/coachs/1584.png",
+      "team": {
+        "id": 541,
+        "name": "Real Madrid",
+        "logo": "https://media.api-sports.io/football/teams/541.png"
+      },
+      "career": [
+        {
+          "team": {
+            "id": 541,
+            "name": "Real Madrid",
+            "logo": "https://media.api-sports.io/football/teams/541.png"
+          },
+          "start": "2019-03-01",
+          "end": "2021-05-01"
+        },
+        {
+          "team": {
+            "id": 541,
+            "name": "Real Madrid",
+            "logo": "https://media.api-sports.io/football/teams/541.png"
+          },
+          "start": "2016-01-01",
+          "end": "2018-05-01"
+        },
+        {
+          "team": {
+            "id": 9575,
+            "name": "Real Madrid II",
+            "logo": "https://media.api-sports.io/football/teams/9575.png"
+          },
+          "start": "2015-07-01",
+          "end": "2016-01-01"
+        }
+      ]
+    },
+    {
+      "id": 2462,
+      "name": "José Mourinho",
+      "firstname": "José Mário",
+      "lastname": "dos Santos Mourinho Félix",
+      "age": 62,
+      "birth": {
+        "date": "1963-01-26",
+        "place": "Setúbal",
+        "country": "Portugal"
+      },
+      "nationality": "Portugal",
+      "height": null,
+      "weight": null,
+      "photo": "https://media.api-sports.io/football/coachs/2462.png",
+      "team": {
+        "id": 541,
+        "name": "Real Madrid",
+        "logo": "https://media.api-sports.io/football/teams/541.png"
+      },
+      "career": [
+        {
+          "team": {
+            "id": 541,
+            "name": "Real Madrid",
+            "logo": "https://media.api-sports.io/football/teams/541.png"
+          },
+          "start": "2026-07-01",
+          "end": null
+        },
+        {
+          "team": {
+            "id": 211,
+            "name": "Benfica",
+            "logo": "https://media.api-sports.io/football/teams/211.png"
+          },
+          "start": "2025-07-01",
+          "end": "2026-05-01"
+        },
+        {
+          "team": {
+            "id": 211,
+            "name": "Benfica",
+            "logo": "https://media.api-sports.io/football/teams/211.png"
+          },
+          "start": "2000-09-01",
+          "end": "2000-12-01"
+        }
+      ]
+    }
+  ]
+}

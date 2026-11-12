@@ -1,0 +1,60 @@
+{
+  "get": "trophies",
+  "parameters": {
+    "coachs": "2462-1584"
+  },
+  "errors": [],
+  "results": 2,
+  "paging": {
+    "current": 1,
+    "total": 1
+  },
+  "response": [
+    {
+      "id": 1584,
+      "trophies": [
+        {
+          "league": "FIFA World Cup",
+          "country": "World",
+          "season": "1998 France",
+          "place": "Winner"
+        },
+        {
+          "league": "FIFA World Cup",
+          "country": "World",
+          "season": "2006 Germany",
+          "place": "2nd Place"
+        },
+        {
+          "league": "International Champions Cup",
+          "country": "World",
+          "season": "2013",
+          "place": "Winner"
+        }
+      ]
+    },
+    {
+      "id": 2462,
+      "trophies": [
+        {
+          "league": "La Liga",
+          "country": "Spain",
+          "season": "2011/2012",
+          "place": "Winner"
+        },
+        {
+          "league": "La Liga",
+          "country": "Spain",
+          "season": "2012/2013",
+          "place": "2nd Place"
+        },
+        {
+          "league": "International Champions Cup",
+          "country": "World",
+          "season": "2013",
+          "place": "2nd Place"
+        }
+      ]
+    }
+  ]
+}

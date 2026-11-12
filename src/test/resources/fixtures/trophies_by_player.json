@@ -1,0 +1,32 @@
+{
+  "get": "trophies",
+  "parameters": {
+    "player": "278"
+  },
+  "errors": [],
+  "results": 46,
+  "paging": {
+    "current": 1,
+    "total": 1
+  },
+  "response": [
+    {
+      "league": "Super Cup",
+      "country": "Spain",
+      "season": "2025",
+      "place": "2nd Place"
+    },
+    {
+      "league": "UEFA U19 Championship",
+      "country": "Europe",
+      "season": null,
+      "place": "Winner"
+    },
+    {
+      "league": "FIFA Intercontinental Cup",
+      "country": "World",
+      "season": null,
+      "place": "Winner"
+    }
+  ]
+}

@@ -1,0 +1,108 @@
+{
+  "get": "fixtures",
+  "parameters": {
+    "live": "all"
+  },
+  "errors": [],
+  "results": 1,
+  "paging": {
+    "current": 1,
+    "total": 1
+  },
+  "response": [
+    {
+      "fixture": {
+        "id": 1649008,
+        "referee": null,
+        "timezone": "UTC",
+        "date": "2026-11-12T08:00:00+00:00",
+        "timestamp": 1794470400,
+        "periods": {
+          "first": 1794470400,
+          "second": null
+        },
+        "venue": {
+          "id": null,
+          "name": "Pleiku Stadium",
+          "city": "Pleiku"
+        },
+        "status": {
+          "long": "First Half",
+          "short": "1H",
+          "elapsed": 14,
+          "extra": null
+        }
+      },
+      "league": {
+        "id": 10,
+        "name": "Friendlies",
+        "country": "World",
+        "logo": "https://media.api-sports.io/football/leagues/10.png",
+        "flag": null,
+        "season": 2026,
+        "round": "Friendly International",
+        "standings": false
+      },
+      "teams": {
+        "home": {
+          "id": 10960,
+          "name": "Thailand U23",
+          "logo": "https://media.api-sports.io/football/teams/10960.png",
+          "winner": false
+        },
+        "away": {
+          "id": 10954,
+          "name": "Qatar U23",
+          "logo": "https://media.api-sports.io/football/teams/10954.png",
+          "winner": true
+        }
+      },
+      "goals": {
+        "home": 0,
+        "away": 1
+      },
+      "score": {
+        "halftime": {
+          "home": 0,
+          "away": 1
+        },
+        "fulltime": {
+          "home": null,
+          "away": null
+        },
+        "extratime": {
+          "home": null,
+          "away": null
+        },
+        "penalty": {
+          "home": null,
+          "away": null
+        }
+      },
+      "events": [
+        {
+          "time": {
+            "elapsed": 8,
+            "extra": null
+          },
+          "team": {
+            "id": 10954,
+            "name": "Qatar U23",
+            "logo": "https://media.api-sports.io/football/teams/10954.png"
+          },
+          "player": {
+            "id": null,
+            "name": null
+          },
+          "assist": {
+            "id": null,
+            "name": null
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "comments": null
+        }
+      ]
+    }
+  ]
+}
