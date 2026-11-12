@@ -108,7 +108,7 @@ class CoreBehaviourTest extends BaseApiTest {
         ApiFootballException e = assertThrows(ApiFootballException.class, () -> api.getStatus());
 
         assertEquals(429, e.getHttpCode());
-        assertTrue(e.getErrors().isEmpty());
+        assertEquals("Too many requests", e.getErrors().get("message"));
         assertTrue(e.getMessage().startsWith("429"));
     }
 

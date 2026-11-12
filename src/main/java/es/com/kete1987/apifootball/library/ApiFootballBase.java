@@ -43,6 +43,8 @@ abstract class ApiFootballBase {
             .registerTypeAdapter(int.class, LenientNumberAdapters.INTEGER)
             .registerTypeAdapter(Double.class, LenientNumberAdapters.DOUBLE)
             .registerTypeAdapter(double.class, LenientNumberAdapters.DOUBLE)
+            .registerTypeAdapter(Long.class, LenientNumberAdapters.LONG)
+            .registerTypeAdapter(long.class, LenientNumberAdapters.LONG)
             .create();
 
     final OkHttpClient httpClient;
@@ -55,7 +57,19 @@ abstract class ApiFootballBase {
         this.rateLimitTracker = rateLimitTracker;
     }
 
+    /** Maximum number of body characters included in an exception message. */
+    static final int MAX_BODY_IN_MESSAGE = 500;
+
+    /**
+     * Builds the HTTP client of the public constructors, which sends {@code apiKey} in the
+     * {@code x-apisports-key} header of every request.
+     *
+     * @throws IllegalArgumentException when the key is {@code null} or blank
+     */
     static OkHttpClient buildHttpClient(String apiKey) {
+        if (apiKey == null || apiKey.trim().isEmpty()) {
+            throw new IllegalArgumentException("apiKey must not be null or blank");
+        }
         return new OkHttpClient.Builder()
                 .addInterceptor(chain -> chain.proceed(
                         chain.request().newBuilder()
@@ -102,6 +116,8 @@ abstract class ApiFootballBase {
     /**
      * Performs the request and returns the raw body, after recording the rate-limit headers and
      * turning non-2xx responses and non-empty {@code errors} into an {@link ApiFootballException}.
+     * An empty body (e.g. HTTP 204) or a body that is not a JSON object is also reported as an
+     * {@link ApiFootballException}.
      */
     String execute(HttpUrl url) throws IOException, ApiFootballException {
         return executeEnvelope(url).body;
@@ -113,14 +129,15 @@ abstract class ApiFootballBase {
             rateLimitTracker.track(response);
             String body = response.body() != null ? response.body().string() : "";
             JsonObject root = parse(body);
-            Map<String, String> errors = root != null ? errorsOf(root.get("errors")) : Collections.emptyMap();
+            Map<String, String> errors = root != null ? errorsOf(root) : Collections.emptyMap();
             if (!response.isSuccessful() || !errors.isEmpty()) {
                 throw new ApiFootballException(response.code(), describe(response.code(), body, errors), errors);
             }
             if (root == null) {
-                throw new ApiFootballException(response.code(), response.code() + " - unexpected body: " + body, null);
+                throw new ApiFootballException(response.code(),
+                        response.code() + " - unexpected body: " + truncate(body), null);
             }
-            return new Envelope(body, root);
+            return new Envelope(response.code(), body, root);
         }
     }
 
@@ -139,6 +156,25 @@ abstract class ApiFootballBase {
      * report and an object ({@code {"field": "message"}}) or a non-empty array otherwise.
      */
     static Map<String, String> errorsOf(JsonElement errors) {
+        return errorsOfMember(errors);
+    }
+
+    /**
+     * Errors of a response body: its {@code errors} member or, for a body that is not an envelope
+     * (e.g. {@code {"message": "..."}} with HTTP 499/500), its {@code message} under the key
+     * {@code "message"}.
+     */
+    private static Map<String, String> errorsOf(JsonObject root) {
+        if (!root.has("errors") && !root.has("response")) {
+            Map<String, String> result = new LinkedHashMap<>();
+            JsonElement message = root.get("message");
+            if (message != null && !message.isJsonNull()) result.put("message", text(message));
+            return result;
+        }
+        return errorsOfMember(root.get("errors"));
+    }
+
+    private static Map<String, String> errorsOfMember(JsonElement errors) {
         Map<String, String> result = new LinkedHashMap<>();
         if (errors == null || errors.isJsonNull()) return result;
         if (errors.isJsonObject()) {
@@ -161,7 +197,7 @@ abstract class ApiFootballBase {
     }
 
     private static String describe(int code, String body, Map<String, String> errors) {
-        if (errors.isEmpty()) return code + " - " + body;
+        if (errors.isEmpty()) return code + " - " + truncate(body);
         StringBuilder sb = new StringBuilder().append(code).append(" - ");
         boolean first = true;
         for (Map.Entry<String, String> entry : errors.entrySet()) {
@@ -172,11 +208,37 @@ abstract class ApiFootballBase {
         return sb.toString();
     }
 
+    /** Cuts a body to {@value #MAX_BODY_IN_MESSAGE} characters for exception messages. */
+    static String truncate(String body) {
+        if (body == null || body.length() <= MAX_BODY_IN_MESSAGE) return body;
+        return body.substring(0, MAX_BODY_IN_MESSAGE) + "... (" + body.length() + " characters)";
+    }
+
+    /** Parsing step of a typed helper; it may fail with a Gson runtime exception. */
+    private interface Mapping<R> {
+        R map();
+    }
+
+    /**
+     * Runs a Gson mapping of the {@code response} member and turns parse failures (a JSON type the
+     * model cannot hold, an out-of-range number...) into an {@link ApiFootballException}, so the
+     * public methods never leak Gson runtime exceptions.
+     */
+    private static <R> R mapped(Envelope envelope, Class<?> type, Mapping<R> mapping) throws ApiFootballException {
+        try {
+            return mapping.map();
+        } catch (JsonParseException | IllegalStateException | NumberFormatException e) {
+            throw new ApiFootballException(envelope.code, envelope.code + " - could not map the response to "
+                    + type.getSimpleName() + ": " + e.getMessage(), null, e);
+        }
+    }
+
     // ------------------------------------------------------------------ typed helpers
 
     /** Fetches an endpoint whose {@code response} is an array, with a single request. */
     <T> List<T> list(HttpUrl.Builder url, Class<T> type) throws IOException, ApiFootballException {
-        return toList(executeEnvelope(url.build()).root.get("response"), type);
+        Envelope envelope = executeEnvelope(url.build());
+        return mapped(envelope, type, () -> toList(envelope.root.get("response"), type));
     }
 
     /**
@@ -185,13 +247,16 @@ abstract class ApiFootballBase {
      * which is how it reports "no data" on those endpoints.
      */
     <T> T object(HttpUrl.Builder url, Class<T> type) throws IOException, ApiFootballException {
-        JsonElement response = executeEnvelope(url.build()).root.get("response");
-        if (response == null || response.isJsonNull()) return null;
-        if (response.isJsonArray()) {
-            JsonArray array = response.getAsJsonArray();
-            return array.size() == 0 ? null : gson().fromJson(array.get(0), type);
-        }
-        return gson().fromJson(response, type);
+        Envelope envelope = executeEnvelope(url.build());
+        return mapped(envelope, type, () -> {
+            JsonElement response = envelope.root.get("response");
+            if (response == null || response.isJsonNull()) return null;
+            if (response.isJsonArray()) {
+                JsonArray array = response.getAsJsonArray();
+                return array.size() == 0 ? null : gson().fromJson(array.get(0), type);
+            }
+            return gson().fromJson(response, type);
+        });
     }
 
     /** Fetches an array endpoint and returns its first element, or {@code null} when empty. */
@@ -200,19 +265,31 @@ abstract class ApiFootballBase {
         return items.isEmpty() ? null : items.get(0);
     }
 
-    /** Fetches one page (1-based) of a paginated endpoint: exactly one request. */
+    /**
+     * Fetches one page (1-based) of a paginated endpoint: exactly one request.
+     *
+     * @throws IllegalArgumentException when {@code page} is lower than 1
+     */
     <T> Page<T> page(HttpUrl.Builder url, Class<T> type, int page) throws IOException, ApiFootballException {
-        HttpUrl target = url.build().newBuilder().setQueryParameter("page", String.valueOf(Math.max(page, 1))).build();
-        JsonObject root = executeEnvelope(target).root;
-        Paging paging = root.has("paging") ? gson().fromJson(root.get("paging"), Paging.class) : null;
-        int results = root.has("results") && root.get("results").isJsonPrimitive() ? root.get("results").getAsInt() : 0;
-        return new Page<>(toList(root.get("response"), type), paging, results);
+        if (page < 1) throw new IllegalArgumentException("page must be >= 1, was " + page);
+        HttpUrl target = url.build().newBuilder().setQueryParameter("page", String.valueOf(page)).build();
+        Envelope envelope = executeEnvelope(target);
+        JsonObject root = envelope.root;
+        return mapped(envelope, type, () -> {
+            Paging paging = root.has("paging") ? gson().fromJson(root.get("paging"), Paging.class) : null;
+            int results = root.has("results") && root.get("results").isJsonPrimitive()
+                    ? root.get("results").getAsInt() : 0;
+            return new Page<>(toList(root.get("response"), type), paging, results);
+        });
     }
 
     /**
      * Walks a paginated endpoint from page 1 and returns every item. <b>Each page is one request
      * against the daily quota</b>, so the walk is always capped: it stops after {@code maxPages}
      * pages, returning what was gathered. There is deliberately no "unlimited" value.
+     *
+     * <p>If a later page fails, the exception propagates and the pages already fetched are lost
+     * (their requests still counted against the quota).
      *
      * @throws IllegalArgumentException if {@code maxPages} is lower than 1
      */
@@ -244,10 +321,12 @@ abstract class ApiFootballBase {
     }
 
     private static final class Envelope {
+        final int code;
         final String body;
         final JsonObject root;
 
-        Envelope(String body, JsonObject root) {
+        Envelope(int code, String body, JsonObject root) {
+            this.code = code;
             this.body = body;
             this.root = root;
         }
@@ -287,7 +366,11 @@ abstract class ApiFootballBase {
         return last != null ? last.getMinuteRemaining() : null;
     }
 
-    /** Number of HTTP requests this client has sent since it was created. */
+    /**
+     * Number of HTTP responses this client has received since it was created, error responses
+     * included. Requests that never got a response (timeouts, connection failures) and retries
+     * OkHttp performs transparently are not counted.
+     */
     public long getRequestCount() {
         return rateLimitTracker.requestCount();
     }

@@ -52,6 +52,7 @@ public class PlayersApi extends ApiFootballBase {
      * Requires at least one of id, team or league in the query; season requires one of them.
      *
      * @param page 1-based page number; a page beyond {@code paging.total} yields an empty page, not an error
+     * @throws IllegalArgumentException when {@code page} is lower than 1
      */
     public Page<PlayerWithStatistics> getPlayersPage(PlayersQuery query, int page)
             throws IOException, ApiFootballException {

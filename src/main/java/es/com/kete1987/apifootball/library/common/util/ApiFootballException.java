@@ -10,7 +10,13 @@ import java.util.Map;
  * <p>The API reports most problems (wrong parameter, plan restriction, exhausted quota...) with an
  * HTTP 200 whose body carries a non-empty {@code errors} member, so this exception covers both
  * non-2xx responses and logical errors. {@link #getErrors()} exposes the {@code errors} entries
- * keyed as the API returned them (e.g. {@code "season" -> "The Season field is required."}).
+ * keyed as the API returned them (e.g. {@code "season" -> "The Season field is required."}). A
+ * body that is not an envelope, such as {@code {"message": "..."}} sent with HTTP 499/500, exposes
+ * its text under the key {@code "message"}.
+ *
+ * <p>It is also thrown when the response cannot be used: an empty body (e.g. HTTP 204), a body
+ * that is not JSON, or a {@code response} that does not fit the model (the Gson failure is kept as
+ * the {@linkplain #getCause() cause}).
  */
 public class ApiFootballException extends Exception {
     private static final long serialVersionUID = 1L;
@@ -19,7 +25,11 @@ public class ApiFootballException extends Exception {
     private final transient Map<String, String> errors;
 
     public ApiFootballException(int httpCode, String message, Map<String, String> errors) {
-        super(message);
+        this(httpCode, message, errors, null);
+    }
+
+    public ApiFootballException(int httpCode, String message, Map<String, String> errors, Throwable cause) {
+        super(message, cause);
         this.httpCode = httpCode;
         this.errors = errors == null
                 ? Collections.emptyMap()

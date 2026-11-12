@@ -51,7 +51,8 @@ public class OddsApi extends ApiFootballBase {
      * one filter in {@code query}. Odds exist 1-14 days before kick-off with 7 days of history and
      * are refreshed every 3 hours.
      *
-     * @param page 1-based page number; values below 1 are sent as 1
+     * @param page 1-based page number
+     * @throws IllegalArgumentException when {@code page} is lower than 1
      */
     public Page<PrematchOdds> getOddsPage(OddsQuery query, int page) throws IOException, ApiFootballException {
         return page(url("odds", query), PrematchOdds.class, page);
