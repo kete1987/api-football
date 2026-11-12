@@ -21,19 +21,30 @@ CI (`.github/workflows/ci.yml`) runs `mvn test` on every branch and pull request
 
 ```
 src/main/java/es/com/kete1987/apifootball/library/
-├── ApiFootball.java           # facade over the sub-APIs
+├── ApiFootball.java           # facade: one accessor per sub-API + rate limits
 ├── ApiFootballBase.java       # shared HTTP: auth, Gson, envelope, errors, pagination, rate limits
 ├── AccountApi.java            # status
-├── <Domain>Api.java           # one sub-API per domain
+├── LeaguesApi.java            # timezone, countries, leagues, leagues/seasons, standings
+├── TeamsApi.java              # teams, teams/statistics, teams/seasons, teams/countries, venues, coachs
+├── FixturesApi.java           # fixtures, rounds, headtohead, statistics, events, lineups, players, injuries, predictions
+├── PlayersApi.java            # players, seasons, profiles, squads, teams, top lists, transfers, trophies, sidelined
+├── OddsApi.java               # odds, odds/mapping, odds/bookmakers, odds/bets, odds/live, odds/live/bets
 ├── RateLimitTracker.java      # rate-limit state shared by the sub-APIs of one facade
 ├── common/
 │   ├── model/                 # Paging, Page<T>, RateLimit
 │   ├── query/Query.java       # base of the fluent parameter builders
 │   └── util/                  # Constants, ApiFootballException, ModelCollections
-└── <domain>/
+└── <domain>/                  # account, leagues, teams, fixtures, players, odds
     ├── model/                 # Gson POJOs of that domain
-    └── query/                 # XxxQuery parameter builders of that domain
+    ├── query/                 # XxxQuery parameter builders of that domain
+    └── util/                  # String constants (statuses, event types, bet ids...)
 ```
+
+## API entry points
+
+Plain constructors, no singletons. `ApiFootball` does **not** duplicate the sub-API methods: it exposes one accessor per sub-API (`api.fixtures()`, `api.leagues()`, `api.teams()`, `api.players()`, `api.odds()`, `api.account()`), all sharing one HTTP client and one rate-limit tracker. Sub-APIs also work standalone (`new FixturesApi("KEY")`).
+
+Each domain keeps its own small reference models (`fixtures.model.TeamRef`, `players.model.TeamRef`...) because the API returns a different subset of fields in each place; do not merge them unless the JSON shapes are identical.
 
 ## The response envelope
 
@@ -45,7 +56,7 @@ Every response is `{get, parameters, errors, results, paging, response}`. `ApiFo
 | `first(url, T.class)` | array, but the call targets one resource (e.g. by id); `null` when empty | 1 |
 | `object(url, T.class)` | `response` is an object (e.g. `status`, `teams/statistics`); `null` when the API answers `[]` | 1 |
 | `page(url, T.class, n)` | paginated endpoint, one page; returns `Page<T>` | 1 |
-| `allPages(url, T.class, maxPages)` | paginated endpoint, every page (capped by `maxPages` when > 0) | 1 per page |
+| `allPages(url, T.class, maxPages)` | paginated endpoint, up to `maxPages` pages (`maxPages` ≥ 1, there is no "unlimited") | 1 per page |
 
 **Errors.** The API answers HTTP 200 with a non-empty `errors` member for most failures (wrong parameter, plan restriction, quota). `execute` turns both that and non-2xx responses into `ApiFootballException` (`getHttpCode()`, `getErrors()`). All public methods throw `IOException` and `ApiFootballException`.
 
@@ -129,7 +140,7 @@ Each endpoint method needs at least one test that asserts (a) representative fie
 API_FOOTBALL_KEY=... mvn test -Pintegration
 ```
 
-It must stay cheap (a handful of requests): every run spends real daily quota.
+It must stay cheap (currently 4 counted requests): every run spends real daily quota.
 
 ## Secrets
 
@@ -140,7 +151,7 @@ The API key never enters the repository: not in code, tests, fixtures, docs or c
 1. Read its section in `docs/API_CATALOG.md` (and the official docs if it is new).
 2. Capture a real response as a fixture (trimmed, anonymised) under `src/test/resources/fixtures/`.
 3. Add the model POJOs and, if it has optional filters, its `XxxQuery`.
-4. Add the method to the sub-API that owns the domain, then delegate to it from `ApiFootball` so the facade stays complete.
+4. Add the method to the sub-API that owns the domain (a new sub-API also needs its accessor in `ApiFootball`).
 5. Add the test, update the catalog and the README endpoint table.
 
 ## Publishing a new version
