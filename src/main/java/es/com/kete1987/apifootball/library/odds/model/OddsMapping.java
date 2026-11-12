@@ -2,11 +2,11 @@ package es.com.kete1987.apifootball.library.odds.model;
 
 /** A fixture for which pre-match odds exist ({@code /odds/mapping}). */
 public class OddsMapping {
-    private MappingLeague league;
+    private LeagueSeasonRef league;
     private MappingFixture fixture;
     private String update;
 
-    public MappingLeague getLeague() {
+    public LeagueSeasonRef getLeague() {
         return league;
     }
 
@@ -17,20 +17,6 @@ public class OddsMapping {
     /** ISO-8601 time of the last update (always {@code +00:00}). */
     public String getUpdate() {
         return update;
-    }
-
-    /** League id and season of a mapping entry. */
-    public static class MappingLeague {
-        private Integer id;
-        private Integer season;
-
-        public Integer getId() {
-            return id;
-        }
-
-        public Integer getSeason() {
-            return season;
-        }
     }
 
     /** Fixture id and kick-off of a mapping entry. */

@@ -1,5 +1,6 @@
 package es.com.kete1987.apifootball.library.fixtures.model;
 
+import es.com.kete1987.apifootball.library.common.model.TeamRef;
 import es.com.kete1987.apifootball.library.fixtures.util.EventTypes;
 
 /** An event of a fixture (goal, card, substitution, VAR). See {@link EventTypes}. */

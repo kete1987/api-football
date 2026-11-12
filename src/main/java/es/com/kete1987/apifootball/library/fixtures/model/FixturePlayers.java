@@ -1,7 +1,9 @@
 package es.com.kete1987.apifootball.library.fixtures.model;
 
+import es.com.kete1987.apifootball.library.common.model.TeamRef;
 import es.com.kete1987.apifootball.library.common.util.ModelCollections;
 
+import es.com.kete1987.apifootball.library.common.util.NumberParsing;
 import java.util.List;
 
 /**
@@ -157,12 +159,7 @@ public class FixturePlayers {
 
         /** Rating parsed as a number, or {@code null} when absent or not numeric. Never throws. */
         public Double getRatingValue() {
-            if (rating == null) return null;
-            try {
-                return Double.valueOf(rating.trim());
-            } catch (NumberFormatException e) {
-                return null;
-            }
+            return NumberParsing.parseDouble(rating);
         }
 
         public Boolean getCaptain() {
@@ -229,6 +226,14 @@ public class FixturePlayers {
          */
         public String getAccuracy() {
             return accuracy;
+        }
+
+        /**
+         * {@link #getAccuracy()} as a whole number ({@code "9"} gives {@code 9}, {@code "68%"} gives
+         * {@code 68}), or {@code null} when absent or not a whole number. Never throws.
+         */
+        public Integer getAccuracyValue() {
+            return NumberParsing.parseLeadingInteger(accuracy);
         }
     }
 

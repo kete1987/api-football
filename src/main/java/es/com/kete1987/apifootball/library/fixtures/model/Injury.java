@@ -1,5 +1,7 @@
 package es.com.kete1987.apifootball.library.fixtures.model;
 
+import es.com.kete1987.apifootball.library.common.model.TeamRef;
+
 /** A player missing (or doubtful for) a fixture because of injury, suspension, etc. */
 public class Injury {
     private InjuredPlayer player;

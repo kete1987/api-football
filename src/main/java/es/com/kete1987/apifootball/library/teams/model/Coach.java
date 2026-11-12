@@ -1,7 +1,9 @@
 package es.com.kete1987.apifootball.library.teams.model;
 
+import es.com.kete1987.apifootball.library.common.model.TeamRef;
 import es.com.kete1987.apifootball.library.common.util.ModelCollections;
 
+import es.com.kete1987.apifootball.library.common.util.NumberParsing;
 import java.util.List;
 
 /** A coach with his current team and career ({@code /coachs} response item). */
@@ -52,9 +54,25 @@ public class Coach {
         return height;
     }
 
+    /**
+     * Height in centimetres from {@link #getHeight()}; null when absent or not a whole number.
+     * Never throws.
+     */
+    public Integer getHeightCm() {
+        return NumberParsing.parseLeadingInteger(height);
+    }
+
     /** Text such as {@code "78 kg"}; may be {@code null}. */
     public String getWeight() {
         return weight;
+    }
+
+    /**
+     * Weight in kilograms from {@link #getWeight()}; null when absent or not a whole number.
+     * Never throws.
+     */
+    public Integer getWeightKg() {
+        return NumberParsing.parseLeadingInteger(weight);
     }
 
     public String getPhoto() {

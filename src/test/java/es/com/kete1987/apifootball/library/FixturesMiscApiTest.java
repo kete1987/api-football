@@ -3,11 +3,11 @@ package es.com.kete1987.apifootball.library;
 import es.com.kete1987.apifootball.library.fixtures.model.Fixture;
 import es.com.kete1987.apifootball.library.fixtures.model.Injury;
 import es.com.kete1987.apifootball.library.fixtures.model.Prediction;
-import es.com.kete1987.apifootball.library.fixtures.model.PredictionTeamLeague;
 import es.com.kete1987.apifootball.library.fixtures.model.RoundDates;
 import es.com.kete1987.apifootball.library.fixtures.query.HeadToHeadQuery;
 import es.com.kete1987.apifootball.library.fixtures.query.InjuriesQuery;
 import es.com.kete1987.apifootball.library.fixtures.query.RoundsQuery;
+import es.com.kete1987.apifootball.library.teams.model.SeasonStatistics;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -222,7 +222,7 @@ class FixturesMiscApiTest extends BaseApiTest {
         assertEquals(2, home.getLast5().getGoals().getAgainst().getTotal());
         assertEquals("0.4", home.getLast5().getGoals().getAgainst().getAverage());
         // team league statistics
-        PredictionTeamLeague league = home.getLeague();
+        SeasonStatistics league = home.getLeague();
         assertEquals("WWWLWWLWWWWW", league.getForm());
         assertEquals(12, league.getFixtures().getPlayed().getTotal());
         assertEquals(5, league.getFixtures().getWins().getHome());

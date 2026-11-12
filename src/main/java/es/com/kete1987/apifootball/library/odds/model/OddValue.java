@@ -1,5 +1,7 @@
 package es.com.kete1987.apifootball.library.odds.model;
 
+import es.com.kete1987.apifootball.library.common.util.NumberParsing;
+
 /**
  * One selection of a pre-match bet. Both members are kept as text because the API is loose with
  * types: {@code value} is a JSON number for some bets (e.g. "Exact Goals Number": {@code 0}, {@code 5})
@@ -22,11 +24,11 @@ public class OddValue {
 
     /** The odd as a number, or {@code null} when absent or not parseable. Never throws. */
     public Double getOddAsDouble() {
-        return OddsParsing.toDouble(odd);
+        return NumberParsing.parseDouble(odd);
     }
 
     /** The value as an integer, or {@code null} when it is not an integer label. Never throws. */
     public Integer getValueAsInteger() {
-        return OddsParsing.toInteger(value);
+        return NumberParsing.parseInteger(value);
     }
 }

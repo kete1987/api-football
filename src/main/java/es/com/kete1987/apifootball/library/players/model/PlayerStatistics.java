@@ -1,7 +1,8 @@
 package es.com.kete1987.apifootball.library.players.model;
 
 import com.google.gson.annotations.SerializedName;
-import es.com.kete1987.apifootball.library.players.util.StatValues;
+import es.com.kete1987.apifootball.library.common.model.TeamRef;
+import es.com.kete1987.apifootball.library.common.util.NumberParsing;
 
 /** Statistics of a player for one team in one league season. Most counters are nullable. */
 public class PlayerStatistics {
@@ -109,7 +110,7 @@ public class PlayerStatistics {
 
         /** {@link #getRating()} as a number; null when absent or not numeric. Never throws. */
         public Double getRatingValue() {
-            return StatValues.parseDouble(rating);
+            return NumberParsing.parseDouble(rating);
         }
 
         public Boolean getCaptain() {
@@ -195,9 +196,12 @@ public class PlayerStatistics {
             return accuracy;
         }
 
-        /** {@link #getAccuracy()} parsed as a number (a trailing {@code %} is ignored); null if absent or not numeric. */
+        /**
+         * {@link #getAccuracy()} as a whole number ({@code "85"} gives {@code 85}, {@code "68%"} gives
+         * {@code 68}); null when absent or not a whole number. Never throws.
+         */
         public Integer getAccuracyValue() {
-            return StatValues.parseInteger(accuracy);
+            return NumberParsing.parseLeadingInteger(accuracy);
         }
     }
 

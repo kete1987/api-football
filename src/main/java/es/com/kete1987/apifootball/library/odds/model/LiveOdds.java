@@ -8,7 +8,7 @@ import java.util.List;
 /** In-play odds of one fixture ({@code /odds/live}). Has no history: it reflects the current moment. */
 public class LiveOdds {
     private LiveFixture fixture;
-    private LeagueRef league;
+    private LeagueSeasonRef league;
     private Teams teams;
     private Flags status;
     private String update;
@@ -18,7 +18,7 @@ public class LiveOdds {
         return fixture;
     }
 
-    public LeagueRef getLeague() {
+    public LeagueSeasonRef getLeague() {
         return league;
     }
 
@@ -82,20 +82,6 @@ public class LiveOdds {
         /** Match clock as {@code "mm:ss"}, e.g. {@code "14:19"}. */
         public String getSeconds() {
             return seconds;
-        }
-    }
-
-    /** League id and season. */
-    public static class LeagueRef {
-        private Integer id;
-        private Integer season;
-
-        public Integer getId() {
-            return id;
-        }
-
-        public Integer getSeason() {
-            return season;
         }
     }
 

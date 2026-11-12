@@ -2,6 +2,7 @@ package es.com.kete1987.apifootball.library;
 
 import es.com.kete1987.apifootball.library.common.model.Page;
 import es.com.kete1987.apifootball.library.common.util.ApiFootballException;
+import es.com.kete1987.apifootball.library.common.util.NumberParsing;
 import es.com.kete1987.apifootball.library.players.model.Player;
 import es.com.kete1987.apifootball.library.players.model.PlayerProfile;
 import es.com.kete1987.apifootball.library.players.model.PlayerStatistics;
@@ -16,7 +17,6 @@ import es.com.kete1987.apifootball.library.players.model.TrophyGroup;
 import es.com.kete1987.apifootball.library.players.query.PlayerProfilesQuery;
 import es.com.kete1987.apifootball.library.players.query.PlayersQuery;
 import es.com.kete1987.apifootball.library.players.query.SquadsQuery;
-import es.com.kete1987.apifootball.library.players.util.StatValues;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -256,12 +256,12 @@ class PlayersApiTest extends BaseApiTest {
 
     @Test
     void statValues_neverThrow() {
-        assertEquals(185, StatValues.parseInteger("185 cm"));
-        assertEquals(37, StatValues.parseInteger("37%"));
-        assertEquals(7.11, StatValues.parseDouble("7.11"), 0.0001);
-        assertNull(StatValues.parseInteger("N/A"));
-        assertNull(StatValues.parseDouble(""));
-        assertNull(StatValues.parseDouble(null));
+        assertEquals(185, NumberParsing.parseLeadingInteger("185 cm"));
+        assertEquals(37, NumberParsing.parseLeadingInteger("37%"));
+        assertEquals(7.11, NumberParsing.parseDouble("7.11"), 0.0001);
+        assertNull(NumberParsing.parseInteger("N/A"));
+        assertNull(NumberParsing.parseDouble(""));
+        assertNull(NumberParsing.parseDouble(null));
     }
 
     // ---------------------------------------------------------------- /players/squads

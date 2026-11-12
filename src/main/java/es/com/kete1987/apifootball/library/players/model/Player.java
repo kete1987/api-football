@@ -1,6 +1,6 @@
 package es.com.kete1987.apifootball.library.players.model;
 
-import es.com.kete1987.apifootball.library.players.util.StatValues;
+import es.com.kete1987.apifootball.library.common.util.NumberParsing;
 
 /**
  * Player profile, shared by {@code /players} (which fills {@code injured}) and
@@ -55,9 +55,12 @@ public class Player {
         return height;
     }
 
-    /** Height in centimetres parsed from {@link #getHeight()}; null when absent or not numeric. Never throws. */
+    /**
+     * Height in centimetres from {@link #getHeight()} ({@code "187"} or {@code "185 cm"}); null when
+     * absent or not a whole number. Never throws.
+     */
     public Integer getHeightCm() {
-        return StatValues.parseInteger(height);
+        return NumberParsing.parseLeadingInteger(height);
     }
 
     /** Weight as sent by the API: {@code "85"}, {@code "82 kg"} or null. */
@@ -65,9 +68,12 @@ public class Player {
         return weight;
     }
 
-    /** Weight in kilograms parsed from {@link #getWeight()}; null when absent or not numeric. Never throws. */
+    /**
+     * Weight in kilograms from {@link #getWeight()} ({@code "85"} or {@code "82 kg"}); null when
+     * absent or not a whole number. Never throws.
+     */
     public Integer getWeightKg() {
-        return StatValues.parseInteger(weight);
+        return NumberParsing.parseLeadingInteger(weight);
     }
 
     /** Shirt number; only sent by {@code /players/profiles}, may be null. */

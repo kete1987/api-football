@@ -48,9 +48,12 @@ public class Standings {
         return season;
     }
 
-    /** Every table, exactly as the API nests them: one inner list per table or group. */
+    /**
+     * Every table, exactly as the API nests them: one inner list per table or group; an empty list
+     * when there are none.
+     */
     public List<List<StandingEntry>> getTables() {
-        if (standings == null) return null;
+        if (standings == null) return Collections.emptyList();
         List<List<StandingEntry>> copy = new ArrayList<>(standings.size());
         for (List<StandingEntry> table : standings) {
             copy.add(ModelCollections.unmodifiable(table));

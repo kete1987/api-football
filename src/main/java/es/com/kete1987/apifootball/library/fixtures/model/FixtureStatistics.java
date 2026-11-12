@@ -1,6 +1,7 @@
 package es.com.kete1987.apifootball.library.fixtures.model;
 
 import com.google.gson.annotations.SerializedName;
+import es.com.kete1987.apifootball.library.common.model.TeamRef;
 import es.com.kete1987.apifootball.library.common.util.ModelCollections;
 
 import java.util.List;

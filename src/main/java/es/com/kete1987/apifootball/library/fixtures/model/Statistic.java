@@ -1,5 +1,7 @@
 package es.com.kete1987.apifootball.library.fixtures.model;
 
+import es.com.kete1987.apifootball.library.common.util.NumberParsing;
+
 /**
  * One statistic of a team in a fixture. The API's {@code value} is an integer ({@code 5}), a
  * percentage string ({@code "37%"}), a decimal string ({@code "1.71"}) or {@code null}, so it is kept
@@ -24,28 +26,20 @@ public class Statistic {
         return value != null && value.trim().endsWith("%");
     }
 
-    /** Numeric value (without any {@code %}), or {@code null} when absent or not a number. */
+    /**
+     * Numeric value ({@code "37%"} gives {@code 37.0}, {@code "1.71"} gives {@code 1.71}), or
+     * {@code null} when absent or not a number. Never throws.
+     */
     public Double getDoubleValue() {
-        if (value == null) return null;
-        String text = value.trim();
-        if (text.endsWith("%")) text = text.substring(0, text.length() - 1).trim();
-        try {
-            return Double.valueOf(text);
-        } catch (NumberFormatException e) {
-            return null;
-        }
+        return isPercentage() ? NumberParsing.parsePercent(value) : NumberParsing.parseDouble(value);
     }
 
     /**
-     * Integer value (without any {@code %}), or {@code null} when absent, not a number or not a whole
-     * number (e.g. {@code "1.71"}).
+     * Integer value ({@code "5"} gives {@code 5}, {@code "37%"} gives {@code 37}), or {@code null}
+     * when absent, not a number or not written as a whole number (e.g. {@code "1.71"},
+     * {@code "8.5%"}). Never throws.
      */
     public Integer getIntValue() {
-        Double d = getDoubleValue();
-        if (d == null || d.isNaN() || d.isInfinite() || d != Math.rint(d)
-                || d > Integer.MAX_VALUE || d < Integer.MIN_VALUE) {
-            return null;
-        }
-        return d.intValue();
+        return isPercentage() ? NumberParsing.parseLeadingInteger(value) : NumberParsing.parseInteger(value);
     }
 }

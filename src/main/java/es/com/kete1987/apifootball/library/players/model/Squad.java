@@ -1,5 +1,6 @@
 package es.com.kete1987.apifootball.library.players.model;
 
+import es.com.kete1987.apifootball.library.common.model.TeamRef;
 import es.com.kete1987.apifootball.library.common.util.ModelCollections;
 
 import java.util.List;

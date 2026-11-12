@@ -1,7 +1,9 @@
 package es.com.kete1987.apifootball.library.fixtures.model;
 
 import com.google.gson.annotations.SerializedName;
+import es.com.kete1987.apifootball.library.common.model.TeamRef;
 import es.com.kete1987.apifootball.library.common.util.ModelCollections;
+import es.com.kete1987.apifootball.library.teams.model.SeasonStatistics;
 
 import java.util.List;
 
@@ -146,13 +148,14 @@ public class Prediction {
     public static class PredictionTeam extends TeamRef {
         @SerializedName("last_5")
         private Last5 last5;
-        private PredictionTeamLeague league;
+        private SeasonStatistics league;
 
         public Last5 getLast5() {
             return last5;
         }
 
-        public PredictionTeamLeague getLeague() {
+        /** The team's statistics in the league of the fixture (same shape as {@code /teams/statistics}). */
+        public SeasonStatistics getLeague() {
             return league;
         }
     }

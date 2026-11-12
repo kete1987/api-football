@@ -1,7 +1,7 @@
 package es.com.kete1987.apifootball.library.fixtures.model;
 
-import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
+import es.com.kete1987.apifootball.library.common.model.TeamRef;
 import es.com.kete1987.apifootball.library.common.util.ModelCollections;
 
 import java.util.List;
@@ -41,14 +41,47 @@ public class FixtureLineup {
 
     /** Team of a lineup, with its kit colours. */
     public static class LineupTeam extends TeamRef {
-        private JsonElement colors;
+        private Colors colors;
 
-        /**
-         * Kit colours as raw JSON ({@code {player:{primary,number,border}, goalkeeper:{...}}}); it was
-         * {@code null} in every real response seen, hence not modelled.
-         */
-        public JsonElement getColors() {
-            return colors == null || colors.isJsonNull() ? null : colors;
+        /** Kit colours, or {@code null} when the API does not send them (the usual case in real responses). */
+        public Colors getColors() {
+            return colors;
+        }
+    }
+
+    /** Kit colours of the outfield players and of the goalkeeper. */
+    public static class Colors {
+        private KitColors player;
+        private KitColors goalkeeper;
+
+        public KitColors getPlayer() {
+            return player;
+        }
+
+        public KitColors getGoalkeeper() {
+            return goalkeeper;
+        }
+    }
+
+    /** Colours of one kit, as hex strings without {@code #} (e.g. {@code "ff0000"}). */
+    public static class KitColors {
+        private String primary;
+        private String number;
+        private String border;
+
+        /** Shirt colour. */
+        public String getPrimary() {
+            return primary;
+        }
+
+        /** Colour of the shirt number. */
+        public String getNumber() {
+            return number;
+        }
+
+        /** Border colour. */
+        public String getBorder() {
+            return border;
         }
     }
 
