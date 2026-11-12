@@ -1,0 +1,22 @@
+package es.com.kete1987.apifootball.library.teams.query;
+
+import es.com.kete1987.apifootball.library.common.query.Query;
+
+/** Parameters of {@code /coachs}. At least one should be set; all are combinable. */
+public class CoachesQuery extends Query<CoachesQuery> {
+
+    /** Coach id. */
+    public CoachesQuery id(int id) {
+        return param("id", id);
+    }
+
+    /** Team id: current and past coaches of that team. */
+    public CoachesQuery team(int team) {
+        return param("team", team);
+    }
+
+    /** Free text matched against the coach name; at least 3 characters. */
+    public CoachesQuery search(String search) {
+        return param("search", search);
+    }
+}
