@@ -19,8 +19,12 @@ import java.io.IOException;
  * ApiFootball api = new ApiFootball("YOUR_API_KEY");
  * List<Fixture> live = api.fixtures().getLiveFixtures();
  * Standings table = api.leagues().getStandings(140, 2025);
- * int left = api.getDailyRequestsRemaining();
+ * Integer left = api.getDailyRequestsRemaining(); // null before the first response
  * }</pre>
+ *
+ * <p>Every API method throws {@code IOException} (network failure), {@link ApiFootballException}
+ * (the API rejected the request, or its response could not be used) and
+ * {@link IllegalArgumentException} (an invalid argument, detected before any request is sent).
  *
  * <p>The sub-APIs can also be created on their own ({@code new FixturesApi("YOUR_API_KEY")}) when
  * only one domain is needed.
@@ -39,6 +43,7 @@ public class ApiFootball {
      * Creates a client for a direct api-sports.io subscription.
      *
      * @param apiKey your API-Football key (sent in the {@code x-apisports-key} header)
+     * @throws IllegalArgumentException when the key is {@code null} or blank
      */
     public ApiFootball(String apiKey) {
         this(ApiFootballBase.buildHttpClient(apiKey), Constants.BASE_URL);
@@ -127,7 +132,11 @@ public class ApiFootball {
         return account.getMinuteRequestsRemaining();
     }
 
-    /** Number of HTTP requests sent through this instance (all sub-APIs) since it was created. */
+    /**
+     * Number of HTTP responses received through this instance (all sub-APIs) since it was created,
+     * error responses included. Requests that never got a response (timeouts, connection failures)
+     * and retries OkHttp performs transparently are not counted.
+     */
     public long getRequestCount() {
         return tracker.requestCount();
     }

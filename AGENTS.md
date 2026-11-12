@@ -21,7 +21,7 @@ CI (`.github/workflows/ci.yml`) runs `mvn test` on every branch and pull request
 
 ```
 src/main/java/es/com/kete1987/apifootball/library/
-├── ApiFootball.java           # facade: one accessor per sub-API + rate limits
+├── ApiFootball.java           # facade: one accessor per sub-API, getStatus() shortcut, rate limits
 ├── ApiFootballBase.java       # shared HTTP: auth, Gson, envelope, errors, pagination, rate limits
 ├── AccountApi.java            # status
 ├── LeaguesApi.java            # timezone, countries, leagues, leagues/seasons, standings
@@ -31,9 +31,10 @@ src/main/java/es/com/kete1987/apifootball/library/
 ├── OddsApi.java               # odds, odds/mapping, odds/bookmakers, odds/bets, odds/live, odds/live/bets
 ├── RateLimitTracker.java      # rate-limit state shared by the sub-APIs of one facade
 ├── common/
-│   ├── model/                 # Paging, Page<T>, RateLimit
-│   ├── query/Query.java       # base of the fluent parameter builders
-│   └── util/                  # Constants, ApiFootballException, ModelCollections
+│   ├── model/                 # Paging, Page<T>, RateLimit, TeamRef (the shared {id, name, logo})
+│   ├── query/                 # Query (base of the parameter builders), QueryValidation
+│   └── util/                  # Constants, ApiFootballException, ModelCollections,
+│                              # LenientNumberAdapters, NumberParsing
 └── <domain>/                  # account, leagues, teams, fixtures, players, odds
     ├── model/                 # Gson POJOs of that domain
     ├── query/                 # XxxQuery parameter builders of that domain
@@ -42,9 +43,11 @@ src/main/java/es/com/kete1987/apifootball/library/
 
 ## API entry points
 
-Plain constructors, no singletons. `ApiFootball` does **not** duplicate the sub-API methods: it exposes one accessor per sub-API (`api.fixtures()`, `api.leagues()`, `api.teams()`, `api.players()`, `api.odds()`, `api.account()`), all sharing one HTTP client and one rate-limit tracker. Sub-APIs also work standalone (`new FixturesApi("KEY")`).
+Plain constructors, no singletons. `ApiFootball` exposes one accessor per sub-API (`api.fixtures()`, `api.leagues()`, `api.teams()`, `api.players()`, `api.odds()`, `api.account()`), all sharing one HTTP client and one rate-limit tracker, plus a `getStatus()` shortcut and the rate-limit getters; it does not duplicate the other sub-API methods. Sub-APIs also work standalone (`new FixturesApi("KEY")`). Constructors taking an API key reject a `null` or blank key with `IllegalArgumentException` (the check lives in `buildHttpClient`).
 
-Each domain keeps its own small reference models (`fixtures.model.TeamRef`, `players.model.TeamRef`...) because the API returns a different subset of fields in each place; do not merge them unless the JSON shapes are identical.
+Reference models are shared only when the JSON shape is identical: the `{id, name, logo}` team reference is `common.model.TeamRef` everywhere (richer team objects extend it), `{id, season}` in odds is `odds.model.LeagueSeasonRef`, and the statistics block of a prediction reuses `teams.model.SeasonStatistics` (the body of `/teams/statistics`). Where the API returns a different subset of fields (league references, player references...), each domain keeps its own small model.
+
+**Naming.** Lookups by one key are `getXById` / `getXByTeam` / `getXByPlayer`...; league + season lookups are `getXByLeague(int league, int season)`; single-page methods end in `Page` (`getOddsByLeaguePage`); multi-page methods start with `getAll`. Java names say "Coaches" (`getTrophiesByCoaches`); `coachs` only appears in paths and query strings. Parameters use plain names (`team`, `player`, `league`, `id`), and id lists are `Collection<Integer>`.
 
 ## The response envelope
 
@@ -58,7 +61,7 @@ Every response is `{get, parameters, errors, results, paging, response}`. `ApiFo
 | `page(url, T.class, n)` | paginated endpoint, one page; returns `Page<T>` | 1 |
 | `allPages(url, T.class, maxPages)` | paginated endpoint, up to `maxPages` pages (`maxPages` ≥ 1, there is no "unlimited") | 1 per page |
 
-**Errors.** The API answers HTTP 200 with a non-empty `errors` member for most failures (wrong parameter, plan restriction, quota). `execute` turns both that and non-2xx responses into `ApiFootballException` (`getHttpCode()`, `getErrors()`). All public methods throw `IOException` and `ApiFootballException`.
+**Errors.** The API answers HTTP 200 with a non-empty `errors` member for most failures (wrong parameter, plan restriction, quota). `execute` turns both that and non-2xx responses into `ApiFootballException` (`getHttpCode()`, `getErrors()`); a non-envelope body such as `{"message": "..."}` (HTTP 499/500) is exposed under the key `message`, and bodies quoted in exception messages are cut to 500 characters. An empty body (HTTP 204) or a non-JSON body is an `ApiFootballException` too, and the typed helpers wrap Gson failures (`JsonParseException`, `IllegalStateException`, `NumberFormatException`) while mapping `response` into an `ApiFootballException` with the cause. So public methods throw only `IOException` (network), `ApiFootballException` (the API or its response) and `IllegalArgumentException` (invalid arguments, detected before any request).
 
 **Rate limits.** Two independent limits, read from the headers of every response (including failed ones) and available right after any call:
 
@@ -68,7 +71,7 @@ api.getDailyRequestsLimit();        // x-ratelimit-requests-limit
 api.getDailyRequestsRemaining();    // x-ratelimit-requests-remaining
 api.getMinuteRequestsLimit();       // X-RateLimit-Limit
 api.getMinuteRequestsRemaining();   // X-RateLimit-Remaining
-api.getRequestCount();              // HTTP requests sent by this client
+api.getRequestCount();              // responses received (timeouts and OkHttp retries not counted)
 ```
 
 **Quota awareness is a design rule.** A library call must cost exactly one request unless its name and Javadoc say otherwise. For paginated endpoints always offer the single-page method (`...Page(query, page)`) next to the "all pages" one, and document the cost in the Javadoc.
@@ -97,10 +100,12 @@ public class FixturesApi extends ApiFootballBase {
 ```
 
 - Both constructors above are mandatory, with exactly those signatures.
+- **Validation.** Parameters the API silently misreads are checked client-side with `common.query.QueryValidation` and rejected with `IllegalArgumentException`: dates (real `YYYY-MM-DD`; every date lookup offers a `LocalDate` overload plus a validated `String` overload), timezones (exactly `"UTC"` or a region id with `/` that `ZoneId.of` knows, never an offset form such as `+02:00`, `GMT+1`, `Z`; the valid names are those of `/timezone`, and the API silently falls back to UTC on unknown ones), ranges (`last`/`next` 1-99) and id lists (1 to `MAX_IDS` = 20, no `null`). `page(...)` rejects page numbers below 1.
+- **Query setters.** Passing `null` to a setter removes the parameter (the contract of `Query.param`); no setter throws on `null`. Required arguments of API methods are validated in the API method instead. Enum-like filters the API expects in lower case are lower-cased (`LeaguesQuery.type`, `FixtureEventsQuery.type`).
 - **Parameters.** Every endpoint with optional filters gets a `XxxQuery extends Query<XxxQuery>` in `<domain>/query/`, with one typed, Javadoc'd setter per documented parameter (`return param("league", league);`). The sub-API exposes a method taking the query, plus convenience overloads for the most common lookups (by id, by league + season...). Endpoints whose parameters are all required just take them as method arguments. Never send a parameter the caller did not set: the API rejects unknown or empty parameters.
 - **Models.** Plain Gson POJOs under `<domain>/model/`, private fields, getters only, no setters. Use `@SerializedName` for snake_case or otherwise non-Java names. Use wrapper types (`Integer`, `Double`, `Boolean`) — the API returns `null` freely. List/Map getters return `ModelCollections.unmodifiable(...)`. Small objects used by a single parent may be static nested classes; objects shared across endpoints of the domain (team, league, player references...) get their own file and are reused, never duplicated.
 - **Fields whose JSON type varies** (number / string / null, e.g. statistic values or `"50%"`) must be mapped to a type that cannot fail to parse — `String` for scalars, `JsonElement` for shape-shifting members — with typed convenience getters where useful. The catalog lists them.
-- **Numeric strings.** `gson()` registers `LenientNumberAdapters`, so an `Integer`/`Double` field accepts a number, a numeric string (`"187"`) or `""`/`null` (→ `null`). A value that can carry non-numeric text (`"37%"`, `"185 cm"`) must still be a `String`.
+- **Numeric strings.** `gson()` registers `LenientNumberAdapters`, so an `Integer`/`Long`/`Double` field accepts a number, a numeric string (`"187"`) or `""`/`null` (→ `null`). Integer fields reject fractional and out-of-range values (`JsonSyntaxException`, surfaced as `ApiFootballException`) instead of truncating or saturating. A value that can carry non-numeric text (`"37%"`, `"185 cm"`) must still be a `String`, with typed getters built on `common.util.NumberParsing` (`parseInteger`, `parseDouble`, `parsePercent`, `parseLeadingInteger`); those getters never throw and return `null` when the text does not parse.
 - **Data-dependent keys** (minute buckets `"0-15"`, under/over `"0.5"`, the stray `""` key in `teams/statistics` cards) are `Map<String, X>`, never POJOs.
 - **Parameter-dependent shapes** (e.g. `fixtures/rounds?dates=true`, `trophies?players=`) get a separate method with its own return type rather than one model trying to fit both.
 - **Gson.** Never build a `Gson` instance; use `gson()` from `ApiFootballBase`. If a type adapter is needed, register it there.
@@ -134,6 +139,8 @@ class FixturesApiTest extends BaseApiTest {
 
 Each endpoint method needs at least one test that asserts (a) representative fields at every nesting level of the parsed fixture, including the type-varying ones, and (b) the request path and query string the library built.
 
+`ModelCoverageTest` maps every fixture to the model type its API method parses into and walks the JSON: it fails on any key without a model field (honouring `@SerializedName`, superclasses, `List`/`Map`/`JsonElement` members), on any scalar Gson cannot read into the field's type, and on any fixture file that is neither mapped nor listed as an error fixture. A new fixture must be added there.
+
 `ApiFootballIntegrationTest` is the exception: it hits the real API and is excluded from the default surefire run. It only runs under the `integration` profile and skips itself unless `API_FOOTBALL_KEY` is set:
 
 ```
@@ -149,7 +156,7 @@ The API key never enters the repository: not in code, tests, fixtures, docs or c
 ## Adding a new endpoint
 
 1. Read its section in `docs/API_CATALOG.md` (and the official docs if it is new).
-2. Capture a real response as a fixture (trimmed, anonymised) under `src/test/resources/fixtures/`.
+2. Capture a real response as a fixture (trimmed, anonymised) under `src/test/resources/fixtures/` and map it in `ModelCoverageTest`.
 3. Add the model POJOs and, if it has optional filters, its `XxxQuery`.
 4. Add the method to the sub-API that owns the domain (a new sub-API also needs its accessor in `ApiFootball`).
 5. Add the test, update the catalog and the README endpoint table.

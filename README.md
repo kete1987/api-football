@@ -55,14 +55,14 @@ api.getDailyRequestsRemaining();    // x-ratelimit-requests-remaining  e.g. 7412
 api.getMinuteRequestsLimit();       // X-RateLimit-Limit               e.g. 300
 api.getMinuteRequestsRemaining();   // X-RateLimit-Remaining           e.g. 297
 api.getRateLimit();                 // the four values as one immutable snapshot
-api.getRequestCount();              // HTTP requests sent by this ApiFootball instance
+api.getRequestCount();              // responses received by this ApiFootball instance
 api.getStatus();                    // account, plan and requests used today (free of quota)
 ```
 
 Things worth knowing (observed against the live API):
 
 - **Errors and empty results consume quota** exactly like successful calls. Only `status` is free.
-- The daily "remaining" header is refreshed with some delay and can briefly go *up*; `getRequestCount()` is exact for what this instance has sent.
+- The daily "remaining" header is refreshed with some delay and can briefly go *up*; `getRequestCount()` counts the responses this instance has received (a timeout, or a retry OkHttp performs on its own, is not counted).
 - **Every library method costs exactly one request**, except the `getAll...(…, maxPages)` methods of paginated endpoints, which cost one request per page and always require an explicit cap.
 
 ## Endpoints
@@ -83,20 +83,30 @@ Every documented query parameter is available, either as a method argument or th
 Only four endpoints are paginated: `players` (20 per page), `players/profiles` (250), `odds` (10) and `odds/mapping` (100). Each has a single-page method and a capped multi-page method:
 
 ```java
-// One page = one request; the Page tells you how many pages exist
+// One page = one request; the Page tells you how many pages exist (pages start at 1)
 Page<PlayerWithStatistics> page = api.players().getPlayersByLeaguePage(140, 2025, 1);
-int totalPages = page.getPaging().getTotal();
+Integer totalPages = page.getPaging().getTotal();
 
 // Up to 5 pages = up to 5 requests
 List<PlayerWithStatistics> players =
         api.players().getAllPlayers(new PlayersQuery().league(140).season(2025), 5);
+
+// Single-page methods end in "Page"; league + season lookups are "...ByLeague"
+Page<PrematchOdds> odds = api.odds().getOddsByLeaguePage(140, 2025, 1);
+List<PrematchOdds> allOdds = api.odds().getAllOddsByLeague(140, 2025, 3);
 ```
 
-There is no "fetch everything" without a cap on purpose: `players/profiles` without filters is more than 2,700 pages.
+There is no "fetch everything" without a cap on purpose: `players/profiles` without filters is more than 2,700 pages. If a later page of a multi-page walk fails, the exception is thrown and the pages already fetched are lost.
 
 ## Error handling
 
-All methods throw `IOException` (network) and `ApiFootballException` (the API rejected the request). API-Football reports most errors with HTTP 200 and an `errors` object in the body; the library turns those into exceptions too:
+Methods throw exactly three exceptions:
+
+- `IOException`: the network failed.
+- `ApiFootballException`: the API rejected the request, or its response could not be used (an empty body such as HTTP 204, a body that is not JSON, or a `response` that does not fit the model; the parse error is kept as the cause).
+- `IllegalArgumentException`: an argument is invalid; it is thrown before any request is sent.
+
+API-Football reports most errors with HTTP 200 and an `errors` object in the body; the library turns those into exceptions too. Bodies that are not an envelope, such as `{"message": "..."}` with HTTP 499/500, expose their text under the key `message`:
 
 ```java
 try {
@@ -109,12 +119,31 @@ try {
 
 Methods that look up a single resource return `null` when the API has no data for it.
 
-Parameters the API would silently misinterpret are validated before the request is sent and throw `IllegalArgumentException`: an impossible date such as `2026-13-45` (the API would return another day's fixtures), an unknown timezone (the API would fall back to UTC), too many ids, and similar.
+Parameters the API would silently misinterpret are validated before the request is sent (see `QueryValidation`):
+
+- Dates must be real `YYYY-MM-DD` dates: `2026-13-45` is rejected (the API would return another day's fixtures). Date lookups take a `LocalDate` or a validated `String`.
+- Timezones must be `"UTC"` or a region name such as `"Europe/Madrid"`, i.e. the names returned by `api.leagues().getTimezones()`; offsets such as `"+02:00"` or `"GMT+1"` are rejected (the API would silently fall back to UTC).
+- Id lists (`Collection<Integer>`) take 1 to 20 ids and no `null`.
+- Page numbers start at 1; `last`/`next` are 1 to 99.
+
+In the `XxxQuery` builders, passing `null` to a setter removes that parameter.
+
+```java
+List<Fixture> today = api.fixtures().getFixturesByDate(LocalDate.now(), "Europe/Madrid");
+List<Fixture> season = api.fixtures().getFixturesByLeague(140, 2025);
+List<Team> teams = api.teams().getTeamsByLeague(140, 2025);
+Squad squad = api.players().getSquadByTeam(541);
+Player profile = api.players().getPlayerProfileById(276);
+List<TrophyGroup> trophies = api.players().getTrophiesByCoaches(Arrays.asList(2462, 1584));
+TeamStatistics stats = api.teams().getTeamStatistics(140, 2025, 541, LocalDate.of(2026, 3, 1));
+```
 
 ## Data notes
 
 - Seasons are the starting year: `2025` is the 2025-2026 season.
-- Values the API returns with mixed types (`"37%"`, `"1.71"`, `5`, `null`) are exposed as `String` with typed helpers that never throw, e.g. `statistic.getIntValue()`, `oddValue.getOddAsDouble()`.
+- Values the API returns with mixed types (`"37%"`, `"1.71"`, `5`, `null`) are exposed as `String` with typed helpers that never throw, e.g. `statistic.getIntValue()`, `oddValue.getOddAsDouble()`, `player.getHeightCm()`. They are built on `NumberParsing`, which you can also use directly (`parseInteger`, `parseDouble`, `parsePercent`, `parseLeadingInteger`).
+- `Integer`/`Long` fields accept numbers, numeric strings and `""` (read as `null`); a value that does not fit (e.g. out of the `int` range) is reported as `ApiFootballException`, never silently changed.
+- The `{id, name, logo}` team reference is one class everywhere, `common.model.TeamRef`; the statistics block of a prediction is the same `SeasonStatistics` that `getTeamStatistics` returns.
 - Fixture statuses, event types and similar enumerations are `String` constants (`FixtureStatuses`, `EventTypes`, `StatisticTypes`...), so a new value added by the API never breaks parsing.
 - Pre-match bet ids and in-play bet ids are different id spaces (`PrematchBet` / `LiveBet`).
 
@@ -125,7 +154,7 @@ mvn test                                         # unit tests, no network
 API_FOOTBALL_KEY=... mvn test -Pintegration      # 4 real requests against the API
 ```
 
-Unit tests run against real API responses stored under `src/test/resources/fixtures/`. See [AGENTS.md](AGENTS.md) for the architecture and the conventions for contributing.
+Unit tests run against real API responses stored under `src/test/resources/fixtures/`; `ModelCoverageTest` checks that every JSON key and value of those responses is mapped by the models. See [AGENTS.md](AGENTS.md) for the architecture and the conventions for contributing.
 
 ## License
 

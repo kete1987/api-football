@@ -11,7 +11,7 @@ import java.io.IOException;
  * Account sub-API: subscription status and daily usage.
  *
  * <p>Can be used standalone ({@code new AccountApi("apiKey")}) or via the {@link ApiFootball}
- * facade ({@code api.getAccount()}).
+ * facade ({@code api.account()}).
  */
 public class AccountApi extends ApiFootballBase {
 

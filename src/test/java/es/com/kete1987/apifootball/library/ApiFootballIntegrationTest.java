@@ -80,7 +80,8 @@ class ApiFootballIntegrationTest {
 
     @Test
     void logicalError_isReportedAsException() {
-        // Bypasses the client-side validation on purpose to see the API's own error envelope.
+        // The library does not validate the length of "search": this call simply provokes the
+        // API's own error envelope (HTTP 200 with an "errors" object).
         ApiFootballException e = assertThrows(ApiFootballException.class,
                 () -> api.teams().searchTeams("ma"));
 
