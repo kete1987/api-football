@@ -163,7 +163,7 @@ class CoreBehaviourTest extends BaseApiTest {
         enqueueBody(envelope("[]", 2, 3, "[{\"id\":2}]"), 200);
         enqueueBody(envelope("[]", 3, 3, "[{\"id\":3}]"), 200);
 
-        List<Item> items = api.allPages(api.url("items"), Item.class, 0);
+        List<Item> items = api.allPages(api.url("items"), Item.class, 10);
 
         assertEquals(3, items.size());
         assertEquals(3, api.getRequestCount());
@@ -180,6 +180,23 @@ class CoreBehaviourTest extends BaseApiTest {
         List<Item> items = api.allPages(api.url("items"), Item.class, 2);
 
         assertEquals(2, items.size());
+        assertEquals(2, api.getRequestCount());
+    }
+
+    @Test
+    void allPages_rejectsNonPositiveCap() {
+        assertThrows(IllegalArgumentException.class, () -> api.allPages(api.url("items"), Item.class, 0));
+        assertEquals(0, api.getRequestCount());
+    }
+
+    @Test
+    void allPages_stopsOnEmptyPage() throws IOException, ApiFootballException {
+        enqueueBody(envelope("[]", 1, 5, "[{\"id\":1}]"), 200);
+        enqueueBody(envelope("[]", 2, 5, "[]"), 200);
+
+        List<Item> items = api.allPages(api.url("items"), Item.class, 5);
+
+        assertEquals(1, items.size());
         assertEquals(2, api.getRequestCount());
     }
 

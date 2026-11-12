@@ -31,7 +31,7 @@ import java.util.List;
  * <p><b>Pagination and cost.</b> {@code /odds} (10 fixtures per page, up to ~1.6 MB per page for a
  * league) and {@code /odds/mapping} (100 per page) are paginated; every page is one request
  * against the daily quota. Single-page methods cost one request; the {@code getAll...} methods
- * cost one request per page walked and always take a {@code maxPages} cap (non-positive = no cap).
+ * cost one request per page walked and always take a {@code maxPages} cap of at least 1.
  * For example {@code /odds?date=...} may span 24 pages.
  */
 public class OddsApi extends ApiFootballBase {
@@ -61,7 +61,7 @@ public class OddsApi extends ApiFootballBase {
      * Pre-match odds, all pages. <b>Costs one request per page walked</b> (up to {@code maxPages}),
      * and a league page can weigh ~1.6 MB.
      *
-     * @param maxPages maximum number of pages to fetch; a non-positive value means every page
+     * @param maxPages maximum number of pages to fetch, at least 1
      */
     public List<PrematchOdds> getAllOdds(OddsQuery query, int maxPages) throws IOException, ApiFootballException {
         return allPages(url("odds", query), PrematchOdds.class, maxPages);

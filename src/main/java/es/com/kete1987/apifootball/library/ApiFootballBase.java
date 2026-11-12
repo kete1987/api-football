@@ -211,17 +211,20 @@ abstract class ApiFootballBase {
 
     /**
      * Walks a paginated endpoint from page 1 and returns every item. <b>Each page is one request
-     * against the daily quota</b>, so {@code maxPages} caps the walk: a positive value stops after
-     * that many pages (returning what was gathered), a non-positive one means "all pages".
+     * against the daily quota</b>, so the walk is always capped: it stops after {@code maxPages}
+     * pages, returning what was gathered. There is deliberately no "unlimited" value.
+     *
+     * @throws IllegalArgumentException if {@code maxPages} is lower than 1
      */
     <T> List<T> allPages(HttpUrl.Builder url, Class<T> type, int maxPages) throws IOException, ApiFootballException {
+        if (maxPages < 1) throw new IllegalArgumentException("maxPages must be >= 1");
         List<T> all = new ArrayList<>();
         int current = 1;
         while (true) {
             Page<T> result = page(url, type, current);
             all.addAll(result.getItems());
             // An empty page means we ran past the end (the API answers that without an error).
-            if (result.getItems().isEmpty() || !result.hasMore() || (maxPages > 0 && current >= maxPages)) break;
+            if (result.getItems().isEmpty() || !result.hasMore() || current >= maxPages) break;
             // Trust the page the API says it served; fall back to the local counter.
             int served = result.getPaging().getCurrent();
             current = Math.max(served, current) + 1;
