@@ -1,6 +1,7 @@
 package es.com.kete1987.apifootball.library.fixtures.query;
 
 import es.com.kete1987.apifootball.library.common.query.Query;
+import es.com.kete1987.apifootball.library.common.query.QueryValidation;
 
 /**
  * Optional filters of {@code GET /fixtures/rounds}. The {@code dates} flag is not here: it changes
@@ -14,8 +15,12 @@ public class RoundsQuery extends Query<RoundsQuery> {
         return param("current", current);
     }
 
-    /** IANA timezone such as {@code "Europe/Madrid"}; affects the dates of {@code getRoundsWithDates}. */
+    /**
+     * Timezone such as {@code "Europe/Madrid"} (a name returned by {@code /timezone}); affects the
+     * dates of {@code getRoundsWithDates}. Checked with {@link QueryValidation#timezone(String)};
+     * {@code null} removes it.
+     */
     public RoundsQuery timezone(String timezone) {
-        return param("timezone", QueryValidation.timezone(timezone));
+        return param("timezone", timezone == null ? null : QueryValidation.timezone(timezone));
     }
 }

@@ -1,6 +1,7 @@
 package es.com.kete1987.apifootball.library.odds.query;
 
 import es.com.kete1987.apifootball.library.common.query.Query;
+import es.com.kete1987.apifootball.library.common.query.QueryValidation;
 
 import java.time.LocalDate;
 
@@ -26,19 +27,30 @@ public class OddsQuery extends Query<OddsQuery> {
         return param("season", season);
     }
 
-    /** Date as {@code YYYY-MM-DD}. Not validated by the API (invalid dates overflow silently). */
+    /**
+     * Date as {@code YYYY-MM-DD}; {@code null} removes it. Validated here because the API silently
+     * overflows an invalid date into another day.
+     *
+     * @throws IllegalArgumentException when the date is malformed or not a real calendar date
+     */
     public OddsQuery date(String date) {
-        return param("date", date);
+        return param("date", date == null ? null : QueryValidation.date("date", date));
     }
 
-    /** Date, sent as {@code YYYY-MM-DD}. */
+    /** Date, sent as {@code YYYY-MM-DD}; {@code null} removes it. */
     public OddsQuery date(LocalDate date) {
-        return param("date", date);
+        return param("date", date == null ? null : QueryValidation.date("date", date));
     }
 
-    /** IANA timezone name from {@code /timezone} (e.g. {@code Europe/Madrid}); invalid values silently become UTC. */
+    /**
+     * Timezone such as {@code "Europe/Madrid"} (a name returned by {@code /timezone}); {@code null}
+     * removes it. Checked with {@link QueryValidation#timezone(String)} because the API silently
+     * falls back to UTC on an unknown name.
+     *
+     * @throws IllegalArgumentException when the name is not a valid timezone
+     */
     public OddsQuery timezone(String timezone) {
-        return param("timezone", timezone);
+        return param("timezone", timezone == null ? null : QueryValidation.timezone(timezone));
     }
 
     /** Bookmaker id (see {@code /odds/bookmakers}). */

@@ -1,6 +1,7 @@
 package es.com.kete1987.apifootball.library;
 
 import es.com.kete1987.apifootball.library.common.model.Page;
+import es.com.kete1987.apifootball.library.common.query.QueryValidation;
 import es.com.kete1987.apifootball.library.common.util.ApiFootballException;
 import es.com.kete1987.apifootball.library.common.util.Constants;
 import es.com.kete1987.apifootball.library.odds.model.Bookmaker;
@@ -95,12 +96,31 @@ public class OddsApi extends ApiFootballBase {
 
     /** One page of pre-match odds of the fixtures of a date. 1 request. */
     public Page<PrematchOdds> getOddsPageByDate(LocalDate date, int page) throws IOException, ApiFootballException {
-        return getOddsPage(new OddsQuery().date(date), page);
+        return getOddsPage(new OddsQuery().date(QueryValidation.date("date", date)), page);
+    }
+
+    /**
+     * One page of pre-match odds of the fixtures of a {@code YYYY-MM-DD} date. 1 request.
+     *
+     * @throws IllegalArgumentException when the date is {@code null}, malformed or not a real calendar date
+     */
+    public Page<PrematchOdds> getOddsPageByDate(String date, int page) throws IOException, ApiFootballException {
+        return getOddsPage(new OddsQuery().date(QueryValidation.date("date", date)), page);
     }
 
     /** All pages of pre-match odds of a date (can be 20+ pages). 1 request per page walked, capped by {@code maxPages}. */
     public List<PrematchOdds> getAllOddsByDate(LocalDate date, int maxPages) throws IOException, ApiFootballException {
-        return getAllOdds(new OddsQuery().date(date), maxPages);
+        return getAllOdds(new OddsQuery().date(QueryValidation.date("date", date)), maxPages);
+    }
+
+    /**
+     * All pages of pre-match odds of a {@code YYYY-MM-DD} date. 1 request per page walked, capped by
+     * {@code maxPages}.
+     *
+     * @throws IllegalArgumentException when the date is {@code null}, malformed or not a real calendar date
+     */
+    public List<PrematchOdds> getAllOddsByDate(String date, int maxPages) throws IOException, ApiFootballException {
+        return getAllOdds(new OddsQuery().date(QueryValidation.date("date", date)), maxPages);
     }
 
     // ------------------------------------------------------------------ odds mapping

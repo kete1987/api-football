@@ -1,5 +1,7 @@
 package es.com.kete1987.apifootball.library.fixtures.query;
 
+import es.com.kete1987.apifootball.library.common.query.QueryValidation;
+
 import java.util.Collection;
 
 /**
@@ -27,12 +29,12 @@ public class FixturesQuery extends FixtureFilters<FixturesQuery> {
      * statistics and players.
      */
     public FixturesQuery ids(Collection<Integer> ids) {
-        return param("ids", QueryValidation.ids(ids));
+        return param("ids", ids == null ? null : QueryValidation.ids("ids", ids));
     }
 
     /** Several fixture ids already joined as {@code "id-id-id"} (digits and dashes, at most 20). */
     public FixturesQuery ids(String ids) {
-        return param("ids", QueryValidation.ids(ids));
+        return param("ids", ids == null ? null : QueryValidation.ids("ids", ids));
     }
 
     /** {@code live=all}: every fixture in progress; the response embeds events. */
@@ -41,12 +43,14 @@ public class FixturesQuery extends FixtureFilters<FixturesQuery> {
     }
 
     /** Fixtures in progress of the given leagues, sent as {@code id-id}; the response embeds events. */
-    public FixturesQuery live(Collection<Integer> leagueIds) {
-        if (leagueIds == null || leagueIds.isEmpty() || leagueIds.contains(null)) {
-            throw new IllegalArgumentException("leagueIds must be a non-empty collection without nulls");
+    public FixturesQuery live(Collection<Integer> leagues) {
+        if (leagues == null) return param("live", null);
+        if (leagues.isEmpty()) {
+            throw new IllegalArgumentException("leagues must contain at least one id");
         }
         StringBuilder sb = new StringBuilder();
-        for (Integer id : leagueIds) {
+        for (Integer id : leagues) {
+            if (id == null) throw new IllegalArgumentException("leagues must not contain null");
             if (sb.length() > 0) sb.append('-');
             sb.append(id);
         }
@@ -55,7 +59,8 @@ public class FixturesQuery extends FixtureFilters<FixturesQuery> {
 
     /** Raw {@code live} value: {@code "all"} or league ids joined as {@code "id-id"}. */
     public FixturesQuery live(String live) {
-        if (live == null || !(live.equals("all") || live.matches("\\d+(-\\d+)*"))) {
+        if (live == null) return param("live", null);
+        if (!(live.equals("all") || live.matches("\\d+(-\\d+)*"))) {
             throw new IllegalArgumentException("live must be 'all' or league ids like 'id-id', was '" + live + "'");
         }
         return param("live", live);
@@ -68,7 +73,8 @@ public class FixturesQuery extends FixtureFilters<FixturesQuery> {
 
     /** Round label as returned by {@code /fixtures/rounds}, e.g. {@code "Regular Season - 13"}. */
     public FixturesQuery round(String round) {
-        if (round == null || round.trim().isEmpty()) {
+        if (round == null) return param("round", null);
+        if (round.trim().isEmpty()) {
             throw new IllegalArgumentException("round must not be blank");
         }
         return param("round", round);

@@ -90,8 +90,8 @@ class FixturesValidationApiTest extends BaseApiTest {
             assertThrows(IllegalArgumentException.class, () -> new HeadToHeadQuery().date(bad), bad);
             assertThrows(IllegalArgumentException.class, () -> new InjuriesQuery().date(bad), bad);
         }
-        assertThrows(IllegalArgumentException.class, () -> new FixturesQuery().date((String) null));
-        assertThrows(IllegalArgumentException.class, () -> new FixturesQuery().date((LocalDate) null));
+        assertThrows(IllegalArgumentException.class, () -> api.getFixturesByDate((String) null));
+        assertThrows(IllegalArgumentException.class, () -> api.getFixturesByDate((LocalDate) null));
         assertThrows(IllegalArgumentException.class, () -> api.getFixturesByDate("2026-13-45"));
         assertEquals(0, server.getRequestCount());
     }
@@ -108,7 +108,7 @@ class FixturesValidationApiTest extends BaseApiTest {
         assertThrows(IllegalArgumentException.class, () -> new FixturesQuery().timezone("Mars/Olympus"));
         assertThrows(IllegalArgumentException.class, () -> new HeadToHeadQuery().timezone(""));
         assertThrows(IllegalArgumentException.class, () -> new RoundsQuery().timezone("Nope"));
-        assertThrows(IllegalArgumentException.class, () -> new InjuriesQuery().timezone(null));
+        assertThrows(IllegalArgumentException.class, () -> api.getFixturesByDate(LocalDate.of(2026, 1, 1), null));
         assertEquals("Europe/Madrid", new FixturesQuery().timezone("Europe/Madrid").toParams().get("timezone"));
     }
 

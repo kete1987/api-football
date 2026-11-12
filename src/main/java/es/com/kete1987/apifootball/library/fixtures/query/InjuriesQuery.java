@@ -1,6 +1,7 @@
 package es.com.kete1987.apifootball.library.fixtures.query;
 
 import es.com.kete1987.apifootball.library.common.query.Query;
+import es.com.kete1987.apifootball.library.common.query.QueryValidation;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -8,7 +9,8 @@ import java.util.Collection;
 /**
  * Parameters of {@code GET /injuries} (data from April 2021). <b>At least one parameter is
  * required</b> (the API answers with an error otherwise). All parameters can be combined;
- * {@code league}, {@code team} and {@code player} need {@code season}.
+ * {@code league}, {@code team} and {@code player} need {@code season}. Passing {@code null} to a
+ * setter removes the parameter.
  */
 public class InjuriesQuery extends Query<InjuriesQuery> {
 
@@ -39,26 +41,29 @@ public class InjuriesQuery extends Query<InjuriesQuery> {
 
     /** Day, {@code YYYY-MM-DD}. */
     public InjuriesQuery date(String date) {
-        return param("date", QueryValidation.date("date", date));
+        return param("date", date == null ? null : QueryValidation.date("date", date));
     }
 
     /** Day. */
     public InjuriesQuery date(LocalDate date) {
-        return param("date", QueryValidation.date("date", date));
+        return param("date", date == null ? null : QueryValidation.date("date", date));
     }
 
     /** Several fixture ids (1 to 20), sent as {@code id-id-id}. */
     public InjuriesQuery ids(Collection<Integer> ids) {
-        return param("ids", QueryValidation.ids(ids));
+        return param("ids", ids == null ? null : QueryValidation.ids("ids", ids));
     }
 
     /** Several fixture ids already joined as {@code "id-id-id"} (at most 20). */
     public InjuriesQuery ids(String ids) {
-        return param("ids", QueryValidation.ids(ids));
+        return param("ids", ids == null ? null : QueryValidation.ids("ids", ids));
     }
 
-    /** IANA timezone such as {@code "Europe/Madrid"}; an unknown name is rejected (the API would fall back to UTC). */
+    /**
+     * Timezone such as {@code "Europe/Madrid"} (a name returned by {@code /timezone}); checked with
+     * {@link QueryValidation#timezone(String)} because the API silently falls back to UTC.
+     */
     public InjuriesQuery timezone(String timezone) {
-        return param("timezone", QueryValidation.timezone(timezone));
+        return param("timezone", timezone == null ? null : QueryValidation.timezone(timezone));
     }
 }

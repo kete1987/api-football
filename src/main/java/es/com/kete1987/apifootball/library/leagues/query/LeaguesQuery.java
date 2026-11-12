@@ -1,6 +1,7 @@
 package es.com.kete1987.apifootball.library.leagues.query;
 
 import es.com.kete1987.apifootball.library.common.query.Query;
+import es.com.kete1987.apifootball.library.common.query.QueryValidation;
 
 import java.util.Locale;
 
@@ -52,8 +53,12 @@ public class LeaguesQuery extends Query<LeaguesQuery> {
         return param("search", search);
     }
 
-    /** The {@code last} leagues/cups added to the API; at most 2 digits (1 to 99). */
+    /**
+     * The {@code last} leagues/cups added to the API; at most 2 digits (1 to 99).
+     *
+     * @throws IllegalArgumentException when outside 1-99
+     */
     public LeaguesQuery last(int last) {
-        return param("last", last);
+        return param("last", QueryValidation.range("last", last, 1, 99));
     }
 }

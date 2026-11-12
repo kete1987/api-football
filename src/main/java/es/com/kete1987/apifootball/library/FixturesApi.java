@@ -1,6 +1,7 @@
 package es.com.kete1987.apifootball.library;
 
 import es.com.kete1987.apifootball.library.common.query.Query;
+import es.com.kete1987.apifootball.library.common.query.QueryValidation;
 import es.com.kete1987.apifootball.library.common.util.ApiFootballException;
 import es.com.kete1987.apifootball.library.common.util.Constants;
 import es.com.kete1987.apifootball.library.fixtures.model.Fixture;
@@ -80,10 +81,10 @@ public class FixturesApi extends ApiFootballBase {
     /**
      * Up to 20 fixtures by id, each with events, lineups, statistics and players. One request.
      *
-     * @throws IllegalArgumentException when empty or more than 20 ids are given
+     * @throws IllegalArgumentException when {@code null}, empty, with more than 20 ids or containing {@code null}
      */
     public List<Fixture> getFixturesByIds(Collection<Integer> ids) throws IOException, ApiFootballException {
-        return getFixtures(new FixturesQuery().ids(ids));
+        return getFixtures(new FixturesQuery().ids(QueryValidation.ids("ids", ids)));
     }
 
     /** Every fixture in progress ({@code live=all}), each with its events. One request. */
@@ -91,9 +92,14 @@ public class FixturesApi extends ApiFootballBase {
         return getFixtures(new FixturesQuery().liveAll());
     }
 
-    /** Fixtures in progress in the given leagues ({@code live=id-id}), each with its events. One request. */
-    public List<Fixture> getLiveFixtures(Collection<Integer> leagueIds) throws IOException, ApiFootballException {
-        return getFixtures(new FixturesQuery().live(leagueIds));
+    /**
+     * Fixtures in progress in the given leagues ({@code live=id-id}), each with its events. One request.
+     *
+     * @throws IllegalArgumentException when {@code null}, empty or containing {@code null}
+     */
+    public List<Fixture> getLiveFixtures(Collection<Integer> leagues) throws IOException, ApiFootballException {
+        if (leagues == null) throw new IllegalArgumentException("leagues must not be null");
+        return getFixtures(new FixturesQuery().live(leagues));
     }
 
     /**
@@ -102,26 +108,41 @@ public class FixturesApi extends ApiFootballBase {
      * @throws IllegalArgumentException when the date is {@code null}
      */
     public List<Fixture> getFixturesByDate(LocalDate date) throws IOException, ApiFootballException {
-        return getFixtures(new FixturesQuery().date(date));
+        return getFixtures(new FixturesQuery().date(QueryValidation.date("date", date)));
     }
 
     /**
      * Fixtures of a {@code YYYY-MM-DD} day, in UTC. One request.
      *
-     * @throws IllegalArgumentException when the date is malformed (the API would silently overflow it into another day)
+     * @throws IllegalArgumentException when the date is {@code null} or malformed (the API would
+     *                                  silently overflow it into another day)
      */
     public List<Fixture> getFixturesByDate(String date) throws IOException, ApiFootballException {
-        return getFixtures(new FixturesQuery().date(date));
+        return getFixtures(new FixturesQuery().date(QueryValidation.date("date", date)));
     }
 
     /**
      * Fixtures of a day, with dates rendered in {@code timezone} and the day interpreted in it.
      * One request.
      *
-     * @throws IllegalArgumentException for a null date or an unknown timezone
+     * @param timezone a name returned by {@code /timezone}, see {@link QueryValidation#timezone(String)}
+     * @throws IllegalArgumentException for a null date or a null or invalid timezone
      */
     public List<Fixture> getFixturesByDate(LocalDate date, String timezone) throws IOException, ApiFootballException {
-        return getFixtures(new FixturesQuery().date(date).timezone(timezone));
+        return getFixtures(new FixturesQuery().date(QueryValidation.date("date", date))
+                .timezone(QueryValidation.timezone(timezone)));
+    }
+
+    /**
+     * Fixtures of a {@code YYYY-MM-DD} day, with dates rendered in {@code timezone} and the day
+     * interpreted in it. One request.
+     *
+     * @param timezone a name returned by {@code /timezone}, see {@link QueryValidation#timezone(String)}
+     * @throws IllegalArgumentException for a null or malformed date or a null or invalid timezone
+     */
+    public List<Fixture> getFixturesByDate(String date, String timezone) throws IOException, ApiFootballException {
+        return getFixtures(new FixturesQuery().date(QueryValidation.date("date", date))
+                .timezone(QueryValidation.timezone(timezone)));
     }
 
     /** All fixtures of a league season. One request; a full season is several hundred fixtures. */
@@ -133,8 +154,10 @@ public class FixturesApi extends ApiFootballBase {
      * Fixtures of one round of a league season. One request.
      *
      * @param round a label from {@link #getRounds(int, int)}, e.g. {@code "Regular Season - 13"}
+     * @throws IllegalArgumentException when {@code round} is {@code null} or blank
      */
     public List<Fixture> getFixturesByRound(int league, int season, String round) throws IOException, ApiFootballException {
+        if (round == null) throw new IllegalArgumentException("round must not be null");
         return getFixtures(new FixturesQuery().league(league).season(season).round(round));
     }
 
@@ -310,9 +333,13 @@ public class FixturesApi extends ApiFootballBase {
         return getInjuries(new InjuriesQuery().fixture(fixture));
     }
 
-    /** Injuries of up to 20 fixtures ({@code ids}). One request. */
-    public List<Injury> getInjuriesByFixtures(Collection<Integer> fixtureIds) throws IOException, ApiFootballException {
-        return getInjuries(new InjuriesQuery().ids(fixtureIds));
+    /**
+     * Injuries of up to 20 fixtures ({@code ids}). One request.
+     *
+     * @throws IllegalArgumentException when {@code null}, empty, with more than 20 ids or containing {@code null}
+     */
+    public List<Injury> getInjuriesByFixtures(Collection<Integer> fixtures) throws IOException, ApiFootballException {
+        return getInjuries(new InjuriesQuery().ids(QueryValidation.ids("ids", fixtures)));
     }
 
     /** Injuries of a league season. One request; large response. */
@@ -330,9 +357,22 @@ public class FixturesApi extends ApiFootballBase {
         return getInjuries(new InjuriesQuery().player(player).season(season));
     }
 
-    /** Injuries of the fixtures of a day. One request. */
+    /**
+     * Injuries of the fixtures of a day. One request.
+     *
+     * @throws IllegalArgumentException when the date is {@code null}
+     */
     public List<Injury> getInjuriesByDate(LocalDate date) throws IOException, ApiFootballException {
-        return getInjuries(new InjuriesQuery().date(date));
+        return getInjuries(new InjuriesQuery().date(QueryValidation.date("date", date)));
+    }
+
+    /**
+     * Injuries of the fixtures of a {@code YYYY-MM-DD} day. One request.
+     *
+     * @throws IllegalArgumentException when the date is {@code null}, malformed or not a real calendar date
+     */
+    public List<Injury> getInjuriesByDate(String date) throws IOException, ApiFootballException {
+        return getInjuries(new InjuriesQuery().date(QueryValidation.date("date", date)));
     }
 
     // ------------------------------------------------------------------ /predictions

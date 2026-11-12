@@ -1,6 +1,7 @@
 package es.com.kete1987.apifootball.library;
 
 import es.com.kete1987.apifootball.library.common.model.Page;
+import es.com.kete1987.apifootball.library.common.query.QueryValidation;
 import es.com.kete1987.apifootball.library.common.util.ApiFootballException;
 import es.com.kete1987.apifootball.library.common.util.Constants;
 import es.com.kete1987.apifootball.library.players.model.Player;
@@ -19,8 +20,8 @@ import es.com.kete1987.apifootball.library.players.query.SquadsQuery;
 import okhttp3.OkHttpClient;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Players sub-API: player profiles and statistics, squads, career teams, top lists, transfers,
@@ -33,9 +34,6 @@ import java.util.stream.Collectors;
  * quota</b>; each has a single-page method and an all-pages method capped by {@code maxPages}.
  */
 public class PlayersApi extends ApiFootballBase {
-
-    /** Maximum number of ids accepted by the plural {@code players}/{@code coachs} parameters. */
-    private static final int MAX_IDS = 20;
 
     public PlayersApi(String apiKey) {
         this(buildHttpClient(apiKey), Constants.BASE_URL, new RateLimitTracker());
@@ -228,20 +226,20 @@ public class PlayersApi extends ApiFootballBase {
      * Trophies of several players, grouped by player id.
      *
      * @param playerIds 1 to 20 ids, sent joined by "-"; Cost: 1 request
-     * @throws IllegalArgumentException if empty or more than 20
+     * @throws IllegalArgumentException if {@code null}, empty, with more than 20 ids or containing {@code null}
      */
-    public List<TrophyGroup> getTrophiesByPlayers(List<Integer> playerIds) throws IOException, ApiFootballException {
-        return list(param(url("trophies"), "players", joinIds(playerIds)), TrophyGroup.class);
+    public List<TrophyGroup> getTrophiesByPlayers(Collection<Integer> playerIds) throws IOException, ApiFootballException {
+        return list(param(url("trophies"), "players", joinIds("players", playerIds)), TrophyGroup.class);
     }
 
     /**
      * Trophies of several coaches, grouped by coach id.
      *
      * @param coachIds 1 to 20 ids, sent joined by "-" (parameter {@code coachs}); Cost: 1 request
-     * @throws IllegalArgumentException if empty or more than 20
+     * @throws IllegalArgumentException if {@code null}, empty, with more than 20 ids or containing {@code null}
      */
-    public List<TrophyGroup> getTrophiesByCoachs(List<Integer> coachIds) throws IOException, ApiFootballException {
-        return list(param(url("trophies"), "coachs", joinIds(coachIds)), TrophyGroup.class);
+    public List<TrophyGroup> getTrophiesByCoachs(Collection<Integer> coachIds) throws IOException, ApiFootballException {
+        return list(param(url("trophies"), "coachs", joinIds("coaches", coachIds)), TrophyGroup.class);
     }
 
     // ------------------------------------------------------------------ /sidelined
@@ -260,21 +258,21 @@ public class PlayersApi extends ApiFootballBase {
      * Sidelined history of several players, grouped by player id.
      *
      * @param playerIds 1 to 20 ids, sent joined by "-"; Cost: 1 request
-     * @throws IllegalArgumentException if empty or more than 20
+     * @throws IllegalArgumentException if {@code null}, empty, with more than 20 ids or containing {@code null}
      */
-    public List<SidelinedGroup> getSidelinedByPlayers(List<Integer> playerIds)
+    public List<SidelinedGroup> getSidelinedByPlayers(Collection<Integer> playerIds)
             throws IOException, ApiFootballException {
-        return list(param(url("sidelined"), "players", joinIds(playerIds)), SidelinedGroup.class);
+        return list(param(url("sidelined"), "players", joinIds("players", playerIds)), SidelinedGroup.class);
     }
 
     /**
      * Sidelined history of several coaches, grouped by coach id.
      *
      * @param coachIds 1 to 20 ids, sent joined by "-" (parameter {@code coachs}); Cost: 1 request
-     * @throws IllegalArgumentException if empty or more than 20
+     * @throws IllegalArgumentException if {@code null}, empty, with more than 20 ids or containing {@code null}
      */
-    public List<SidelinedGroup> getSidelinedByCoachs(List<Integer> coachIds) throws IOException, ApiFootballException {
-        return list(param(url("sidelined"), "coachs", joinIds(coachIds)), SidelinedGroup.class);
+    public List<SidelinedGroup> getSidelinedByCoachs(Collection<Integer> coachIds) throws IOException, ApiFootballException {
+        return list(param(url("sidelined"), "coachs", joinIds("coaches", coachIds)), SidelinedGroup.class);
     }
 
     // ------------------------------------------------------------------ helpers
@@ -284,10 +282,7 @@ public class PlayersApi extends ApiFootballBase {
         return maxPages;
     }
 
-    private static String joinIds(List<Integer> ids) {
-        if (ids == null || ids.isEmpty() || ids.size() > MAX_IDS) {
-            throw new IllegalArgumentException("Between 1 and " + MAX_IDS + " ids are required");
-        }
-        return ids.stream().map(String::valueOf).collect(Collectors.joining("-"));
+    private static String joinIds(String name, Collection<Integer> ids) {
+        return QueryValidation.ids(name, ids);
     }
 }

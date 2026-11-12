@@ -1,5 +1,6 @@
 package es.com.kete1987.apifootball.library;
 
+import es.com.kete1987.apifootball.library.common.query.QueryValidation;
 import es.com.kete1987.apifootball.library.common.util.ApiFootballException;
 import es.com.kete1987.apifootball.library.common.util.Constants;
 import es.com.kete1987.apifootball.library.leagues.model.Country;
@@ -14,6 +15,7 @@ import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -79,11 +81,27 @@ public class TeamsApi extends ApiFootballBase {
 
     /**
      * Same as {@link #getTeamStatistics(int, int, int)} but computed only with the matches played
-     * up to {@code date} ({@code YYYY-MM-DD}).
+     * up to {@code date} ({@code YYYY-MM-DD}). One request.
+     *
+     * @throws IllegalArgumentException when the date is {@code null}, malformed or not a real
+     *                                  calendar date (the API would silently overflow it)
      */
     public TeamStatistics getTeamStatistics(int league, int season, int team, String date)
             throws IOException, ApiFootballException {
-        return object(param(statisticsUrl(league, season, team), "date", date), TeamStatistics.class);
+        return object(param(statisticsUrl(league, season, team), "date", QueryValidation.date("date", date)),
+                TeamStatistics.class);
+    }
+
+    /**
+     * Same as {@link #getTeamStatistics(int, int, int)} but computed only with the matches played
+     * up to {@code date}. One request.
+     *
+     * @throws IllegalArgumentException when the date is {@code null}
+     */
+    public TeamStatistics getTeamStatistics(int league, int season, int team, LocalDate date)
+            throws IOException, ApiFootballException {
+        return object(param(statisticsUrl(league, season, team), "date", QueryValidation.date("date", date)),
+                TeamStatistics.class);
     }
 
     private HttpUrl.Builder statisticsUrl(int league, int season, int team) {
