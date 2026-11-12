@@ -145,6 +145,7 @@ TeamStatistics stats = api.teams().getTeamStatistics(140, 2025, 541, LocalDate.o
 - `Integer`/`Long` fields accept numbers, numeric strings and `""` (read as `null`); a value that does not fit (e.g. out of the `int` range) is reported as `ApiFootballException`, never silently changed.
 - The `{id, name, logo}` team reference is one class everywhere, `common.model.TeamRef`; the statistics block of a prediction is the same `SeasonStatistics` that `getTeamStatistics` returns.
 - Fixture statuses, event types and similar enumerations are `String` constants (`FixtureStatuses`, `EventTypes`, `StatisticTypes`...), so a new value added by the API never breaks parsing.
+- Match events have a coarse `type` and a `detail` that says what happened: a **missed penalty is `type "Goal"`** with `detail "Missed Penalty"`. Classify with the `FixtureEvent` helpers rather than `getType()`: `isGoal()` (excludes missed penalties), `isPenaltyGoal()`, `isOwnGoal()`, `isMissedPenalty()`, `isYellowCard()`, `isRedCard()`, `isVar()`. For substitutions the API's `player` is the player going off and `assist` the one coming on; `getPlayerOut()` / `getPlayerIn()` name them. For the score, prefer `fixture.getGoals()` (includes extra time, excludes a shoot-out) to counting events.
 - Pre-match bet ids and in-play bet ids are different id spaces (`PrematchBet` / `LiveBet`).
 
 ## Building and testing

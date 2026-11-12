@@ -244,6 +244,9 @@ the docs examples also use lower case (`status=ft`, `status=ns`).
   Penalty confirmed (VAR since 2020-21). **Real responses use `"subst"` in lower case** while `Goal`, `Card` are
   capitalised; parse case-insensitively. `detail` for substitutions is open-ended ("Substitution 5" observed).
   The `type` filter of `/fixtures/events` takes lower case (`type=card`, `type=goal` in docs).
+  **`type` is coarse; `detail` says what happened.** A missed penalty is `type: "Goal"` with
+  `detail: "Missed Penalty"`, so "is a goal" must be decided on `detail`, never on `type` alone (the docs list it
+  under Goal without saying it is not a goal). See section 11.16 for the shapes seen live.
 * **Fixture statistics `type`** (docs list): Shots on Goal, Shots off Goal, Shots insidebox, Shots outsidebox,
   Total Shots, Blocked Shots, Fouls, Corner Kicks, Offsides, Ball Possession, Yellow Cards, Red Cards,
   Goalkeeper Saves, Total passes, Passes accurate, Passes %.
@@ -725,7 +728,31 @@ response: object[]
   detail: string                        // "Normal Goal", "Yellow Card", "Substitution 1", ...
   comments: string?                     // "Foul", "Dissent", ...
 ```
-Real vs docs: `type` for substitutions is lower case `"subst"`. Fixture: `fixtures_events.json`.
+Real vs docs: `type` for substitutions is lower case `"subst"`. Fixture: `fixtures_events.json` (only
+"Normal Goal", "Yellow Card" and "Substitution N" events).
+
+Shapes seen live in `fixtures?live=all` during a comparison run on 2026-11-12 (6 fixtures, polled every 30 s;
+recorded after parsing, so not stored as fixtures):
+* **Missed penalty**: `type "Goal"`, `detail "Missed Penalty"` (2 cases). `player` is the taker; in one case it was `{}`
+  (null members) in the first poll and filled 60 s later, and in one case `assist` repeated the taker.
+  The API's `goals`/`score` did not count it.
+* **Scored penalty**: `type "Goal"`, `detail "Penalty"` (4 cases), also in extra time (`elapsed 120, extra 4`).
+* **Own goal**: none seen; which `team` it is listed under is not verified.
+* **Second yellow**: two events at the same minute for the same player, `"Yellow Card"` then `"Red Card"`.
+  A straight red is a single `"Red Card"`. No `"Second Yellow card"` detail was seen.
+* **VAR**: `"Penalty confirmed"`, `"Goal cancelled"` and the undocumented `"Card upgrade confirmed"`. Three VAR
+  events first appeared **without `detail`** and got it 30 s later. A cancelled goal's `"Goal"` event was
+  removed and replaced by the `"Var"`/`"Goal cancelled"` event (`goals` reverted one poll before the event list
+  changed). A confirmed penalty and an upgraded card are followed by their own Goal/Card events.
+* **Substitution**: `player` = player going **off**, `assist` = player coming **on** (49 of 49 events checked
+  against the lineups of the same fixtures: `player` in `startXI`, `assist` in `substitutes`; confirmed against
+  Sportmonks, which names them the other way round).
+* **Penalty shoot-out**: none in the run, and the captured `PEN` fixtures have no events; neither the docs
+  nor any response shows whether shoot-out kicks appear in the events. `goals` excludes the shoot-out
+  (`fixtures_status_multi.json`: `PEN`, goals 1-1, `score.penalty` 3-4) and `score.extratime` holds only the
+  goals scored in extra time.
+* **Transient data**: events can appear for a single poll and vanish (a `"Normal Goal"` without player at
+  119' made the API's own `goals` 2-4 for one poll in fixture 1644363 and was then removed).
 
 ### 11.17 `GET /fixtures/lineups`
 Lineups (formation, coach, XI, substitutes). Available 20–40 minutes before kick-off when covered (`coverage.fixtures.lineups`);
@@ -1227,6 +1254,7 @@ response: object[]
 | `/teams/statistics` cards maps | 8 minute keys | 8 minute keys + empty-string key `""` |
 | fixture status long | "First Half, Kick Off", "Technical Loss" | "First Half", "Technical loss" |
 | event type substitution | "Subst" | "subst" |
+| VAR event details | Goal cancelled, Penalty confirmed | also "Card upgrade confirmed"; `detail` missing for ~30 s on new VAR events |
 | fixture statistics types | 16 incl. "Passes %" | 17: no "Passes %", plus "Free Kicks", "expected_goals" |
 | lineups `team.colors` | object | null |
 | `/fixtures/players` `passes.accuracy` | "68%" | "9" (string count) |

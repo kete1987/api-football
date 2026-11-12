@@ -110,6 +110,7 @@ public class FixturesApi extends ApiFootballBase {
 - **Parameter-dependent shapes** (e.g. `fixtures/rounds?dates=true`, `trophies?players=`) get a separate method with its own return type rather than one model trying to fit both.
 - **Gson.** Never build a `Gson` instance; use `gson()` from `ApiFootballBase`. If a type adapter is needed, register it there.
 - **Enumerated values** (fixture statuses, event types...) are exposed as `String` in models, with constants classes under `<domain>/util/` — the API adds values over time and an enum would break parsing.
+- **Classification helpers** (`isGoal()`, `isLive()`, `getAccuracyValue()`...) must be decided on the field that carries the meaning, not on a coarse one: event `type` is coarse (a missed penalty is `type "Goal"`, `detail "Missed Penalty"`), status `long` is unreliable, a parsed number may be a count on one endpoint and a percentage on another. Before adding or changing one, list every documented and observed value of the underlying fields (catalog sections 8, 9 and the endpoint section) and state in the Javadoc what the helper answers for each, including the ones no fixture contains. `FixtureEventSemanticsTest` is the pattern: a truth table over every `type`/`detail` pair, plus a check that every `EventTypes` detail constant has a row.
 - **Javadoc** every public method: what it returns, which parameters are required, and anything from the catalog a caller must know (update frequency, pagination cost, plan restrictions).
 
 ## Tests
@@ -138,6 +139,8 @@ class FixturesApiTest extends BaseApiTest {
 ```
 
 Each endpoint method needs at least one test that asserts (a) representative fields at every nesting level of the parsed fixture, including the type-varying ones, and (b) the request path and query string the library built.
+
+`ModelCoverageTest` only proves that every JSON key has a field; it says nothing about what helpers answer. Shapes that no fixture contains (missed penalty, own goal, VAR) are tested with small inline JSON in the test, marked as hand-written from the documented shape (or as recorded live, when it was).
 
 `ModelCoverageTest` maps every fixture to the model type its API method parses into and walks the JSON: it fails on any key without a model field (honouring `@SerializedName`, superclasses, `List`/`Map`/`JsonElement` members), on any scalar Gson cannot read into the field's type, and on any fixture file that is neither mapped nor listed as an error fixture. A new fixture must be added there.
 
