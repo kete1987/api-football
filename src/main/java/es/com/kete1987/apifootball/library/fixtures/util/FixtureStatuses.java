@@ -97,7 +97,11 @@ public final class FixtureStatuses {
         return in(IN_PLAY, shortCode);
     }
 
-    /** {@code true} when the ball is actually rolling or about to: in play but not suspended/interrupted. */
+    /**
+     * {@link #isLive(String)} minus {@code SUSP} and {@code INT}: the match is under way and expected to
+     * continue now. Note that it still includes the breaks {@code HT} and {@code BT}, during which the
+     * ball is not rolling.
+     */
     public static boolean isPlaying(String shortCode) {
         return isLive(shortCode)
                 && !SUSPENDED.equalsIgnoreCase(shortCode.trim())

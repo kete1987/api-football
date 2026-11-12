@@ -4,6 +4,10 @@ package es.com.kete1987.apifootball.library.fixtures.util;
  * Event {@code type} and {@code detail} values of {@code /fixtures/events}, as plain strings (the API
  * adds values over time, e.g. {@code "Substitution 5"}).
  *
+ * <p>{@code type} is coarse and {@code detail} says what happened: in particular a <b>missed penalty is
+ * {@code type "Goal"}</b> with {@code detail "Missed Penalty"}. Classify with the helpers of
+ * {@code FixtureEvent} ({@code isGoal()}, {@code isMissedPenalty()}...), not by {@code type} alone.
+ *
  * <p>Real responses mix casing ({@code "Goal"}, {@code "Card"}, {@code "subst"}, {@code "Var"}), so
  * compare case-insensitively. The {@code type} <em>filter</em> takes lower case ({@code goal},
  * {@code card}, {@code subst}, {@code var}); use the {@code FILTER_*} constants for it.
@@ -28,24 +32,29 @@ public final class EventTypes {
     /** Value of the {@code type} filter for VAR events. */
     public static final String FILTER_VAR = "var";
 
-    /** Goal detail. */
+    /** Goal detail: a goal from open play or a set piece. */
     public static final String NORMAL_GOAL = "Normal Goal";
-    /** Goal detail. */
+    /** Goal detail: an own goal (counts as a goal). */
     public static final String OWN_GOAL = "Own Goal";
-    /** Goal detail. */
+    /** Goal detail: a <em>scored</em> penalty. */
     public static final String PENALTY = "Penalty";
-    /** Goal detail. */
+    /** Detail of {@code type "Goal"} for a penalty that was <em>not</em> scored: not a goal. */
     public static final String MISSED_PENALTY = "Missed Penalty";
 
     /** Card detail. */
     public static final String YELLOW_CARD = "Yellow Card";
-    /** Card detail (the documentation spells it "Red card"; compare case-insensitively). */
+    /**
+     * Card detail (the documentation spells it "Red card"; compare case-insensitively). A second
+     * yellow arrives as a {@link #YELLOW_CARD} event followed by a {@code RED_CARD} event.
+     */
     public static final String RED_CARD = "Red Card";
 
     /** VAR detail. */
     public static final String GOAL_CANCELLED = "Goal cancelled";
     /** VAR detail. */
     public static final String PENALTY_CONFIRMED = "Penalty confirmed";
+    /** VAR detail seen in real responses (not in the documentation): a card upgraded to red after review. */
+    public static final String CARD_UPGRADE_CONFIRMED = "Card upgrade confirmed";
 
     /** Prefix of substitution details: {@code "Substitution 1"}, {@code "Substitution 2"}... */
     public static final String SUBSTITUTION_DETAIL_PREFIX = "Substitution";

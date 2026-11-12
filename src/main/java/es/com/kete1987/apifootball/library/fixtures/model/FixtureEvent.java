@@ -3,7 +3,29 @@ package es.com.kete1987.apifootball.library.fixtures.model;
 import es.com.kete1987.apifootball.library.common.model.TeamRef;
 import es.com.kete1987.apifootball.library.fixtures.util.EventTypes;
 
-/** An event of a fixture (goal, card, substitution, VAR). See {@link EventTypes}. */
+/**
+ * An event of a fixture (goal, card, substitution, VAR). See {@link EventTypes}.
+ *
+ * <p><b>How the API classifies events.</b> Every event has a coarse {@code type} and a finer
+ * {@code detail}, and the {@code type} alone does not say what happened:
+ * <ul>
+ *   <li>{@code type "Goal"} covers everything around goals and penalties: {@code detail}
+ *       {@code "Normal Goal"}, {@code "Penalty"} (a scored penalty), {@code "Own Goal"} and
+ *       {@code "Missed Penalty"} &mdash; a penalty that did <em>not</em> go in is still
+ *       {@code type "Goal"}. Use {@link #isGoal()}, which excludes it, never {@code type} alone.</li>
+ *   <li>{@code type "Card"}: {@code "Yellow Card"}, {@code "Red Card"} (the documentation spells it
+ *       {@code "Red card"}). A second yellow arrives as two events at the same minute for the same
+ *       player, {@code "Yellow Card"} and {@code "Red Card"}.</li>
+ *   <li>{@code type "subst"} (lower case in real responses): {@code "Substitution 1"},
+ *       {@code "Substitution 2"}... {@code player} is the player going <em>off</em> and {@code assist}
+ *       the player coming <em>on</em>; see {@link #getPlayerOut()} / {@link #getPlayerIn()}.</li>
+ *   <li>{@code type "Var"}: {@code "Goal cancelled"}, {@code "Penalty confirmed"} and, in real
+ *       responses, {@code "Card upgrade confirmed"}; the {@code detail} can be missing for the first
+ *       30 s or so after the event appears.</li>
+ * </ul>
+ * Every helper compares case-insensitively, ignores surrounding whitespace, accepts {@code null}
+ * members and never throws.
+ */
 public class FixtureEvent {
     private Time time;
     private TeamRef team;
@@ -21,22 +43,35 @@ public class FixtureEvent {
         return team;
     }
 
-    /** Player involved; its members can be {@code null} (seen in live fixtures). */
+    /**
+     * Player of the event: the scorer, the penalty taker (also for a missed penalty), the booked
+     * player, the player a VAR decision concerns &mdash; and, for a <b>substitution, the player going
+     * off</b> (see {@link #getPlayerOut()}). Its members can be {@code null}, typically for a few
+     * polls right after a live event appears.
+     */
     public PlayerRef getPlayer() {
         return player;
     }
 
-    /** Assisting player; for substitutions the player coming in. Members are {@code null} for most cards. */
+    /**
+     * Second player of the event: the assisting player for a goal and, for a <b>substitution, the
+     * player coming on</b> (see {@link #getPlayerIn()}). Its members are {@code null} for most cards.
+     * Not meaningful for other events: a real missed penalty carried the taker here too.
+     */
     public PlayerRef getAssist() {
         return assist;
     }
 
-    /** {@code "Goal"}, {@code "Card"}, {@code "subst"}, {@code "Var"}... (casing varies). */
+    /** {@code "Goal"}, {@code "Card"}, {@code "subst"}, {@code "Var"}... (casing varies). Coarse: see the class comment. */
     public String getType() {
         return type;
     }
 
-    /** E.g. {@code "Normal Goal"}, {@code "Yellow Card"}, {@code "Substitution 1"}. */
+    /**
+     * What happened, e.g. {@code "Normal Goal"}, {@code "Missed Penalty"}, {@code "Yellow Card"},
+     * {@code "Substitution 1"}, {@code "Goal cancelled"}; may be {@code null} for a moment on new
+     * live events.
+     */
     public String getDetail() {
         return detail;
     }
@@ -46,22 +81,110 @@ public class FixtureEvent {
         return comments;
     }
 
+    private static boolean same(String actual, String expected) {
+        return actual != null && actual.trim().equalsIgnoreCase(expected);
+    }
+
     private boolean typeIs(String expected) {
-        return type != null && type.equalsIgnoreCase(expected);
+        return same(type, expected);
     }
 
+    private boolean detailIs(String expected) {
+        return same(detail, expected);
+    }
+
+    /**
+     * {@code true} for a goal that counts: {@code type "Goal"} with any {@code detail} except
+     * {@code "Missed Penalty"} &mdash; so normal goals, scored penalties and own goals. A missed
+     * penalty is {@code type "Goal"} in the API but is not a goal; see {@link #isMissedPenalty()}.
+     *
+     * <p>A {@code "Goal"} event whose {@code detail} is missing or not one of the documented values
+     * counts as a goal, because the {@code type} says so and the API has added values before.
+     *
+     * <p><b>Penalty shoot-outs.</b> Neither the documentation nor any captured response shows whether
+     * or how shoot-out kicks appear in the events (the captured {@code PEN} fixtures carry no events),
+     * so this method cannot be said to exclude them. The shoot-out result is in
+     * {@code score.penalty}, and {@code goals} does not include it. To count goals of the match,
+     * prefer the API's own {@code goals} / {@code score}.
+     *
+     * <p>A goal later cancelled by VAR was, in the one real case observed, removed from the events and
+     * replaced by a {@code "Var"} / {@code "Goal cancelled"} event, so it no longer counts here.
+     */
     public boolean isGoal() {
-        return typeIs(EventTypes.GOAL);
+        return typeIs(EventTypes.GOAL) && !detailIs(EventTypes.MISSED_PENALTY);
     }
 
+    /** {@code true} for a scored penalty during play: {@code type "Goal"}, {@code detail "Penalty"}. A subset of {@link #isGoal()}. */
+    public boolean isPenaltyGoal() {
+        return typeIs(EventTypes.GOAL) && detailIs(EventTypes.PENALTY);
+    }
+
+    /**
+     * {@code true} for an own goal: {@code type "Goal"}, {@code detail "Own Goal"}. A subset of
+     * {@link #isGoal()}. Which team the API puts in {@link #getTeam()} for an own goal (the scorer's
+     * or the beneficiary's) has not been verified against real data.
+     */
+    public boolean isOwnGoal() {
+        return typeIs(EventTypes.GOAL) && detailIs(EventTypes.OWN_GOAL);
+    }
+
+    /**
+     * {@code true} for a penalty that was not scored: {@code type "Goal"}, {@code detail
+     * "Missed Penalty"}. {@link #isGoal()} is {@code false} for it. {@link #getPlayer()} is the
+     * taker (its members can be {@code null} at first); {@link #getAssist()} carries no meaning.
+     */
+    public boolean isMissedPenalty() {
+        return typeIs(EventTypes.GOAL) && detailIs(EventTypes.MISSED_PENALTY);
+    }
+
+    /** {@code true} for any card ({@code type "Card"}); see {@link #isYellowCard()} and {@link #isRedCard()}. */
     public boolean isCard() {
         return typeIs(EventTypes.CARD);
     }
 
+    /**
+     * {@code true} for {@code type "Card"}, {@code detail "Yellow Card"}. A second yellow is a yellow
+     * card event too, followed by a separate red card event at the same minute.
+     */
+    public boolean isYellowCard() {
+        return typeIs(EventTypes.CARD) && detailIs(EventTypes.YELLOW_CARD);
+    }
+
+    /**
+     * {@code true} for {@code type "Card"}, {@code detail "Red Card"} (any casing). Covers both a
+     * straight red and the red that follows a second yellow; to tell them apart, look for a
+     * {@link #isYellowCard() yellow card} of the same player at the same minute.
+     */
+    public boolean isRedCard() {
+        return typeIs(EventTypes.CARD) && detailIs(EventTypes.RED_CARD);
+    }
+
+    /** {@code true} for a substitution ({@code type "subst"}); see {@link #getPlayerOut()} and {@link #getPlayerIn()}. */
     public boolean isSubstitution() {
         return typeIs(EventTypes.SUBSTITUTION);
     }
 
+    /**
+     * For a substitution, the player going off (the API's {@code player}); {@code null} for any other
+     * event. Verified against the lineups of real fixtures: in every substitution checked,
+     * {@code player} was in the starting XI and {@code assist} among the substitutes.
+     */
+    public PlayerRef getPlayerOut() {
+        return isSubstitution() ? player : null;
+    }
+
+    /** For a substitution, the player coming on (the API's {@code assist}); {@code null} for any other event. */
+    public PlayerRef getPlayerIn() {
+        return isSubstitution() ? assist : null;
+    }
+
+    /**
+     * {@code true} for any VAR decision ({@code type "Var"}): {@code "Goal cancelled"},
+     * {@code "Penalty confirmed"}, {@code "Card upgrade confirmed"}... A VAR event is never itself a
+     * goal or a card: a confirmed penalty is followed by its own {@code "Penalty"} or
+     * {@code "Missed Penalty"} event, an upgraded card by its own {@code "Red Card"} event, and a
+     * cancelled goal's {@code "Goal"} event disappears from the list.
+     */
     public boolean isVar() {
         return typeIs(EventTypes.VAR);
     }

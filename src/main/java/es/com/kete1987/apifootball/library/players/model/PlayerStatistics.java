@@ -199,6 +199,11 @@ public class PlayerStatistics {
         /**
          * {@link #getAccuracy()} as a whole number ({@code "85"} gives {@code 85}, {@code "68%"} gives
          * {@code 68}); null when absent or not a whole number. Never throws.
+         *
+         * <p>Not a count of accurate passes: real values (e.g. 89 for a {@link #getTotal() total} of 516)
+         * are far below the season total. The documentation does not state the unit; it reads like a
+         * percentage but that is not verified. Do not compare it with the per-fixture accuracy of
+         * {@code /fixtures/players}, which is a count.
          */
         public Integer getAccuracyValue() {
             return NumberParsing.parseLeadingInteger(accuracy);

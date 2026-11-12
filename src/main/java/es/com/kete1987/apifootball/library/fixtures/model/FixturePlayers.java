@@ -231,6 +231,11 @@ public class FixturePlayers {
         /**
          * {@link #getAccuracy()} as a whole number ({@code "9"} gives {@code 9}, {@code "68%"} gives
          * {@code 68}), or {@code null} when absent or not a whole number. Never throws.
+         *
+         * <p>In real responses this is the <b>number</b> of accurate passes (at most {@link #getTotal()}),
+         * not a percentage, and it is not the same measure as the season accuracy of {@code /players}.
+         * The parse does not tell a count from a percentage: check whether {@link #getAccuracy()}
+         * ends with {@code %} if that matters.
          */
         public Integer getAccuracyValue() {
             return NumberParsing.parseLeadingInteger(accuracy);
