@@ -74,8 +74,8 @@ public class PlayersApi extends ApiFootballBase {
      *
      * @return the player, or {@code null} when not found
      */
-    public PlayerWithStatistics getPlayerById(int playerId, int season) throws IOException, ApiFootballException {
-        return first(url("players", new PlayersQuery().id(playerId).season(season)), PlayerWithStatistics.class);
+    public PlayerWithStatistics getPlayerById(int id, int season) throws IOException, ApiFootballException {
+        return first(url("players", new PlayersQuery().id(id).season(season)), PlayerWithStatistics.class);
     }
 
     /** One page (20 players) of the players of a team in a season. Cost: 1 request. */
@@ -107,8 +107,8 @@ public class PlayersApi extends ApiFootballBase {
     }
 
     /** Seasons with statistics for one player. Cost: 1 request. */
-    public List<Integer> getPlayerSeasons(int playerId) throws IOException, ApiFootballException {
-        return list(param(url("players/seasons"), "player", playerId), Integer.class);
+    public List<Integer> getPlayerSeasons(int player) throws IOException, ApiFootballException {
+        return list(param(url("players/seasons"), "player", player), Integer.class);
     }
 
     // ------------------------------------------------------------------ /players/profiles
@@ -134,8 +134,8 @@ public class PlayersApi extends ApiFootballBase {
     }
 
     /** Profile of one player. Cost: 1 request. @return the player, or {@code null} when not found */
-    public Player getPlayerProfile(int playerId) throws IOException, ApiFootballException {
-        PlayerProfile profile = first(url("players/profiles", new PlayerProfilesQuery().player(playerId)),
+    public Player getPlayerProfileById(int id) throws IOException, ApiFootballException {
+        PlayerProfile profile = first(url("players/profiles", new PlayerProfilesQuery().player(id)),
                 PlayerProfile.class);
         return profile != null ? profile.getPlayer() : null;
     }
@@ -154,20 +154,20 @@ public class PlayersApi extends ApiFootballBase {
     }
 
     /** Current squad of a team. Cost: 1 request. @return the squad, or {@code null} when none */
-    public Squad getSquad(int teamId) throws IOException, ApiFootballException {
-        return first(url("players/squads", new SquadsQuery().team(teamId)), Squad.class);
+    public Squad getSquadByTeam(int team) throws IOException, ApiFootballException {
+        return first(url("players/squads", new SquadsQuery().team(team)), Squad.class);
     }
 
     /** Teams (with their squads) a player currently belongs to. Cost: 1 request. */
-    public List<Squad> getSquadsByPlayer(int playerId) throws IOException, ApiFootballException {
-        return getSquads(new SquadsQuery().player(playerId));
+    public List<Squad> getSquadsByPlayer(int player) throws IOException, ApiFootballException {
+        return getSquads(new SquadsQuery().player(player));
     }
 
     // ------------------------------------------------------------------ /players/teams
 
     /** Teams and seasons of a player's career. Cost: 1 request. */
-    public List<PlayerTeam> getPlayerTeams(int playerId) throws IOException, ApiFootballException {
-        return list(param(url("players/teams"), "player", playerId), PlayerTeam.class);
+    public List<PlayerTeam> getPlayerTeams(int player) throws IOException, ApiFootballException {
+        return list(param(url("players/teams"), "player", player), PlayerTeam.class);
     }
 
     // ------------------------------------------------------------------ top lists
@@ -201,78 +201,78 @@ public class PlayersApi extends ApiFootballBase {
     // ------------------------------------------------------------------ /transfers
 
     /** Transfer history of a player. Cost: 1 request. */
-    public List<PlayerTransfers> getTransfersByPlayer(int playerId) throws IOException, ApiFootballException {
-        return list(param(url("transfers"), "player", playerId), PlayerTransfers.class);
+    public List<PlayerTransfers> getTransfersByPlayer(int player) throws IOException, ApiFootballException {
+        return list(param(url("transfers"), "player", player), PlayerTransfers.class);
     }
 
     /** Transfers of a team (one element per player; may be a large response). Cost: 1 request. */
-    public List<PlayerTransfers> getTransfersByTeam(int teamId) throws IOException, ApiFootballException {
-        return list(param(url("transfers"), "team", teamId), PlayerTransfers.class);
+    public List<PlayerTransfers> getTransfersByTeam(int team) throws IOException, ApiFootballException {
+        return list(param(url("transfers"), "team", team), PlayerTransfers.class);
     }
 
     // ------------------------------------------------------------------ /trophies
 
     /** Trophies of one player (flat list). Cost: 1 request. */
-    public List<Trophy> getTrophiesByPlayer(int playerId) throws IOException, ApiFootballException {
-        return list(param(url("trophies"), "player", playerId), Trophy.class);
+    public List<Trophy> getTrophiesByPlayer(int player) throws IOException, ApiFootballException {
+        return list(param(url("trophies"), "player", player), Trophy.class);
     }
 
     /** Trophies of one coach (flat list). Cost: 1 request. */
-    public List<Trophy> getTrophiesByCoach(int coachId) throws IOException, ApiFootballException {
-        return list(param(url("trophies"), "coach", coachId), Trophy.class);
+    public List<Trophy> getTrophiesByCoach(int coach) throws IOException, ApiFootballException {
+        return list(param(url("trophies"), "coach", coach), Trophy.class);
     }
 
     /**
      * Trophies of several players, grouped by player id.
      *
-     * @param playerIds 1 to 20 ids, sent joined by "-"; Cost: 1 request
+     * @param players 1 to 20 ids, sent joined by "-"; Cost: 1 request
      * @throws IllegalArgumentException if {@code null}, empty, with more than 20 ids or containing {@code null}
      */
-    public List<TrophyGroup> getTrophiesByPlayers(Collection<Integer> playerIds) throws IOException, ApiFootballException {
-        return list(param(url("trophies"), "players", joinIds("players", playerIds)), TrophyGroup.class);
+    public List<TrophyGroup> getTrophiesByPlayers(Collection<Integer> players) throws IOException, ApiFootballException {
+        return list(param(url("trophies"), "players", QueryValidation.ids("players", players)), TrophyGroup.class);
     }
 
     /**
      * Trophies of several coaches, grouped by coach id.
      *
-     * @param coachIds 1 to 20 ids, sent joined by "-" (parameter {@code coachs}); Cost: 1 request
+     * @param coaches 1 to 20 ids, sent joined by "-" (parameter {@code coachs}); Cost: 1 request
      * @throws IllegalArgumentException if {@code null}, empty, with more than 20 ids or containing {@code null}
      */
-    public List<TrophyGroup> getTrophiesByCoachs(Collection<Integer> coachIds) throws IOException, ApiFootballException {
-        return list(param(url("trophies"), "coachs", joinIds("coaches", coachIds)), TrophyGroup.class);
+    public List<TrophyGroup> getTrophiesByCoaches(Collection<Integer> coaches) throws IOException, ApiFootballException {
+        return list(param(url("trophies"), "coachs", QueryValidation.ids("coaches", coaches)), TrophyGroup.class);
     }
 
     // ------------------------------------------------------------------ /sidelined
 
     /** Injury/suspension history of one player (flat list). Cost: 1 request. */
-    public List<SidelinedPeriod> getSidelinedByPlayer(int playerId) throws IOException, ApiFootballException {
-        return list(param(url("sidelined"), "player", playerId), SidelinedPeriod.class);
+    public List<SidelinedPeriod> getSidelinedByPlayer(int player) throws IOException, ApiFootballException {
+        return list(param(url("sidelined"), "player", player), SidelinedPeriod.class);
     }
 
     /** Sidelined history of one coach (flat list; may be empty). Cost: 1 request. */
-    public List<SidelinedPeriod> getSidelinedByCoach(int coachId) throws IOException, ApiFootballException {
-        return list(param(url("sidelined"), "coach", coachId), SidelinedPeriod.class);
+    public List<SidelinedPeriod> getSidelinedByCoach(int coach) throws IOException, ApiFootballException {
+        return list(param(url("sidelined"), "coach", coach), SidelinedPeriod.class);
     }
 
     /**
      * Sidelined history of several players, grouped by player id.
      *
-     * @param playerIds 1 to 20 ids, sent joined by "-"; Cost: 1 request
+     * @param players 1 to 20 ids, sent joined by "-"; Cost: 1 request
      * @throws IllegalArgumentException if {@code null}, empty, with more than 20 ids or containing {@code null}
      */
-    public List<SidelinedGroup> getSidelinedByPlayers(Collection<Integer> playerIds)
+    public List<SidelinedGroup> getSidelinedByPlayers(Collection<Integer> players)
             throws IOException, ApiFootballException {
-        return list(param(url("sidelined"), "players", joinIds("players", playerIds)), SidelinedGroup.class);
+        return list(param(url("sidelined"), "players", QueryValidation.ids("players", players)), SidelinedGroup.class);
     }
 
     /**
      * Sidelined history of several coaches, grouped by coach id.
      *
-     * @param coachIds 1 to 20 ids, sent joined by "-" (parameter {@code coachs}); Cost: 1 request
+     * @param coaches 1 to 20 ids, sent joined by "-" (parameter {@code coachs}); Cost: 1 request
      * @throws IllegalArgumentException if {@code null}, empty, with more than 20 ids or containing {@code null}
      */
-    public List<SidelinedGroup> getSidelinedByCoachs(Collection<Integer> coachIds) throws IOException, ApiFootballException {
-        return list(param(url("sidelined"), "coachs", joinIds("coaches", coachIds)), SidelinedGroup.class);
+    public List<SidelinedGroup> getSidelinedByCoaches(Collection<Integer> coaches) throws IOException, ApiFootballException {
+        return list(param(url("sidelined"), "coachs", QueryValidation.ids("coaches", coaches)), SidelinedGroup.class);
     }
 
     // ------------------------------------------------------------------ helpers
@@ -282,7 +282,4 @@ public class PlayersApi extends ApiFootballBase {
         return maxPages;
     }
 
-    private static String joinIds(String name, Collection<Integer> ids) {
-        return QueryValidation.ids(name, ids);
-    }
 }

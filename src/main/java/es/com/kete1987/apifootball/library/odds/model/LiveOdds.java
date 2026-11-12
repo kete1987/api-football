@@ -41,10 +41,10 @@ public class LiveOdds {
     }
 
     /** The in-play bet with the given <b>in-play</b> id, or {@code null}. */
-    public LiveBetOdds findBet(int liveBetId) {
+    public LiveBetOdds findBet(int id) {
         if (odds == null) return null;
         for (LiveBetOdds bet : odds) {
-            if (bet.getId() != null && bet.getId() == liveBetId) return bet;
+            if (bet.getId() != null && bet.getId() == id) return bet;
         }
         return null;
     }

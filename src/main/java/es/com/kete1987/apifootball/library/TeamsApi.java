@@ -50,7 +50,7 @@ public class TeamsApi extends ApiFootballBase {
     }
 
     /** Returns the teams of a league in a season. */
-    public List<Team> getTeams(int league, int season) throws IOException, ApiFootballException {
+    public List<Team> getTeamsByLeague(int league, int season) throws IOException, ApiFootballException {
         return getTeams(new TeamsQuery().league(league).season(season));
     }
 

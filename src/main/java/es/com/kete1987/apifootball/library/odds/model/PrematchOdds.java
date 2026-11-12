@@ -29,10 +29,10 @@ public class PrematchOdds {
     }
 
     /** The odds of the bookmaker with the given id, or {@code null}. */
-    public BookmakerOdds findBookmaker(int bookmakerId) {
+    public BookmakerOdds findBookmaker(int id) {
         if (bookmakers == null) return null;
         for (BookmakerOdds b : bookmakers) {
-            if (b.getId() != null && b.getId() == bookmakerId) return b;
+            if (b.getId() != null && b.getId() == id) return b;
         }
         return null;
     }

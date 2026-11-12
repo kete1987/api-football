@@ -146,7 +146,7 @@ public class FixturesApi extends ApiFootballBase {
     }
 
     /** All fixtures of a league season. One request; a full season is several hundred fixtures. */
-    public List<Fixture> getFixturesByLeagueAndSeason(int league, int season) throws IOException, ApiFootballException {
+    public List<Fixture> getFixturesByLeague(int league, int season) throws IOException, ApiFootballException {
         return getFixtures(new FixturesQuery().league(league).season(season));
     }
 

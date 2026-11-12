@@ -199,10 +199,10 @@ class PlayersApiTest extends BaseApiTest {
     // ---------------------------------------------------------------- /players/profiles
 
     @Test
-    void getPlayerProfile_byPlayer() throws Exception {
+    void getPlayerProfileById_byPlayer() throws Exception {
         enqueue("players_profiles_by_player.json");
 
-        Player p = api.getPlayerProfile(278);
+        Player p = api.getPlayerProfileById(278);
 
         assertEquals("Kylian Mbappé", p.getName());
         assertEquals(10, p.getNumber());
@@ -267,10 +267,10 @@ class PlayersApiTest extends BaseApiTest {
     // ---------------------------------------------------------------- /players/squads
 
     @Test
-    void getSquad_byTeam() throws Exception {
+    void getSquadByTeam_byTeam() throws Exception {
         enqueue("players_squads.json");
 
-        Squad squad = api.getSquad(541);
+        Squad squad = api.getSquadByTeam(541);
 
         assertEquals("Real Madrid", squad.getTeam().getName());
         assertEquals(541, squad.getTeam().getId());
@@ -425,10 +425,10 @@ class PlayersApiTest extends BaseApiTest {
     }
 
     @Test
-    void getTrophiesByCoachs_wrappers() throws Exception {
+    void getTrophiesByCoaches_wrappers() throws Exception {
         enqueue("trophies_by_coachs.json");
 
-        List<TrophyGroup> groups = api.getTrophiesByCoachs(Arrays.asList(2462, 1584));
+        List<TrophyGroup> groups = api.getTrophiesByCoaches(Arrays.asList(2462, 1584));
 
         assertEquals(2, groups.size());
         assertEquals(1584, groups.get(0).getId());
@@ -452,7 +452,7 @@ class PlayersApiTest extends BaseApiTest {
     void idLists_areValidated() {
         List<Integer> tooMany = IntStream.rangeClosed(1, 21).boxed().collect(Collectors.toList());
         assertThrows(IllegalArgumentException.class, () -> api.getTrophiesByPlayers(tooMany));
-        assertThrows(IllegalArgumentException.class, () -> api.getSidelinedByCoachs(Collections.emptyList()));
+        assertThrows(IllegalArgumentException.class, () -> api.getSidelinedByCoaches(Collections.emptyList()));
         assertEquals(0, server.getRequestCount());
     }
 
@@ -493,10 +493,10 @@ class PlayersApiTest extends BaseApiTest {
     }
 
     @Test
-    void getSidelinedByCoachs_buildsQuery() throws Exception {
+    void getSidelinedByCoaches_buildsQuery() throws Exception {
         enqueue("sidelined_by_players.json");
 
-        api.getSidelinedByCoachs(Arrays.asList(1, 2));
+        api.getSidelinedByCoaches(Arrays.asList(1, 2));
 
         assertEquals("/sidelined?coachs=1-2", takeRequest().getPath());
     }

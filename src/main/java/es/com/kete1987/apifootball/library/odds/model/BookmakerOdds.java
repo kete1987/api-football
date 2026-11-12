@@ -24,10 +24,10 @@ public class BookmakerOdds {
     }
 
     /** The bet with the given pre-match id, or {@code null}. */
-    public PrematchBetOdds findBet(int betId) {
+    public PrematchBetOdds findBet(int id) {
         if (bets == null) return null;
         for (PrematchBetOdds bet : bets) {
-            if (bet.getId() != null && bet.getId() == betId) return bet;
+            if (bet.getId() != null && bet.getId() == id) return bet;
         }
         return null;
     }

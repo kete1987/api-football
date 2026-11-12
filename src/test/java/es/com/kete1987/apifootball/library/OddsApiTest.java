@@ -107,10 +107,10 @@ class OddsApiTest extends BaseApiTest {
     }
 
     @Test
-    void getOddsPageByDate_lastPageAndNullFlag() throws Exception {
+    void getOddsByDatePage_lastPageAndNullFlag() throws Exception {
         enqueue("odds_by_date_page2.json");
 
-        Page<PrematchOdds> page = api.getOddsPageByDate(LocalDate.of(2026, 11, 14), 2);
+        Page<PrematchOdds> page = api.getOddsByDatePage(LocalDate.of(2026, 11, 14), 2);
 
         assertEquals(7, page.getResults());
         assertEquals(2, page.getPaging().getCurrent());
@@ -122,11 +122,11 @@ class OddsApiTest extends BaseApiTest {
     }
 
     @Test
-    void getAllOddsByLeagueSeason_walksPagesUpToMax() throws Exception {
+    void getAllOddsByLeague_walksPagesUpToMax() throws Exception {
         enqueue("odds_by_league_season.json");
         enqueue("odds_by_date_page2.json");
 
-        List<PrematchOdds> all = api.getAllOddsByLeagueSeason(140, 2026, 2);
+        List<PrematchOdds> all = api.getAllOddsByLeague(140, 2026, 2);
 
         assertEquals(6, all.size());
         assertEquals(2, server.getRequestCount());
@@ -155,10 +155,10 @@ class OddsApiTest extends BaseApiTest {
     }
 
     @Test
-    void getOddsPageByLeagueSeason_buildsUrl() throws Exception {
+    void getOddsByLeaguePage_buildsUrl() throws Exception {
         enqueue("odds_by_league_season.json");
 
-        api.getOddsPageByLeagueSeason(140, 2026, 2);
+        api.getOddsByLeaguePage(140, 2026, 2);
 
         assertEquals("/odds?league=140&season=2026&page=2", takeRequest().getPath());
     }

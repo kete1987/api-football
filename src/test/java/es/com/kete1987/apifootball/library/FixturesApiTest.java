@@ -192,10 +192,10 @@ class FixturesApiTest extends BaseApiTest {
     }
 
     @Test
-    void getFixturesByLeagueAndSeason() throws Exception {
+    void getFixturesByLeague() throws Exception {
         enqueue("fixtures_last.json");
 
-        List<Fixture> fixtures = api.getFixturesByLeagueAndSeason(140, 2026);
+        List<Fixture> fixtures = api.getFixturesByLeague(140, 2026);
 
         assertEquals("/fixtures?league=140&season=2026", takeRequest().getPath());
         assertEquals(3, fixtures.size());

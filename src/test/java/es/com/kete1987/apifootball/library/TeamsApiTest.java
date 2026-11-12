@@ -53,10 +53,10 @@ class TeamsApiTest extends BaseApiTest {
     }
 
     @Test
-    void getTeamsByLeagueSeason_parsesList() throws Exception {
+    void getTeamsByLeague_parsesList() throws Exception {
         enqueue("teams_by_league_season.json");
 
-        List<Team> teams = api.getTeams(140, 2026);
+        List<Team> teams = api.getTeamsByLeague(140, 2026);
 
         assertEquals(3, teams.size());
         assertEquals("Barcelona", teams.get(0).getTeam().getName());

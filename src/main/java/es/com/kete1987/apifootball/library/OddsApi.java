@@ -83,19 +83,19 @@ public class OddsApi extends ApiFootballBase {
     }
 
     /** One page of pre-match odds of a league season. 1 request (~1.6 MB). */
-    public Page<PrematchOdds> getOddsPageByLeagueSeason(int league, int season, int page)
+    public Page<PrematchOdds> getOddsByLeaguePage(int league, int season, int page)
             throws IOException, ApiFootballException {
         return getOddsPage(new OddsQuery().league(league).season(season), page);
     }
 
     /** All pages of pre-match odds of a league season. 1 request per page walked, capped by {@code maxPages}. */
-    public List<PrematchOdds> getAllOddsByLeagueSeason(int league, int season, int maxPages)
+    public List<PrematchOdds> getAllOddsByLeague(int league, int season, int maxPages)
             throws IOException, ApiFootballException {
         return getAllOdds(new OddsQuery().league(league).season(season), maxPages);
     }
 
     /** One page of pre-match odds of the fixtures of a date. 1 request. */
-    public Page<PrematchOdds> getOddsPageByDate(LocalDate date, int page) throws IOException, ApiFootballException {
+    public Page<PrematchOdds> getOddsByDatePage(LocalDate date, int page) throws IOException, ApiFootballException {
         return getOddsPage(new OddsQuery().date(QueryValidation.date("date", date)), page);
     }
 
@@ -104,7 +104,7 @@ public class OddsApi extends ApiFootballBase {
      *
      * @throws IllegalArgumentException when the date is {@code null}, malformed or not a real calendar date
      */
-    public Page<PrematchOdds> getOddsPageByDate(String date, int page) throws IOException, ApiFootballException {
+    public Page<PrematchOdds> getOddsByDatePage(String date, int page) throws IOException, ApiFootballException {
         return getOddsPage(new OddsQuery().date(QueryValidation.date("date", date)), page);
     }
 
