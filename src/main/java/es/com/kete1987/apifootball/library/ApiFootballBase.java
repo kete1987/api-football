@@ -220,7 +220,8 @@ abstract class ApiFootballBase {
         while (true) {
             Page<T> result = page(url, type, current);
             all.addAll(result.getItems());
-            if (!result.hasMore() || (maxPages > 0 && current >= maxPages)) break;
+            // An empty page means we ran past the end (the API answers that without an error).
+            if (result.getItems().isEmpty() || !result.hasMore() || (maxPages > 0 && current >= maxPages)) break;
             // Trust the page the API says it served; fall back to the local counter.
             int served = result.getPaging().getCurrent();
             current = Math.max(served, current) + 1;
