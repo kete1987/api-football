@@ -271,6 +271,25 @@ public class Fixture {
         return null;
     }
 
+    /**
+     * The grid column of {@code player} (a starter of {@code lineup}) in Sportmonks' convention, which
+     * is what an app drawing both teams on one pitch needs: the API's column mirrored when
+     * {@code lineup} is this fixture's <b>home</b> team lineup, unchanged when it is the away team's.
+     * Returns {@code null} when the lineup does not belong to this fixture (its team id is neither
+     * side), the player has no grid, or the row is unknown. Read the {@link FixtureLineup} comment for
+     * the evidence and the limits (it needs the full starting XI). Never throws.
+     */
+    public Integer getGridColumnAsSportmonks(FixtureLineup lineup, FixtureLineup.LineupPlayer player) {
+        if (lineup == null || lineup.getTeam() == null || lineup.getTeam().getId() == null || player == null) {
+            return null;
+        }
+        Integer id = lineup.getTeam().getId();
+        if (id.equals(homeId())) {
+            return lineup.getGridColumnMirrored(player);
+        }
+        return id.equals(awayId()) ? player.getGridColumn() : null;
+    }
+
     private static String nameIn(List<FixtureLineup.Entry> entries, Integer playerId) {
         if (entries == null) return null;
         for (FixtureLineup.Entry e : entries) {

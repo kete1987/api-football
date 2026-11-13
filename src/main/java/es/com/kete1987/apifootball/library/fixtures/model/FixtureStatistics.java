@@ -49,6 +49,25 @@ public class FixtureStatistics {
         return find(statistics2h, type);
     }
 
+    /**
+     * Integer value of a full-match statistic by type name (case-insensitive, see
+     * {@code StatisticTypes}), or {@code defaultValue} when the statistic is absent, its value is
+     * {@code null} or it is not written as a whole number. {@code "37%"} gives 37; the API sends
+     * {@code null} for statistics it does not have (e.g. a team without a red card), which is often a
+     * 0 in practice: pass {@code 0} as the default when that is what you want. Never throws.
+     */
+    public int getIntValue(String type, int defaultValue) {
+        Statistic s = find(type);
+        Integer v = s == null ? null : s.getIntValue();
+        return v == null ? defaultValue : v;
+    }
+
+    /** Like {@link #getIntValue(String, int)} but returns {@code null} instead of a default. */
+    public Integer getIntValue(String type) {
+        Statistic s = find(type);
+        return s == null ? null : s.getIntValue();
+    }
+
     private static Statistic find(List<Statistic> list, String type) {
         if (list == null || type == null) return null;
         for (Statistic s : list) {
