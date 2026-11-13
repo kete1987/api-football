@@ -103,6 +103,7 @@ Important details for (Gson) deserialisation:
 | `/teams` (no params) | `{"required": "At least one parameter is required."}` |
 | `/fixtures?foo=bar` | `{"foo": "The Foo field do not exist."}` |
 | `/teams?search=ma` | `{"search": "The Search field must be at least 3 characters in length."}` |
+| `/teams?search=Leganés` | `{"search": "The Search field may only contain alpha-numeric characters and spaces."}` (HTTP 200, 0 results, consumes quota) |
 | `/fixtures?league=abc` | `{"league": "The League field must contain an integer.", "season": "The Season field is required."}` |
 | `/standings?league=140` | `{"season": "The Season field is required.", "team": "The Team field is required."}` |
 | `/players?search=mbappe` | `{"team": "The League or Team field is required with the Search field.", "league": "The League or Team field is required with the Search field."}` |
@@ -195,6 +196,10 @@ URL patterns (docs; confirmed in responses):
 | Country flag | `https://media.api-sports.io/flags/{country_code_lowercase}.svg` (e.g. `gb.svg`, `es.svg`; sub-national codes like `gb-eng.svg`) |
 
 Flags/codes are `null` for "World" and for many teams-only countries.
+The patterns above are built by `common.util.MediaUrls` (`playerPhoto`, `teamLogo`, `leagueLogo`, `venueImage`,
+`coachPhoto`, `countryFlag`). A `null`, non-positive id (the API sends venue id `0`) or a non-plain country code gives
+`null`. Events and lineups carry a player id but no photo: `PlayerRef.getPhotoUrl()` and `LineupPlayer.getPhotoUrl()`
+build it from the id.
 (docs) Logos and trademarks are delivered for identification only; rights belong to third parties.
 
 ## 8. Fixture status codes
@@ -230,6 +235,19 @@ livescore stay `NS` until the final result is set (up to 48 h later). Fixture id
 Real `long` values that differ from the docs table — **map by `short`, never by `long`**:
 `1H` → `"First Half"` (docs "First Half, Kick Off"); `AWD` → `"Technical loss"` (lower-case l). Observed shorts:
 FT, NS, PST, PEN, AET, 1H, AWD, ABD, CANC. `odds/live` uses its own `status.long` ("First Half") and no `short`.
+
+`SUSP` and `INT` belong to the API's "In Play" group, so a "live" test on the group also matches a match that is not
+being played. Apps that show a running minute must check `SUSP`/`INT` first (`FixtureStatuses.isInterrupted`;
+`isLive` follows the group, `isPlaying` leaves them out, `isPendingResolution` = `PST, SUSP, INT, CANC, ABD, AWD, WO`).
+At `HT` and `BT` `status.extra` keeps the added time of the half just played (seen 1 and 4 at `HT`, 7 and 8 at `BT`)
+and at `BT` `elapsed` is `null`.
+
+Minute behaviour observed live on 2026-11-12 (28 matches, against Sportmonks): API-Football gives the minute in
+progress (1 at kick-off), so it runs about +1 versus Sportmonks (+1 in 929 polls, 0 in 306, -1 in 26); `elapsed` stays
+at 45/90 while `extra` counts (`90+1` to `90+7`, sometimes jumping `90+2` to `90+4`); the extra-time minute is
+unreliable: it starts too high (97 when Sportmonks shows 91, 95 against 90) and goes backwards (100 to 94, 109 to 106,
+114 to 94), and there is no extra-time break status (`ET` keeps running). The minute to show is
+`status.getDisplayMinute()` / `getDisplayMinuteText()` (`elapsed + extra`, `"90+4"`; also on `FixtureEvent.Time`).
 
 The `status` filter (fixtures, headtohead) accepts one or several shorts joined by `-` (e.g. `PEN-AET`, `NS-PST-FT`);
 the docs examples also use lower case (`status=ft`, `status=ns`).
@@ -394,7 +412,12 @@ response: object[]
 ```
 Real vs docs: the OpenAPI schema omits `top_assists`, `top_cards`, `injuries` but they are present (and in the docs
 example). Fixtures: `leagues_by_id.json` (La Liga, all seasons), `leagues_current_country.json`
-(`country=Spain&current=true`, 39 results).
+(`country=Spain&current=true`, 39 results), `leagues_by_id_world_cup.json`, `leagues_by_id_ucl.json`.
+
+Real: `seasons[].current` stays `true` after the season ends: World Cup 2026 (`id=1`) is `current: true` with `end`
+`2026-07-19` on 2026-11-13. `end` is the date of the last fixture known, not the planned end: Champions League 2026
+(`id=2`) reads `start 2026-07-07`, `end 2027-01-27` (end of the league phase) while its knockout rounds are not
+scheduled. Library: `Season.hasStarted/isOver/isInProgress(LocalDate)`, `League.getSeasonInProgress(LocalDate)`.
 
 ### 11.5 `GET /leagues/seasons`
 All available season years. No parameters. Update: when a league is added. Recommended: 1 call/day.
@@ -569,9 +592,22 @@ response: object[]
         goals: {for: int, against: int}
       update: string         // ISO datetime
 ```
-Real: World Cup 2026 (`league=1&season=2026`) → 13 tables: Group A…L (4 rows each) + "Group Stage" (12 rows, a
-cross-group ranking). Fixtures: `standings_league.json`, `standings_groups.json` (trimmed to 5 tables × 3 rows),
-`error_standings_missing_season.json`.
+Real: World Cup 2026 (`league=1&season=2026`) → 13 tables: Group A…L (4 rows each) + "Group Stage" (12 rows, the
+ranking of the third-placed teams, each of whom is also in its group table; `description` "Round of 32" for the first 8).
+Champions League 2025 → 1 table of 36 rows with `group` "UEFA Champions League". LaLiga 2026 → 1 table, `group`
+"Primera División". Library: `Standings.getGroupTables()` / `getCrossGroupRankings()` (rule: a table whose teams all
+appear in other tables, drawn from at least two of them, is a cross-group ranking), `getGroupOf(teamId)`.
+
+`description` values observed (all responses above, plus Champions League 2026): `Promotion - Champions League (League phase)`,
+`Promotion - Europa League (League phase)`, `Promotion - Conference League (Qualification)`,
+`Promotion - Champions League (Play Offs: 1/8-finals)`, `Promotion - Champions League (Play Offs: 1/16-finals)` (the
+API's name for the league-phase play-off, which `/fixtures/rounds` calls "Round of 32"), `Relegation - LaLiga2`,
+`Round of 32`, `null`. Library: `StandingEntry.getZoneCategory()/getZoneTarget()/isPromotion()/isRelegation()`
+(`leagues.util.StandingZones`). The `form` of World Cup rows has 5 letters after 3 matches (it includes results before
+the tournament).
+
+Fixtures: `standings_league.json`, `standings_groups.json` (trimmed to 5 tables × 3 rows), `standings_world_cup_2026.json`,
+`standings_ucl_2025.json`, `standings_laliga_2026.json`, `error_standings_missing_season.json`.
 
 ### 11.12 `GET /fixtures/rounds`
 Rounds of a league/season; the round string is usable as `round` filter in `/fixtures`.
@@ -594,7 +630,21 @@ response: object[]
   round: string
   dates: string[]                   // "YYYY-MM-DD"
 ```
-Fixtures: `fixtures_rounds.json`, `fixtures_rounds_dates.json`, `fixtures_rounds_current.json`.
+Real: the order is chronological, not numeric (LaLiga 2026 lists `Regular Season - 6` before `Regular Season - 4`). Round
+texts are `<stage>` or `<stage> - <n>`; the only structure the API gives. Observed (here or in `league.round` of fixtures):
+`Regular Season - N`, `League Stage - N`, `Group Stage - N`, `Group Stage`, `Apertura - N`, `Clausura - Quadrangular - N`,
+`League A - N`, `1st/2nd/3rd Qualifying Round`, `Play-offs` (Champions League: the August qualifying play-off),
+`Round of 32` (Champions League: the two-legged league-phase play-off; World Cup: single-match round of 32),
+`Round of 16`, `Quarter-finals`, `Semi-finals`, `3rd Place Final`, `Final`, `Friendly International`.
+
+`current=true` returns `[]` when the season is over (Champions League 2025 on 2026-11-13) and, **during a break between
+rounds, the NEXT round**, not the last played (LaLiga 2026: `"Regular Season - 13"` while round 12 was finished and 13
+had not started). `FixturesApi.getCurrentRound` returns `null` for `[]`. Library: `RoundName`, `StageTypes`,
+`CompetitionStructure` (stages, dates, status, `groupByRound`).
+
+Fixtures: `fixtures_rounds.json`, `fixtures_rounds_dates.json`, `fixtures_rounds_current.json`,
+`fixtures_rounds_ucl_2025.json`, `fixtures_rounds_dates_ucl_2025.json`, `fixtures_rounds_world_cup_2026.json`,
+`fixtures_rounds_laliga_2026.json`.
 
 ### 11.13 `GET /fixtures`
 Fixtures (matches). Update: every 15 seconds. Recommended: 1 call/minute for leagues/teams/fixtures with a fixture
@@ -622,6 +672,12 @@ Valid combinations (docs "Use Cases"): `id`; `ids`; `live`; `league+season`; `da
 `date+league+season`; `league+next`; `venue+next`; `league+last+status`; `team+last+timezone`;
 `team+season+from+to`; `league+season+from+to+timezone`; `league+season+round`. Real: `league+last` (no season)
 works; `league` alone with an invalid value also asked for `season`.
+
+`team+season` (all fixtures of a team in a season) is not in the docs list but works: **verified 2026-11-13**,
+`team=541&season=2026` returned 52 fixtures (2026-08-26 to 2027-01-27) with an empty `errors`
+(`FixturesApi.getFixturesByTeam(team, season)`). `from`/`to` **without `league` or `team` is an error** ("need another
+parameter", verified live, query `af08` of the migration reports) and the error costs a request; the library rejects it
+before sending.
 ```
 response: object[]
   fixture: object
@@ -664,6 +720,17 @@ response: object[]
   events: <element of /fixtures/events>[]
 ```
 Real vs docs: `extra` and `league.standings` present as per changelog. `status.long` wording differs (section 8).
+
+Knockout ties (real): there is no leg, aggregate or tie winner. Two legs are the two fixtures of one round between the same
+teams, ordered by `timestamp`. `goals` includes extra time (Juventus 3-2 Galatasaray AET has `fulltime` 3-0, `extratime`
+0-2, `goals` 3-2), so the aggregate is the sum of `goals`; the shoot-out is only in the last leg's `score.penalty`.
+`teams.*.winner` is per match: true for Juventus in that second leg although Galatasaray went through 7-5, and null for
+both sides in a second leg drawn after extra time (Dinamo Minsk 2-2 Ludogorets, Ludogorets through 3-2). In single
+matches `winner` includes the shoot-out. `score.extratime` is `{null, null}` in 3 of the 4 World Cup 2026 shoot-outs
+(Germany-Paraguay, Netherlands-Morocco, Australia-Egypt) although extra time was played: use the status (`AET`/`PEN`),
+not `extratime`. Group-stage fixtures carry no group. Library: `Ties`/`Tie`, `Groups`. Fixtures:
+`fixtures_by_league_ucl_2025.json` (`/fixtures?league=2&season=2025`, every fixture except 140 of the 144 league-phase
+ones), `fixtures_by_league_world_cup_2026.json` (`/fixtures?league=1&season=2026`, all 104).
 Fixtures: `fixtures_by_id.json` (full detail), `fixtures_by_ids.json`, `fixtures_live.json` (with events),
 `fixtures_by_date.json` (`timezone=Europe/Madrid`), `fixtures_by_date_sunday.json` (1 235 results, many statuses),
 `fixtures_last.json`, `fixtures_next.json`, `fixtures_status_multi.json` (`status=PEN-AET`, extratime/penalty
@@ -691,6 +758,9 @@ otherwise 1/day.
 | timezone | string | O | |
 
 Response: same element as `/fixtures` (without events/lineups/statistics/players).
+Without `last` the result includes upcoming fixtures (`NS`). `last=N` returns only fixtures already played, so it is not
+"the N latest dates". The history is incomplete for older cup ties (old Copa del Rey meetings can be missing; data goes
+back to about 2012): do not treat the list as exhaustive.
 Fixture: `fixtures_headtohead.json` (`h2h=541-529&last=3`).
 
 ### 11.15 `GET /fixtures/statistics`
@@ -760,8 +830,12 @@ recorded after parsing, so not stored as fixtures):
   So `team` = beneficiary, `player` = a player of the **other** team. `FixtureEvent.getTeamGoalCountsFor()` names
   this. Sportmonks agrees: own goal = type id 15, `participant_id` = the benefiting team, `player_name`
   "Domingos Duarte", `result "0-1"`, `addition "1st Own Goal"`.
-* **Second yellow**: two events at the same minute for the same player, `"Yellow Card"` then `"Red Card"`.
-  A straight red is a single `"Red Card"`. No `"Second Yellow card"` detail was seen.
+* **Second yellow**: the API sends `"Yellow Card"` then `"Red Card"` for the same player at the same minute (recorded:
+  A. Ruibal, `elapsed 118`, after an earlier yellow at `90+4`, Navalcarnero-Betis, fixture 1644363). No `"Second Yellow
+  card"` detail was seen. A red with no yellow of the same player at the same minute is a straight red (L. Krejci, 72',
+  Czech Republic-Spain, fixture 1528961). The `player.id` can be missing in the first polls after an event appears (seen on
+  a yellow card at 116'). Library: `Fixture.isSecondYellowRed(event)`, `getCardEventsMerged()`; matching rules in
+  `FixtureEventAnalysis`.
 * **VAR**: `"Penalty confirmed"`, `"Goal cancelled"` and the undocumented `"Card upgrade confirmed"`. Three VAR
   events first appeared **without `detail`** and got it 30 s later. A cancelled goal's `"Goal"` event was
   removed and replaced by the `"Var"`/`"Goal cancelled"` event (`goals` reverted one poll before the event list
@@ -800,7 +874,7 @@ recorded after parsing, so not stored as fixtures):
 ### 11.17 `GET /fixtures/lineups`
 Lineups (formation, coach, XI, substitutes). Available 20–40 minutes before kick-off when covered (`coverage.fixtures.lineups`);
 otherwise sometimes only after the match. Update: every 15 minutes. Recommended: 1 every 15 min while in progress,
-otherwise 1/day. Grid: `X:Y` where X = line (1 = goalkeeper) and Y = column left to right.
+otherwise 1/day. Grid: see "Lineup grid" below (the home team's columns are mirrored compared with Sportmonks).
 
 | Param | Type | | Notes |
 |---|---|---|---|
@@ -825,6 +899,50 @@ response: object[]          // one per team
 Real vs docs: `team.colors` was **null** for both teams in the 2026 La Liga lineups (docs example has the object),
 but **present** (`{player: {primary: "18345e", number, border}, goalkeeper: {...}}`) in the 2025 fixtures
 `fixtures_by_id_penalty_shootout.json` and `fixtures_by_id_own_goal.json` → nullable.
+
+**Lineup grid.** `grid` is `"row:column"`. Row 1 is the goalkeeper and the following rows are the lines from the back to
+the front (a 4-3-3 has rows 1 to 4); the column numbers the players of that row. Substitutes have `grid: null`.
+**Neither API-Football nor Sportmonks gives metric coordinates**: a grid only says "third of four players in the second
+line", so the app places the dots itself. Library: `LineupPlayer.getGridRow()` / `getGridColumn()` parse it (`null` when
+absent or malformed).
+
+**Home-team columns are mirrored compared with Sportmonks.** Checked on 2026-11-12 by matching every starter by shirt
+number against Sportmonks' `lineups[].formation_field` in the 5 matches that had a lineup in both providers
+(Turkey-Belgium, Italy-France, Czech Republic-Spain, England-Croatia, Navalcarnero-Betis):
+
+| Side | Rows equal | Columns equal as sent | Columns equal after `playersInRow + 1 - column` |
+|---|---|---|---|
+| Home | 11 of 11 in all 5 matches | only 3 of 11 (the central players) | **11 of 11 in all 5 matches** |
+| Away | 11 of 11 in all 5 matches | **11 of 11 in all 5 matches** | 3 of 11 |
+
+Transformation, **home team only**, rows unchanged: `column' = playersInRow + 1 - column`, with `playersInRow` the number
+of starters of that team that share the row (the goalkeeper's row has 1, so the goalkeeper never moves). It is its own
+inverse, so it converts in both directions. It needs the full starting XI: with fewer than 11 starters the row count is
+wrong, so check `getStartXI().size() == 11` first. Library: `FixtureLineup.getGridColumnMirrored(player)` (counts the row
+for you; apply it to the home lineup only) or `Fixture.getGridColumnAsSportmonks(lineup, player)` (mirrors when the
+lineup is the home team's, returns the column unchanged for the away team, `null` for a lineup of another fixture).
+
+Worked example (Italy home, 4-3-3, API-Football fixture 1528960 / Sportmonks 19676662). Row 2 has 4 players
+(`5 - column`), rows 3 and 4 have 3 (`4 - column`):
+
+| Player | Shirt | API `grid` | Mirrored | Sportmonks `formation_field` |
+|---|---|---|---|---|
+| G. Donnarumma | 1 | 1:1 | 1:1 | 1:1 |
+| M. Kayode | 2 | 2:4 | 2:1 | 2:1 |
+| G. Scalvini | 3 | 2:3 | 2:2 | 2:2 |
+| A. Bastoni | 6 | 2:2 | 2:3 | 2:3 |
+| R. Calafiori | 5 | 2:1 | 2:4 | 2:4 |
+| D. Frattesi | 16 | 3:3 | 3:1 | 3:1 |
+| S. Tonali | 8 | 3:2 | 3:2 | 3:2 |
+| N. Barella | 18 | 3:1 | 3:3 | 3:3 |
+| S. Esposito | 7 | 4:3 | 4:1 | 4:1 |
+| F. Esposito | 9 | 4:2 | 4:2 | 4:2 |
+| N. Cambiaghi | 19 | 4:1 | 4:3 | 4:3 |
+
+France (away, 4-2-3-1) in the same match: grid identical to Sportmonks for all 11 (e.g. M. Gusto `2:4` in both). Without
+the correction, an XI drawn from the home grid appears left-right reversed next to the away one. Sportmonks'
+`formation_position` (1-11) has no counterpart in API-Football.
+
 Fixture: `fixtures_lineups.json`.
 
 ### 11.18 `GET /fixtures/players`
@@ -1005,7 +1123,7 @@ Recommended: 1/day.
 | team | int | O | |
 | league | int | O | |
 | season | int | C | YYYY; requires id, league or team |
-| search | string | C | min 4 chars (docs); requires league or team |
+| search | string | C | min 4 chars (docs; the client rejects shorter terms before the request); requires league or team |
 | page | int | O | default 1 |
 ```
 response: object[]
@@ -1078,7 +1196,8 @@ response: object[]
 Fixture: `players_teams.json`.
 
 ### 11.27 `GET /players/topscorers`
-20 best scorers of a league/season. Tie-breakers (docs): goals desc, penalties asc, assists desc, matches with goals
+Best scorers of a league/season: exactly 20 rows (LaLiga 2026), no pagination and no way to get the rest (a provider
+that pages the full list, such as Sportmonks, gives more). Tie-breakers (docs): goals desc, penalties asc, assists desc, matches with goals
 desc, minutes asc, team rank, red cards asc, yellow cards asc. Update: several times a week. Recommended: 1/day.
 
 | Param | Type | | Notes |
@@ -1245,9 +1364,19 @@ response: object[]
         odd: string             // "1.20"
 ```
 Real: `values[].value` is **a JSON number for some bets** (ids 38, 40, 41 observed) — use a lenient adapter (read as
-string). The fixture date in odds can be stale (fixture 1570461: odds `2026-11-22T16:00` vs fixtures
-`2026-11-21T20:00`). A single page for a league can be ≈1.6 MB. Fixtures: `odds_by_fixture.json`,
+string). A single page for a league can be ≈1.6 MB. Fixtures: `odds_by_fixture.json`,
 `odds_by_league_season.json` (paging total 2), `odds_by_date_page2.json` (paging current 2 of 24).
+
+Verified 2026-11-12/13 (Real Madrid - Celta, fixture 1570461): the fixture `date` of `/odds` is provisional
+(`2026-11-22T16:00`, the real kick-off is `2026-11-21T20:00` in `/fixtures`), and `odds?league=140&season=2026&date=2026-11-21`
+returned no result for that fixture. Request odds by fixture id. `update` is one timestamp per fixture (here
+`2026-11-08T16:51:14+00:00`, 5 days old), not per bookmaker or selection. A fixture 15 days ahead returned 0 results
+(window: 1-14 days before the fixture). Of the five bookmakers a real app maps, Bet365 (8), William Hill (7) and Betfair
+(3) were present for that fixture; 888Sport (21) and Interwetten (15) are in `/odds/bookmakers` but did not appear in any
+fixture checked. The "Exact Score" bet (id 10) lists 40 selections for Bet365 as `home:away` (`1:0`, `2:1`, `0:1`...);
+for the home favourite (Match Winner home 1.18) `1:0` pays 10.00 and `0:1` pays 34.00, which fixes the order. Library:
+`odds.util.BookmakerIds` (checked against Appendix A), `PrematchBetOdds.findValue/getHomeOdd/...`,
+`OddValue.getExactScoreHome/Away`, `PrematchOdds.getUpdateAsInstant`.
 
 ### 11.37 `GET /odds/mapping`
 Fixture ids for which pre-match odds exist. **Paginated, 100 per page.** Update: daily. Recommended: 1/day.
@@ -1314,7 +1443,7 @@ response: object[]
 | `/odds` `values[].value` | string | string or int |
 | `venue.id` | int | int, null or 0 |
 | invalid `date` / `timezone` | (not stated) | silently accepted (date overflow, UTC fallback) |
-| `search` length | schema: exactly 3 for countries/bookmakers/bets | min 3; longer works per docs examples |
+| `search` | schema: exactly 3 for countries/bookmakers/bets | min 3 (4 for `/players`, docs); only ASCII letters, digits and spaces (accents and symbols are rejected with the message in section 3); longer works per docs examples. The library validates this client-side (`QueryValidation.search`). |
 | errors | 204 with errors object; 499/500 `{"message"}` | HTTP 200 with errors object for all validation errors |
 | `paging` | absent from schemas | always present |
 
@@ -1352,6 +1481,7 @@ response: object[]
 | timezone.json | `/timezone` |
 | countries.json / countries_by_name.json | `/countries`, `/countries?name=england` |
 | leagues_by_id.json | `/leagues?id=140` |
+| leagues_by_id_world_cup.json / leagues_by_id_ucl.json | `/leagues?id=1`, `/leagues?id=2` |
 | leagues_current_country.json | `/leagues?country=Spain&current=true` |
 | leagues_seasons.json | `/leagues/seasons` |
 | teams_by_id.json | `/teams?id=541` |
@@ -1361,8 +1491,16 @@ response: object[]
 | teams_countries.json | `/teams/countries` |
 | venues_by_id.json / venues_search.json | `/venues?id=1456`, `/venues?search=madrid` |
 | standings_league.json | `/standings?league=140&season=2026` |
-| standings_groups.json | `/standings?league=1&season=2026` |
+| standings_groups.json | `/standings?league=1&season=2026` (trimmed to 5 tables × 3 rows) |
+| standings_world_cup_2026.json | `/standings?league=1&season=2026` (full, 13 tables) |
+| standings_ucl_2025.json | `/standings?league=2&season=2025` |
+| standings_laliga_2026.json | `/standings?league=140&season=2026` (full, 20 rows) |
 | fixtures_rounds.json / fixtures_rounds_dates.json / fixtures_rounds_current.json | `/fixtures/rounds?league=140&season=2026` (+`dates=true`, +`current=true`) |
+| fixtures_rounds_ucl_2025.json / fixtures_rounds_dates_ucl_2025.json | `/fixtures/rounds?league=2&season=2025` (+`dates=true`) |
+| fixtures_rounds_world_cup_2026.json | `/fixtures/rounds?league=1&season=2026` |
+| fixtures_rounds_laliga_2026.json | `/fixtures/rounds?league=140&season=2026` (all 38) |
+| fixtures_by_league_ucl_2025.json | `/fixtures?league=2&season=2025` (league phase trimmed to 4 of 144) |
+| fixtures_by_league_world_cup_2026.json | `/fixtures?league=1&season=2026` |
 | fixtures_by_id.json | `/fixtures?id=1570443` |
 | fixtures_by_ids.json | `/fixtures?ids=1570443-1570451` |
 | fixtures_by_id_penalty_shootout.json | `/fixtures?id=1544371` (Champions League final 2026-05-30, PSG - Arsenal, `PEN`; every event kept) |
