@@ -172,23 +172,27 @@ public class PlayersApi extends ApiFootballBase {
 
     // ------------------------------------------------------------------ top lists
 
-    /** 20 best scorers of a league season. Cost: 1 request (not paginated). */
+    /**
+     * The best scorers of a league season ({@code GET /players/topscorers}). Cost: 1 request. The API
+     * returns <b>at most 20 players</b> and has no pagination for this endpoint: there is no way to
+     * get the 21st. Updated several times a week; one call a day is enough.
+     */
     public List<PlayerWithStatistics> getTopScorers(int league, int season) throws IOException, ApiFootballException {
         return top("players/topscorers", league, season);
     }
 
-    /** 20 best assist providers of a league season. Cost: 1 request. */
+    /** The best assist providers of a league season. Cost: 1 request. At most 20 players, no pagination (see {@link #getTopScorers(int, int)}). */
     public List<PlayerWithStatistics> getTopAssists(int league, int season) throws IOException, ApiFootballException {
         return top("players/topassists", league, season);
     }
 
-    /** 20 players with most yellow cards of a league season. Cost: 1 request. */
+    /** The players with most yellow cards of a league season. Cost: 1 request. At most 20 players, no pagination (see {@link #getTopScorers(int, int)}). */
     public List<PlayerWithStatistics> getTopYellowCards(int league, int season)
             throws IOException, ApiFootballException {
         return top("players/topyellowcards", league, season);
     }
 
-    /** 20 players with most red cards of a league season. Cost: 1 request. */
+    /** The players with most red cards of a league season. Cost: 1 request. At most 20 players, no pagination (see {@link #getTopScorers(int, int)}). */
     public List<PlayerWithStatistics> getTopRedCards(int league, int season) throws IOException, ApiFootballException {
         return top("players/topredcards", league, season);
     }

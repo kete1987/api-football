@@ -113,6 +113,8 @@ class SearchValidationTest extends BaseApiTest {
         assertThrows(IllegalArgumentException.class, () -> players.searchPlayersPage("gom", 140, 2026, 1));
         assertThrows(IllegalArgumentException.class, () -> players.searchPlayerProfilesPage("bü", 1));
         assertThrows(IllegalArgumentException.class, () -> leagues.searchLeagues("Primèra"));
+        assertThrows(IllegalArgumentException.class, () -> leagues.searchCountries("España"));
+        assertThrows(IllegalArgumentException.class, () -> leagues.searchCountries("sp"));
         assertEquals(0, server.getRequestCount());
     }
 

@@ -268,10 +268,11 @@ public class FixturesApi extends ApiFootballBase {
     }
 
     /**
-     * All fixtures of a team in a season ({@code team+season}). One request; a team plays up to a few
-     * dozen matches a season. This exact combination is not in the catalog's list of tested
-     * combinations (section 11.13) but is the documented way to list a team's season; it has not been
-     * exercised live by this library.
+     * All fixtures of a team in a season ({@code team+season}). One request, not paginated: a team
+     * plays dozens of matches a season, all returned in one response. This combination is not
+     * in the documentation's list of use cases (catalog section 11.13) but works: verified live
+     * 2026-11-13 with {@code team=541&season=2026}, which returned 52 fixtures (2026-08-26 to
+     * 2027-01-27) with an empty {@code errors}.
      */
     public List<Fixture> getFixturesByTeam(int team, int season) throws IOException, ApiFootballException {
         return getFixtures(new FixturesQuery().team(team).season(season));

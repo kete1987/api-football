@@ -1,7 +1,8 @@
 package es.com.kete1987.apifootball.library.leagues.model;
 
+import es.com.kete1987.apifootball.library.common.util.DateParsing;
+
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 
 /**
  * A season of a competition.
@@ -43,12 +44,12 @@ public class Season {
 
     /** {@link #getStart()} as a date, or {@code null} when it is missing or not a valid date. */
     public LocalDate getStartDate() {
-        return parse(start);
+        return DateParsing.parseIsoDate(start);
     }
 
     /** {@link #getEnd()} as a date, or {@code null} when it is missing or not a valid date. */
     public LocalDate getEndDate() {
-        return parse(end);
+        return DateParsing.parseIsoDate(end);
     }
 
     /**
@@ -78,15 +79,6 @@ public class Season {
     /** {@code true} when {@link #hasStarted(LocalDate)} and not {@link #isOver(LocalDate)}. */
     public boolean isInProgress(LocalDate date) {
         return hasStarted(date) && !isOver(date);
-    }
-
-    private static LocalDate parse(String text) {
-        if (text == null) return null;
-        try {
-            return LocalDate.parse(text.trim());
-        } catch (DateTimeParseException e) {
-            return null;
-        }
     }
 
     public Coverage getCoverage() {

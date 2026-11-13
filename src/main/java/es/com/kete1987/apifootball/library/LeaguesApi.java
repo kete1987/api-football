@@ -62,9 +62,14 @@ public class LeaguesApi extends ApiFootballBase {
         return first(param(url("countries"), "code", code), Country.class);
     }
 
-    /** Searches countries by name; {@code search} must have at least 3 characters. */
+    /**
+     * Searches countries by name. One request. {@code search} must have at least 3 characters and only
+     * ASCII letters, digits and spaces (see {@code QueryValidation.search}).
+     *
+     * @throws IllegalArgumentException when the term is invalid; no request is sent
+     */
     public List<Country> searchCountries(String search) throws IOException, ApiFootballException {
-        return list(param(url("countries"), "search", search), Country.class);
+        return getCountries(new CountriesQuery().search(search));
     }
 
     // ------------------------------------------------------------------ /leagues

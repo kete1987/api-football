@@ -1,11 +1,11 @@
 package es.com.kete1987.apifootball.library.competition.model;
 
+import es.com.kete1987.apifootball.library.common.util.DateParsing;
 import es.com.kete1987.apifootball.library.competition.util.StageTypes;
 import es.com.kete1987.apifootball.library.fixtures.model.Fixture;
 import es.com.kete1987.apifootball.library.fixtures.model.RoundDates;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -91,7 +91,7 @@ public final class CompetitionStructure {
             stageNumbered.merge(stage, name.hasMatchday(), Boolean::logicalOr);
             LocalDate[] span = stageSpan.computeIfAbsent(stage, k -> new LocalDate[2]);
             for (String text : entry.getValue()) {
-                LocalDate date = parseDate(text);
+                LocalDate date = DateParsing.parseIsoDate(text);
                 if (date == null) continue;
                 if (span[0] == null || date.isBefore(span[0])) span[0] = date;
                 if (span[1] == null || date.isAfter(span[1])) span[1] = date;
@@ -114,15 +114,6 @@ public final class CompetitionStructure {
             i++;
         }
         return new CompetitionStructure(new ArrayList<>(roundDates.keySet()), stages);
-    }
-
-    private static LocalDate parseDate(String text) {
-        if (text == null) return null;
-        try {
-            return LocalDate.parse(text.trim());
-        } catch (DateTimeParseException e) {
-            return null;
-        }
     }
 
     /** Every round text, in the official order of {@code fixtures/rounds}, without duplicates. */
