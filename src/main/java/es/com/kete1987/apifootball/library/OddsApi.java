@@ -34,6 +34,13 @@ import java.util.List;
  * against the daily quota. Single-page methods cost one request; the {@code getAll...} methods
  * cost one request per page walked and always take a {@code maxPages} cap of at least 1.
  * For example {@code /odds?date=...} may span 24 pages.
+ *
+ * <p><b>Prefer fixture ids over dates.</b> The {@code date} of an {@code /odds} entry can be
+ * provisional (a fixture of 21 Nov was listed on 22 Nov and {@code date=2026-11-21} returned
+ * nothing), so {@link #getOddsByFixture(int)} is the reliable lookup. The {@code update} time is one
+ * per fixture, not per bookmaker. Pre-match odds exist only 1-14 days before kick-off (catalog:
+ * "Odds available 1-14 days before the fixture, 7-day history"). Some bookmakers of the catalogue
+ * rarely or never appear in the odds.
  */
 public class OddsApi extends ApiFootballBase {
 
@@ -69,7 +76,11 @@ public class OddsApi extends ApiFootballBase {
         return allPages(url("odds", query), PrematchOdds.class, maxPages);
     }
 
-    /** Pre-match odds of one fixture (all bookmakers and bets). 1 request. {@code null} when no odds exist. */
+    /**
+     * Pre-match odds of one fixture (all bookmakers and bets). 1 request. {@code null} when no odds
+     * exist, which includes fixtures more than 14 days away. This is the recommended lookup (by
+     * fixture id, not by date).
+     */
     public PrematchOdds getOddsByFixture(int fixture) throws IOException, ApiFootballException {
         return firstOf(getOddsPage(new OddsQuery().fixture(fixture), 1));
     }
@@ -94,7 +105,11 @@ public class OddsApi extends ApiFootballBase {
         return getAllOdds(new OddsQuery().league(league).season(season), maxPages);
     }
 
-    /** One page of pre-match odds of the fixtures of a date. 1 request. */
+    /**
+     * One page of pre-match odds of the fixtures of a date. 1 request. Caution: the date used by
+     * {@code /odds} can be provisional, so a fixture may be missing for its real date; prefer
+     * {@link #getOddsByFixture(int)}.
+     */
     public Page<PrematchOdds> getOddsByDatePage(LocalDate date, int page) throws IOException, ApiFootballException {
         return getOddsPage(new OddsQuery().date(QueryValidation.date("date", date)), page);
     }
@@ -108,7 +123,7 @@ public class OddsApi extends ApiFootballBase {
         return getOddsPage(new OddsQuery().date(QueryValidation.date("date", date)), page);
     }
 
-    /** All pages of pre-match odds of a date (can be 20+ pages). 1 request per page walked, capped by {@code maxPages}. */
+    /** All pages of pre-match odds of a date (see the caution on provisional dates in {@link #getOddsByDatePage(LocalDate, int)}; can be 20+ pages). 1 request per page walked, capped by {@code maxPages}. */
     public List<PrematchOdds> getAllOddsByDate(LocalDate date, int maxPages) throws IOException, ApiFootballException {
         return getAllOdds(new OddsQuery().date(QueryValidation.date("date", date)), maxPages);
     }
@@ -140,7 +155,7 @@ public class OddsApi extends ApiFootballBase {
 
     // ------------------------------------------------------------------ bookmakers
 
-    /** All bookmakers. 1 request. Names can be {@code null}. Updated several times a week. */
+    /** All bookmakers. 1 request. Names can be {@code null}. Updated several times a week. Some listed bookmakers rarely appear in the odds. */
     public List<Bookmaker> getBookmakers() throws IOException, ApiFootballException {
         return getBookmakers(null);
     }
@@ -155,7 +170,13 @@ public class OddsApi extends ApiFootballBase {
         return first(url("odds/bookmakers", new BookmakersQuery().id(id)), Bookmaker.class);
     }
 
-    /** Bookmakers whose name matches {@code search} (min 3 characters). 1 request. */
+    /**
+     * Bookmakers whose name matches {@code search} (min 3 characters, letters, digits and spaces
+     * only, see {@code QueryValidation.search}). 1 request. The catalogue lists bookmakers that
+     * rarely appear in the odds of a fixture.
+     *
+     * @throws IllegalArgumentException when the term would be rejected by the API
+     */
     public List<Bookmaker> searchBookmakers(String search) throws IOException, ApiFootballException {
         return getBookmakers(new BookmakersQuery().search(search));
     }
@@ -177,7 +198,7 @@ public class OddsApi extends ApiFootballBase {
         return first(url("odds/bets", new PrematchBetsQuery().id(id)), PrematchBet.class);
     }
 
-    /** Pre-match bets whose name matches {@code search} (min 3 characters). 1 request. */
+    /** Pre-match bets whose name matches {@code search} (min 3 characters, letters, digits and spaces; throws {@link IllegalArgumentException} otherwise). 1 request. */
     public List<PrematchBet> searchPrematchBets(String search) throws IOException, ApiFootballException {
         return getPrematchBets(new PrematchBetsQuery().search(search));
     }
@@ -230,7 +251,7 @@ public class OddsApi extends ApiFootballBase {
         return first(url("odds/live/bets", new LiveBetsQuery().id(id)), LiveBet.class);
     }
 
-    /** In-play bets whose name matches {@code search} (min 3 characters). 1 request. */
+    /** In-play bets whose name matches {@code search} (min 3 characters, letters, digits and spaces; throws {@link IllegalArgumentException} otherwise). 1 request. */
     public List<LiveBet> searchLiveBets(String search) throws IOException, ApiFootballException {
         return getLiveBets(new LiveBetsQuery().search(search));
     }

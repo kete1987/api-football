@@ -1,7 +1,9 @@
 package es.com.kete1987.apifootball.library.odds.model;
 
 /**
- * Fixture reference of a pre-match odds entry. The date can be stale with respect to
+ * Fixture reference of a pre-match odds entry. Do not filter by this date: query odds by fixture id
+ * instead (the {@code date} of {@code /odds} can be provisional and the real day then returns nothing).
+ * The date can be stale with respect to
  * {@code /fixtures} (the odds feed is not refreshed when a fixture is rescheduled).
  */
 public class OddsFixtureRef {
