@@ -3,6 +3,8 @@ package es.com.kete1987.apifootball.library.fixtures.model;
 import es.com.kete1987.apifootball.library.common.model.TeamRef;
 import es.com.kete1987.apifootball.library.fixtures.util.EventTypes;
 
+import java.util.Comparator;
+
 /**
  * An event of a fixture (goal, card, substitution, VAR). See {@link EventTypes}.
  *
@@ -43,6 +45,33 @@ import es.com.kete1987.apifootball.library.fixtures.util.EventTypes;
  * </ul>
  */
 public class FixtureEvent {
+    /**
+     * Chronological order of events. The API does not return a fixture's events in chronological
+     * order (a card at {@code 90+6} has been listed before a substitution at {@code 90}, and
+     * {@code 90+1} before {@code 90}), so a caller drawing a timeline has to sort them.
+     *
+     * <p>Orders by {@code time.elapsed} ascending, then by {@code time.extra} ascending, a
+     * {@code null} extra counting as 0 (so {@code 90} comes before {@code 90+1}). Events with no
+     * {@code time}, or no {@code elapsed} minute, sort last (a {@code null} event too), and never
+     * make the comparator throw. Events that compare equal (same minute and extra) are <b>not</b>
+     * reordered by it: use a stable sort ({@link java.util.List#sort}, {@code Collections.sort}) so
+     * they keep the order the API sent them in. That matters because a second yellow card arrives
+     * as a {@code "Yellow Card"} event followed by a {@code "Red Card"} event at the same minute.
+     *
+     * <p>Example: {@code List<FixtureEvent> events = new ArrayList<>(api.fixtures().getFixtureEvents(id));
+     * events.sort(FixtureEvent.BY_TIME);} (the returned list is unmodifiable, hence the copy). For a
+     * fixture, {@link Fixture#getEventsSorted()} does exactly this.
+     */
+    public static final Comparator<FixtureEvent> BY_TIME = (a, b) -> {
+        Integer ea = elapsedOf(a);
+        Integer eb = elapsedOf(b);
+        if (ea == null || eb == null) {
+            return ea == null ? (eb == null ? 0 : 1) : -1;
+        }
+        int c = Integer.compare(ea, eb);
+        return c != 0 ? c : Integer.compare(extraOf(a), extraOf(b));
+    };
+
     private Time time;
     private TeamRef team;
     private PlayerRef player;
@@ -51,6 +80,15 @@ public class FixtureEvent {
     private String detail;
     private String comments;
 
+    private static Integer elapsedOf(FixtureEvent e) {
+        return e == null || e.time == null ? null : e.time.elapsed;
+    }
+
+    private static int extraOf(FixtureEvent e) {
+        return e.time.extra == null ? 0 : e.time.extra;
+    }
+
+    /** Minute of the event; may be {@code null}. The API's order is not chronological: see {@link #BY_TIME}. */
     public Time getTime() {
         return time;
     }

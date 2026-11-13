@@ -792,7 +792,8 @@ recorded after parsing, so not stored as fixtures):
 * **Event order and names**: events are **not strictly sorted** by time (a card at `90+6` was listed before a
   substitution at `90`, and `90+1` before `90`), and the same player id carries different spellings in different
   events of one fixture (`"Julián Alvarez"` on a card, `"J. Alvarez"` on a substitution). Sort by
-  `elapsed`/`extra` and match players by id.
+  `elapsed`/`extra` and match players by id. The library does it: `Fixture.getEventsSorted()` (stable, same minute keeps the
+  API's order, no-time events last) and the comparator `FixtureEvent.BY_TIME` (null `extra` = 0); `getEvents()` keeps the API's order.
 * **Transient data**: events can appear for a single poll and vanish (a `"Normal Goal"` without player at
   119' made the API's own `goals` 2-4 for one poll in fixture 1644363 and was then removed).
 

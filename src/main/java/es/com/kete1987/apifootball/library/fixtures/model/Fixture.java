@@ -2,6 +2,8 @@ package es.com.kete1987.apifootball.library.fixtures.model;
 
 import es.com.kete1987.apifootball.library.common.util.ModelCollections;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -53,9 +55,32 @@ public class Fixture {
         return score;
     }
 
-    /** Events; present with {@code id}, {@code ids} and {@code live}, otherwise {@code null}. */
+    /**
+     * Events in the order the API sent them; present with {@code id}, {@code ids} and {@code live},
+     * otherwise {@code null}. That order is <b>not chronological</b> (a card at {@code 90+6} has been
+     * listed before a substitution at {@code 90}): use {@link #getEventsSorted()} for a timeline.
+     */
     public List<FixtureEvent> getEvents() {
         return ModelCollections.unmodifiable(events);
+    }
+
+    /**
+     * A new unmodifiable list with the same events sorted chronologically by
+     * {@link FixtureEvent#BY_TIME}, or {@code null} when {@link #getEvents()} is {@code null} (same
+     * convention as the other list getters). {@link #getEvents()} itself is not affected.
+     *
+     * <p>The API's order is not chronological, hence this helper. The sort is stable: events at the
+     * same minute (and extra) keep the order the API sent them in, which matters because a second
+     * yellow card arrives as a {@code "Yellow Card"} event followed by a {@code "Red Card"} event at
+     * the same minute. Events without a minute go last.
+     */
+    public List<FixtureEvent> getEventsSorted() {
+        if (events == null) {
+            return null;
+        }
+        List<FixtureEvent> sorted = new ArrayList<>(events);
+        sorted.sort(FixtureEvent.BY_TIME);
+        return Collections.unmodifiableList(sorted);
     }
 
     /** Lineups; present with {@code id} and {@code ids}, otherwise {@code null}. */
