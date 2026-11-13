@@ -100,23 +100,27 @@ class ModelCoverageTest {
         map(Status.class, "status.json");
         map(String.class, "timezone.json");
         map(Country.class, "countries.json", "countries_by_name.json", "teams_countries.json");
-        map(League.class, "leagues_by_id.json", "leagues_current_country.json");
+        map(League.class, "leagues_by_id.json", "leagues_current_country.json", "leagues_by_id_world_cup.json",
+                "leagues_by_id_ucl.json");
         map(Integer.class, "leagues_seasons.json", "teams_seasons.json", "players_seasons.json",
                 "players_seasons_by_player.json");
-        map(standingsItem(), "standings_league.json", "standings_groups.json");
+        map(standingsItem(), "standings_league.json", "standings_groups.json", "standings_world_cup_2026.json",
+                "standings_ucl_2025.json", "standings_laliga_2026.json");
         // teams
         map(Team.class, "teams_by_id.json", "teams_by_league_season.json");
         map(TeamStatistics.class, "teams_statistics.json");
         map(Venue.class, "venues_by_id.json", "venues_search.json");
         map(Coach.class, "coachs_by_team.json");
         // fixtures
-        map(String.class, "fixtures_rounds.json", "fixtures_rounds_current.json");
-        map(RoundDates.class, "fixtures_rounds_dates.json");
+        map(String.class, "fixtures_rounds.json", "fixtures_rounds_current.json", "fixtures_rounds_ucl_2025.json",
+                "fixtures_rounds_world_cup_2026.json", "fixtures_rounds_laliga_2026.json");
+        map(RoundDates.class, "fixtures_rounds_dates.json", "fixtures_rounds_dates_ucl_2025.json");
         map(Fixture.class, "fixtures_by_id.json", "fixtures_by_ids.json", "fixtures_live.json",
                 "fixtures_by_date.json", "fixtures_by_date_sunday.json", "fixtures_last.json",
                 "fixtures_next.json", "fixtures_status_multi.json", "fixtures_empty.json",
                 "fixtures_invalid_date_overflow.json", "fixtures_invalid_timezone_fallback.json",
-                "fixtures_headtohead.json", "fixtures_by_id_penalty_shootout.json", "fixtures_by_id_own_goal.json");
+                "fixtures_headtohead.json", "fixtures_by_id_penalty_shootout.json", "fixtures_by_id_own_goal.json",
+                "fixtures_by_league_ucl_2025.json", "fixtures_by_league_world_cup_2026.json");
         map(FixtureStatistics.class, "fixtures_statistics.json", "fixtures_statistics_half.json");
         map(FixtureEvent.class, "fixtures_events.json");
         map(FixtureLineup.class, "fixtures_lineups.json");
