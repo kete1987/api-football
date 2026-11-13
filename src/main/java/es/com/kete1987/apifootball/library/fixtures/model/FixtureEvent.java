@@ -2,6 +2,7 @@ package es.com.kete1987.apifootball.library.fixtures.model;
 
 import es.com.kete1987.apifootball.library.common.model.TeamRef;
 import es.com.kete1987.apifootball.library.fixtures.util.EventTypes;
+import es.com.kete1987.apifootball.library.fixtures.util.FixtureMinutes;
 
 import java.util.Comparator;
 
@@ -263,7 +264,11 @@ public class FixtureEvent {
         return typeIs(EventTypes.VAR);
     }
 
-    /** Minute of an event; {@code extra} is the added time or {@code null}. */
+    /**
+     * Minute of an event; {@code extra} is the added time or {@code null}. A goal in the fourth minute
+     * of added time is {@code elapsed 90, extra 4}. Observed live: the API's minute runs about +1
+     * versus Sportmonks and the extra-time minute is unreliable; see {@link FixtureMinutes}.
+     */
     public static class Time {
         private Integer elapsed;
         private Integer extra;
@@ -274,6 +279,19 @@ public class FixtureEvent {
 
         public Integer getExtra() {
             return extra;
+        }
+
+        /**
+         * {@code elapsed + extra} ({@code extra} {@code null} counts as 0), or {@code null} without
+         * {@code elapsed}: {@code 90+4} gives 94. See {@link FixtureMinutes} for what was observed live.
+         */
+        public Integer getDisplayMinute() {
+            return FixtureMinutes.total(elapsed, extra);
+        }
+
+        /** The minute as a score-board writes it: {@code "90+4"}, {@code "45"}; {@code null} without {@code elapsed}. */
+        public String getDisplayMinuteText() {
+            return FixtureMinutes.format(elapsed, extra);
         }
     }
 }

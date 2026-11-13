@@ -68,6 +68,7 @@ public final class FixtureStatuses {
     private static final Set<String> SCHEDULED = set(TBD, NS);
     private static final Set<String> IN_PLAY = set(FIRST_HALF, HALFTIME, SECOND_HALF, EXTRA_TIME,
             BREAK_TIME, PENALTY_IN_PROGRESS, SUSPENDED, INTERRUPTED, LIVE);
+    private static final Set<String> INTERRUPTED_CODES = set(SUSPENDED, INTERRUPTED);
     private static final Set<String> FINISHED = set(FT, AET, PEN);
     private static final Set<String> NOT_PLAYED = set(TECHNICAL_LOSS, WALKOVER);
 
@@ -89,9 +90,18 @@ public final class FixtureStatuses {
     }
 
     /**
-     * {@code true} for every "In Play" code: {@code 1H, HT, 2H, ET, BT, P, SUSP, INT, LIVE}. Note that
-     * the API groups suspended and interrupted matches as in play; use {@link #isPlaying(String)} to
-     * leave them out.
+     * {@code true} for every "In Play" code of the API documentation: {@code 1H, HT, 2H, ET, BT, P,
+     * SUSP, INT, LIVE}.
+     *
+     * <p><b>Warning: this includes {@code SUSP} (suspended) and {@code INT} (interrupted).</b> The API
+     * groups them as "in play", but the match is not being played: a screen that shows a running
+     * minute whenever {@code isLive()} is {@code true} will keep showing a minute for a suspended match.
+     * To handle them, check {@link #isInterrupted(String)} <em>first</em>, or use
+     * {@link #isPlaying(String)}, which leaves them out. {@code HT} and {@code BT} are live too, and
+     * {@code LIVE} (very rare) is live with no {@code elapsed}.
+     *
+     * <p>Truth table (verified by {@code FixtureHelpersStatusTest}): true for {@code 1H, HT, 2H, ET, BT,
+     * P, SUSP, INT, LIVE}; false for every other code, for {@code null} and for unknown codes.
      */
     public static boolean isLive(String shortCode) {
         return in(IN_PLAY, shortCode);
@@ -100,12 +110,32 @@ public final class FixtureStatuses {
     /**
      * {@link #isLive(String)} minus {@code SUSP} and {@code INT}: the match is under way and expected to
      * continue now. Note that it still includes the breaks {@code HT} and {@code BT}, during which the
-     * ball is not rolling.
+     * ball is not rolling. For {@code SUSP}/{@code INT} see {@link #isInterrupted(String)}.
      */
     public static boolean isPlaying(String shortCode) {
-        return isLive(shortCode)
-                && !SUSPENDED.equalsIgnoreCase(shortCode.trim())
-                && !INTERRUPTED.equalsIgnoreCase(shortCode.trim());
+        return isLive(shortCode) && !isInterrupted(shortCode);
+    }
+
+    /**
+     * {@code true} for {@code SUSP} (suspended by the referee, may be rescheduled) and {@code INT}
+     * (interrupted, should resume shortly): "interrupted, pending resolution". Both are inside
+     * {@link #isLive(String)} in the API's grouping, which is why this helper exists: check it before
+     * treating a match as in play. {@code false} for everything else, including {@code PST},
+     * {@code ABD} and {@code null}.
+     */
+    public static boolean isInterrupted(String shortCode) {
+        return in(INTERRUPTED_CODES, shortCode);
+    }
+
+    /**
+     * {@code true} when the match is not being played and its outcome is still to be decided or will
+     * not happen as scheduled: {@code PST, SUSP, INT, CANC, ABD, AWD, WO} (the set an app typically
+     * shows as "postponed"). Equals {@link #isInterrupted(String)} plus {@link #isPostponed(String)},
+     * {@link #isCancelled(String)}, {@link #isAbandoned(String)} and {@link #isNotPlayed(String)}.
+     */
+    public static boolean isPendingResolution(String shortCode) {
+        return isInterrupted(shortCode) || isPostponed(shortCode) || isCancelled(shortCode)
+                || isAbandoned(shortCode) || isNotPlayed(shortCode);
     }
 
     /** {@code true} for {@code FT}, {@code AET} and {@code PEN}. */

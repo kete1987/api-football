@@ -1,6 +1,7 @@
 package es.com.kete1987.apifootball.library.fixtures.model;
 
 import es.com.kete1987.apifootball.library.common.util.ModelCollections;
+import es.com.kete1987.apifootball.library.fixtures.util.FixtureEventAnalysis;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -81,6 +82,229 @@ public class Fixture {
         List<FixtureEvent> sorted = new ArrayList<>(events);
         sorted.sort(FixtureEvent.BY_TIME);
         return Collections.unmodifiableList(sorted);
+    }
+
+    /**
+     * {@code true} when {@code event} is the red card that follows a second yellow: this fixture's
+     * events hold a yellow card of the same player at the same minute. The API has no second-yellow
+     * event, it sends "Yellow Card" then "Red Card" (recorded: Ruibal, 118', Navalcarnero-Betis). A
+     * straight red, any other event, a {@code null} event and a fixture without events all give
+     * {@code false}. Matching rules and limits: {@link FixtureEventAnalysis}.
+     */
+    public boolean isSecondYellowRed(FixtureEvent event) {
+        return FixtureEventAnalysis.isSecondYellowRed(event, events);
+    }
+
+    /**
+     * The cards of the fixture in chronological order ({@link #getEventsSorted()}) with each second
+     * yellow collapsed into one entry: the yellow card that belongs to it is dropped and the red card
+     * stays; tell it from a straight red with {@link #isSecondYellowRed(FixtureEvent)}. An earlier,
+     * separate yellow of the same player stays. Empty when there are no events. See
+     * {@link FixtureEventAnalysis#cardEventsMerged(List)}.
+     */
+    public List<FixtureEvent> getCardEventsMerged() {
+        return FixtureEventAnalysis.cardEventsMerged(getEventsSorted());
+    }
+
+    /**
+     * The score after each goal, in chronological order: one {@link ScoreStep} per goal event
+     * ({@link FixtureEvent#isGoal()}) of {@link #getEventsSorted()}, so missed penalties (and every
+     * non-goal event) are left out. A goal is added to the team in
+     * {@link FixtureEvent#getTeamGoalCountsFor()}, which is the benefiting team also for an own goal
+     * (the API lists an own goal under the team it counts for), so own goals need no special case. The
+     * home team is the one whose id equals {@code teams.home.id}; a goal whose team is missing or is
+     * neither side is skipped (it cannot be attributed). Shoot-out kicks are not events and not counted.
+     *
+     * <p>Events at the same minute keep the API's order, so two goals in the same minute are ordered as
+     * sent. The API's own {@link #getGoals()} stays authoritative: on finished fixtures the last step
+     * equals it (verified on 1-1, 0-1 own goal and 1-1 {@code PEN} fixtures), but during a live match
+     * events can appear and vanish. Returns an empty list when there are no events or no goal;
+     * {@code null} is never returned.
+     */
+    public List<ScoreStep> getRunningScore() {
+        List<ScoreStep> steps = new ArrayList<>();
+        List<FixtureEvent> sorted = getEventsSorted();
+        Integer homeId = homeId();
+        Integer awayId = awayId();
+        int home = 0;
+        int away = 0;
+        if (sorted != null && homeId != null && awayId != null) {
+            for (FixtureEvent e : sorted) {
+                if (e.getTeamGoalCountsFor() == null || e.getTeamGoalCountsFor().getId() == null) continue;
+                Integer id = e.getTeamGoalCountsFor().getId();
+                if (id.equals(homeId)) {
+                    home++;
+                } else if (id.equals(awayId)) {
+                    away++;
+                } else {
+                    continue;
+                }
+                steps.add(new ScoreStep(e, home, away));
+            }
+        }
+        return Collections.unmodifiableList(steps);
+    }
+
+    /** The score after one goal: see {@link Fixture#getRunningScore()}. */
+    public static class ScoreStep {
+        private final FixtureEvent event;
+        private final int home;
+        private final int away;
+
+        ScoreStep(FixtureEvent event, int home, int away) {
+            this.event = event;
+            this.home = home;
+            this.away = away;
+        }
+
+        /** The goal event this step comes from. */
+        public FixtureEvent getEvent() {
+            return event;
+        }
+
+        /** Home goals after this goal. */
+        public int getHome() {
+            return home;
+        }
+
+        /** Away goals after this goal. */
+        public int getAway() {
+            return away;
+        }
+
+        /** The score as {@code "home-away"}, e.g. {@code "2-1"}. */
+        public String getText() {
+            return home + "-" + away;
+        }
+    }
+
+    // ------------------------------------------------------------ lookups inside the fixture
+
+    /**
+     * Team statistics block of a team, or {@code null} when absent (no {@code id}/{@code ids} query,
+     * statistics not yet available, {@code teamId} {@code null} or not in the fixture). Never throws.
+     */
+    public FixtureStatistics findStatistics(Integer teamId) {
+        if (statistics == null || teamId == null) return null;
+        for (FixtureStatistics s : statistics) {
+            if (s != null && s.getTeam() != null && teamId.equals(s.getTeam().getId())) return s;
+        }
+        return null;
+    }
+
+    /** Statistics of the home team ({@code teams.home.id}), or {@code null}. See {@link #findStatistics(Integer)}. */
+    public FixtureStatistics getHomeStatistics() {
+        return findStatistics(homeId());
+    }
+
+    /** Statistics of the away team ({@code teams.away.id}), or {@code null}. See {@link #findStatistics(Integer)}. */
+    public FixtureStatistics getAwayStatistics() {
+        return findStatistics(awayId());
+    }
+
+    /**
+     * Lineup of a team, or {@code null} when absent (lineups are published 20-40 minutes before
+     * kick-off, and only with {@code id}/{@code ids}). Never throws.
+     */
+    public FixtureLineup findLineup(Integer teamId) {
+        if (lineups == null || teamId == null) return null;
+        for (FixtureLineup l : lineups) {
+            if (l != null && l.getTeam() != null && teamId.equals(l.getTeam().getId())) return l;
+        }
+        return null;
+    }
+
+    /** Lineup of the home team, or {@code null}. See {@link #findLineup(Integer)}. */
+    public FixtureLineup getHomeLineup() {
+        return findLineup(homeId());
+    }
+
+    /** Lineup of the away team, or {@code null}. See {@link #findLineup(Integer)}. */
+    public FixtureLineup getAwayLineup() {
+        return findLineup(awayId());
+    }
+
+    /** Per-player statistics block of a team, or {@code null} when absent. Never throws. */
+    public FixturePlayers findPlayers(Integer teamId) {
+        if (players == null || teamId == null) return null;
+        for (FixturePlayers p : players) {
+            if (p != null && p.getTeam() != null && teamId.equals(p.getTeam().getId())) return p;
+        }
+        return null;
+    }
+
+    /** Per-player statistics of the home team, or {@code null}. See {@link #findPlayers(Integer)}. */
+    public FixturePlayers getHomePlayers() {
+        return findPlayers(homeId());
+    }
+
+    /** Per-player statistics of the away team, or {@code null}. See {@link #findPlayers(Integer)}. */
+    public FixturePlayers getAwayPlayers() {
+        return findPlayers(awayId());
+    }
+
+    /**
+     * Name of a player by id, looked up in the lineups (starting XI, then substitutes) and then in the
+     * per-player statistics; {@code null} when the id is {@code null}, unknown or its name is missing.
+     * Events carry the player id and a name that the API abbreviates and spells differently from one
+     * event to the next; the lineups give a stable one. Never throws.
+     */
+    public String findPlayerName(Integer playerId) {
+        if (playerId == null) return null;
+        if (lineups != null) {
+            for (FixtureLineup l : lineups) {
+                if (l == null) continue;
+                String name = nameIn(l.getStartXI(), playerId);
+                if (name == null) name = nameIn(l.getSubstitutes(), playerId);
+                if (name != null) return name;
+            }
+        }
+        if (players != null) {
+            for (FixturePlayers fp : players) {
+                if (fp == null) continue;
+                for (FixturePlayers.PlayerEntry e : fp.getPlayers()) {
+                    FixturePlayers.PlayerInfo p = e == null ? null : e.getPlayer();
+                    if (p != null && playerId.equals(p.getId()) && p.getName() != null) return p.getName();
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * The grid column of {@code player} (a starter of {@code lineup}) in Sportmonks' convention, which
+     * is what an app drawing both teams on one pitch needs: the API's column mirrored when
+     * {@code lineup} is this fixture's <b>home</b> team lineup, unchanged when it is the away team's.
+     * Returns {@code null} when the lineup does not belong to this fixture (its team id is neither
+     * side), the player has no grid, or the row is unknown. Read the {@link FixtureLineup} comment for
+     * the evidence and the limits (it needs the full starting XI). Never throws.
+     */
+    public Integer getGridColumnAsSportmonks(FixtureLineup lineup, FixtureLineup.LineupPlayer player) {
+        if (lineup == null || lineup.getTeam() == null || lineup.getTeam().getId() == null || player == null) {
+            return null;
+        }
+        Integer id = lineup.getTeam().getId();
+        if (id.equals(homeId())) {
+            return lineup.getGridColumnMirrored(player);
+        }
+        return id.equals(awayId()) ? player.getGridColumn() : null;
+    }
+
+    private static String nameIn(List<FixtureLineup.Entry> entries, Integer playerId) {
+        if (entries == null) return null;
+        for (FixtureLineup.Entry e : entries) {
+            FixtureLineup.LineupPlayer p = e == null ? null : e.getPlayer();
+            if (p != null && playerId.equals(p.getId()) && p.getName() != null) return p.getName();
+        }
+        return null;
+    }
+
+    private Integer homeId() {
+        return teams == null || teams.home == null ? null : teams.home.getId();
+    }
+
+    private Integer awayId() {
+        return teams == null || teams.away == null ? null : teams.away.getId();
     }
 
     /** Lineups; present with {@code id} and {@code ids}, otherwise {@code null}. */
