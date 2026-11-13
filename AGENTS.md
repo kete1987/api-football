@@ -140,7 +140,7 @@ class FixturesApiTest extends BaseApiTest {
 
 Each endpoint method needs at least one test that asserts (a) representative fields at every nesting level of the parsed fixture, including the type-varying ones, and (b) the request path and query string the library built.
 
-`ModelCoverageTest` only proves that every JSON key has a field; it says nothing about what helpers answer. Shapes that no fixture contains (missed penalty, own goal, VAR) are tested with small inline JSON in the test, marked as hand-written from the documented shape (or as recorded live, when it was).
+`ModelCoverageTest` only proves that every JSON key has a field; it says nothing about what helpers answer. Shapes that no fixture contains (missed penalty, VAR, second yellow) are tested with small inline JSON in the test, marked as hand-written from the documented shape (or as recorded live, when it was). An own goal and a penalty during play are in real fixtures (`fixtures_by_id_own_goal.json`, `fixtures_by_id_penalty_shootout.json`), and `FixtureEventSemanticsTest` rebuilds the score from their events. Verified there: penalty shoot-out kicks are not events (only `score.penalty` carries the shoot-out), and an own goal's `team` is the team it counts for while its `player` is from the other team.
 
 `ModelCoverageTest` maps every fixture to the model type its API method parses into and walks the JSON: it fails on any key without a model field (honouring `@SerializedName`, superclasses, `List`/`Map`/`JsonElement` members), on any scalar Gson cannot read into the field's type, and on any fixture file that is neither mapped nor listed as an error fixture. A new fixture must be added there.
 

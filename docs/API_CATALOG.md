@@ -247,12 +247,18 @@ the docs examples also use lower case (`status=ft`, `status=ns`).
   **`type` is coarse; `detail` says what happened.** A missed penalty is `type: "Goal"` with
   `detail: "Missed Penalty"`, so "is a goal" must be decided on `detail`, never on `type` alone (the docs list it
   under Goal without saying it is not a goal). See section 11.16 for the shapes seen live.
+  There is **no shoot-out `detail`**: penalty shoot-out kicks are not events at all (verified, section 11.16).
+  **Own goal**: listed under the team the goal **counts for**; `player` belongs to the other team.
+* **Event `comments`** (free text, observed): `Foul`, `Time wasting`, `Persistent fouling`, `Argument`, `Dissent`;
+  `null` for goals and substitutions.
 * **Fixture statistics `type`** (docs list): Shots on Goal, Shots off Goal, Shots insidebox, Shots outsidebox,
   Total Shots, Blocked Shots, Fouls, Corner Kicks, Offsides, Ball Possession, Yellow Cards, Red Cards,
   Goalkeeper Saves, Total passes, Passes accurate, Passes %.
   **Real (2026, La Liga): 17 types**: the list above **without "Passes %"** plus **"Free Kicks"** and
   **"expected_goals"** (snake_case!). Order differs between responses. Model as an open set (enum with fallback or
-  keep the raw string).
+  keep the raw string). **Real (2025 season, `fixtures?id=` of a Champions League final and a La Liga match):
+  18 types**: the docs list **with "Passes %"**, plus **"expected_goals"** and **"goals_prevented"** (`"0.68"`), and
+  no "Free Kicks" — the set varies by fixture/season.
 * **Lineup position `pos`**: `G`, `D`, `M`, `F`. **Player `position`** (squads, profiles, players):
   `Goalkeeper`, `Defender`, `Midfielder`, `Attacker`.
 * **Injury `player.type`**: `Missing Fixture`, `Questionable`. `reason` is free text ("Suspended", "Knee Injury", …).
@@ -662,7 +668,8 @@ Fixtures: `fixtures_by_id.json` (full detail), `fixtures_by_ids.json`, `fixtures
 `fixtures_by_date.json` (`timezone=Europe/Madrid`), `fixtures_by_date_sunday.json` (1 235 results, many statuses),
 `fixtures_last.json`, `fixtures_next.json`, `fixtures_status_multi.json` (`status=PEN-AET`, extratime/penalty
 scores), `fixtures_empty.json` (empty result), `fixtures_invalid_date_overflow.json`,
-`fixtures_invalid_timezone_fallback.json`, `error_unknown_param.json`, `error_invalid_integer.json`,
+`fixtures_invalid_timezone_fallback.json`, `fixtures_by_id_penalty_shootout.json` (`PEN` fixture with all its events),
+`fixtures_by_id_own_goal.json` (fixture with an own goal), `error_unknown_param.json`, `error_invalid_integer.json`,
 `error_last_too_large.json`, `error_too_many_ids.json`.
 
 ### 11.14 `GET /fixtures/headtohead`
@@ -704,7 +711,8 @@ response: object[]            // one per team
   statistics_1h: object[]     // only with half=true (same element)
   statistics_2h: object[]     // only with half=true
 ```
-Real vs docs: types differ from the docs list ("Free Kicks", "expected_goals" added; "Passes %" absent). `value`
+Real vs docs: types differ from the docs list and between fixtures ("Free Kicks", "expected_goals",
+"goals_prevented" added; "Passes %" absent in 2026 La Liga, present in 2025 fixtures; section 9). `value`
 type varies **per element** — model as `JsonElement`/custom adapter (`Integer`, `String`, `null`).
 Fixtures: `fixtures_statistics.json`, `fixtures_statistics_half.json` (not trimmed inside).
 
@@ -729,7 +737,8 @@ response: object[]
   comments: string?                     // "Foul", "Dissent", ...
 ```
 Real vs docs: `type` for substitutions is lower case `"subst"`. Fixture: `fixtures_events.json` (only
-"Normal Goal", "Yellow Card" and "Substitution N" events).
+"Normal Goal", "Yellow Card" and "Substitution N" events); an own goal and a penalty during play are in
+`fixtures_by_id_own_goal.json` and `fixtures_by_id_penalty_shootout.json` (all events kept).
 
 Shapes seen live in `fixtures?live=all` during a comparison run on 2026-11-12 (6 fixtures, polled every 30 s;
 recorded after parsing, so not stored as fixtures):
@@ -737,7 +746,20 @@ recorded after parsing, so not stored as fixtures):
   (null members) in the first poll and filled 60 s later, and in one case `assist` repeated the taker.
   The API's `goals`/`score` did not count it.
 * **Scored penalty**: `type "Goal"`, `detail "Penalty"` (4 cases), also in extra time (`elapsed 120, extra 4`).
-* **Own goal**: none seen; which `team` it is listed under is not verified.
+* **Own goal** (verified, fixture 1390944 Getafe 0-1 Atletico Madrid, `fixtures_by_id_own_goal.json`):
+
+  | member | value |
+  |---|---|
+  | `type` / `detail` | `"Goal"` / `"Own Goal"` |
+  | `time` | `{elapsed: 82, extra: null}` |
+  | `team` | **Atletico Madrid (530), the team the goal counts for** (the away side, which won 1-0) |
+  | `player` | `{id: 46795, name: "D. Duarte"}` — a **Getafe** player (in Getafe's `startXI` and `players`) |
+  | `assist` / `comments` | `{id: null, name: null}` / `null` |
+  | `goals` / `score.fulltime` | 0-1: the goal counts for the event's `team` |
+
+  So `team` = beneficiary, `player` = a player of the **other** team. `FixtureEvent.getTeamGoalCountsFor()` names
+  this. Sportmonks agrees: own goal = type id 15, `participant_id` = the benefiting team, `player_name`
+  "Domingos Duarte", `result "0-1"`, `addition "1st Own Goal"`.
 * **Second yellow**: two events at the same minute for the same player, `"Yellow Card"` then `"Red Card"`.
   A straight red is a single `"Red Card"`. No `"Second Yellow card"` detail was seen.
 * **VAR**: `"Penalty confirmed"`, `"Goal cancelled"` and the undocumented `"Card upgrade confirmed"`. Three VAR
@@ -747,10 +769,30 @@ recorded after parsing, so not stored as fixtures):
 * **Substitution**: `player` = player going **off**, `assist` = player coming **on** (49 of 49 events checked
   against the lineups of the same fixtures: `player` in `startXI`, `assist` in `substitutes`; confirmed against
   Sportmonks, which names them the other way round).
-* **Penalty shoot-out**: none in the run, and the captured `PEN` fixtures have no events; neither the docs
-  nor any response shows whether shoot-out kicks appear in the events. `goals` excludes the shoot-out
-  (`fixtures_status_multi.json`: `PEN`, goals 1-1, `score.penalty` 3-4) and `score.extratime` holds only the
-  goals scored in extra time.
+* **Penalty shoot-out: the kicks are not events** (verified, fixture 1544371, Champions League final 2026-05-30,
+  PSG - Arsenal, `fixtures_by_id_penalty_shootout.json`):
+
+  | field | value |
+  |---|---|
+  | `fixture.status` | `{long: "Match Finished", short: "PEN", elapsed: 120, extra: null}` |
+  | `goals` | 1-1 (extra time included, shoot-out excluded) |
+  | `score.halftime` / `fulltime` / `extratime` / `penalty` | 0-1 / 1-1 / **0-0** (not null: ET was played) / **4-3** |
+  | `events` | 19: 2 goals (`Normal Goal` 6', `Penalty` 65' during play), 6 cards, 11 substitutions; **last event a card at 118'** |
+  | shoot-out kicks in `events` | **none** — neither the 7 scored nor the 3 missed/saved kicks (Sportmonks lists all 10) |
+  | `players[].penalty` | shoot-out kicks not counted (`scored` 1 only for the 65' taker; the saving goalkeeper `saved: 0`) |
+
+  So `score.penalty` is the only place the shoot-out appears, and counting `isGoal()` events per team reproduces
+  `goals` (1-1). A penalty during play in a match decided on penalties is an ordinary `"Penalty"` event with a
+  match minute. Not seen yet: a match where a penalty is *missed* during play and then goes to a shoot-out
+  (it would be an ordinary `"Missed Penalty"` event; nothing suggests otherwise).
+  Sportmonks, for comparison, does list the kicks: type id 23 (shoot-out goal, `addition "Scored"`) and 22
+  (shoot-out miss, `addition "Off target"` / `"Goalkeeper save"`), in the `penalties` period, `minute` = kick number
+  1..10, `result` = running shoot-out score (`"4-3"` after the last kick); state `FT_PEN` ("After Penalties"); score
+  type `PENALTY_SHOOTOUT` 4-3, `CURRENT` 1-1.
+* **Event order and names**: events are **not strictly sorted** by time (a card at `90+6` was listed before a
+  substitution at `90`, and `90+1` before `90`), and the same player id carries different spellings in different
+  events of one fixture (`"Julián Alvarez"` on a card, `"J. Alvarez"` on a substitution). Sort by
+  `elapsed`/`extra` and match players by id.
 * **Transient data**: events can appear for a single poll and vanish (a `"Normal Goal"` without player at
   119' made the API's own `goals` 2-4 for one poll in fixture 1644363 and was then removed).
 
@@ -779,7 +821,9 @@ response: object[]          // one per team
   substitutes: object[]
     player: {id: int, name: string, number: int, pos: string?, grid: null}
 ```
-Real vs docs: `team.colors` was **null** for both teams in all real lineups (docs example has the object).
+Real vs docs: `team.colors` was **null** for both teams in the 2026 La Liga lineups (docs example has the object),
+but **present** (`{player: {primary: "18345e", number, border}, goalkeeper: {...}}`) in the 2025 fixtures
+`fixtures_by_id_penalty_shootout.json` and `fixtures_by_id_own_goal.json` → nullable.
 Fixture: `fixtures_lineups.json`.
 
 ### 11.18 `GET /fixtures/players`
@@ -812,6 +856,11 @@ example (`"68%"`), and an **int** in `/players`. `rating` is a string (`"6.29"`;
 La Liga sample most numbers were `0` rather than `null`, but `goals.conceded`, `dribbles.past`, `penalty.won/commited/missed/saved`
 were always `null`; the docs example has many nulls → treat every statistic as nullable. `team.update` was the Unix
 epoch. Fixture: `fixtures_players.json`.
+**Verified on real fixtures** (`fixtures_by_id_penalty_shootout.json`, `fixtures_by_id_own_goal.json`):
+`penalty.scored/missed/saved` count **penalties during play only**, never shoot-out kicks (in the 4-3 shoot-out of
+fixture 1544371 the goalkeeper who saved a kick has `saved: 0` and only the 65' penalty is `scored`); and an **own
+goal is credited to nobody** in `goals.total` (fixture 1390944, won 1-0 by an own goal: no player has a goal; the
+own-goal scorer has `total: null`). Summing `goals.total` therefore need not give the score.
 
 ### 11.19 `GET /injuries`
 Players missing a fixture (injured, suspended…). Data from April 2021. **At least one parameter required.** All
@@ -1255,8 +1304,10 @@ response: object[]
 | fixture status long | "First Half, Kick Off", "Technical Loss" | "First Half", "Technical loss" |
 | event type substitution | "Subst" | "subst" |
 | VAR event details | Goal cancelled, Penalty confirmed | also "Card upgrade confirmed"; `detail` missing for ~30 s on new VAR events |
-| fixture statistics types | 16 incl. "Passes %" | 17: no "Passes %", plus "Free Kicks", "expected_goals" |
-| lineups `team.colors` | object | null |
+| fixture statistics types | 16 incl. "Passes %" | varies: 17 (2026 La Liga: no "Passes %", plus "Free Kicks", "expected_goals"); 18 (2025: with "Passes %", plus "expected_goals", "goals_prevented") |
+| lineups `team.colors` | object | null (2026 La Liga) or object (2025 fixtures) |
+| penalty shoot-out in events | (not stated) | shoot-out kicks are not events; only `score.penalty` has the shoot-out |
+| own goal `team` | (not stated) | the team the goal counts for; `player` is from the other team |
 | `/fixtures/players` `passes.accuracy` | "68%" | "9" (string count) |
 | `/players` `height`/`weight` | "175 cm" | "173" (profiles: both formats) |
 | `/odds` `values[].value` | string | string or int |
@@ -1313,6 +1364,8 @@ response: object[]
 | fixtures_rounds.json / fixtures_rounds_dates.json / fixtures_rounds_current.json | `/fixtures/rounds?league=140&season=2026` (+`dates=true`, +`current=true`) |
 | fixtures_by_id.json | `/fixtures?id=1570443` |
 | fixtures_by_ids.json | `/fixtures?ids=1570443-1570451` |
+| fixtures_by_id_penalty_shootout.json | `/fixtures?id=1544371` (Champions League final 2026-05-30, PSG - Arsenal, `PEN`; every event kept) |
+| fixtures_by_id_own_goal.json | `/fixtures?id=1390944` (La Liga 2025-11-23, Getafe - Atletico Madrid, own goal; every event kept) |
 | fixtures_live.json | `/fixtures?live=all` |
 | fixtures_by_date.json | `/fixtures?date=2026-11-12&timezone=Europe/Madrid` |
 | fixtures_by_date_sunday.json | `/fixtures?date=2026-11-08` |
