@@ -40,7 +40,10 @@ public class Fixture {
     /**
      * Current or final goals of the match, as counted by the API, including extra time but not a
      * penalty shoot-out (see {@link Score#getPenalty()}); members are {@code null} before the start.
-     * This is the authoritative score: prefer it to counting events.
+     * This is the authoritative score: prefer it to counting events. On finished fixtures it equals
+     * the number of {@link FixtureEvent#isGoal()} events per
+     * {@link FixtureEvent#getTeamGoalCountsFor()} (verified on a {@code PEN} fixture, whose shoot-out
+     * kicks are not events, and on a fixture with an own goal).
      */
     public Goals getGoals() {
         return goals;
@@ -87,7 +90,9 @@ public class Fixture {
     /**
      * Score by phase; each phase has {@code null} members when it was not played. In real responses
      * {@code extratime} holds only the goals scored in extra time (e.g. full time 2-2, extra time 0-1,
-     * {@code goals} 2-3), and {@code penalty} the shoot-out result, which {@code goals} excludes.
+     * {@code goals} 2-3; {@code 0-0}, not {@code null}, when extra time was played without goals), and
+     * {@code penalty} the shoot-out result, which {@code goals} excludes. The shoot-out kicks
+     * themselves are not in the events, so {@code penalty} is the only place the shoot-out appears.
      */
     public static class Score {
         private Goals halftime;

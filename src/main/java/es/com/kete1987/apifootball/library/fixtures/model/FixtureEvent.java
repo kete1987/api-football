@@ -25,6 +25,22 @@ import es.com.kete1987.apifootball.library.fixtures.util.EventTypes;
  * </ul>
  * Every helper compares case-insensitively, ignores surrounding whitespace, accepts {@code null}
  * members and never throws.
+ *
+ * <p><b>Verified against real fixtures</b> ({@code /fixtures?id=}, see docs/API_CATALOG.md section 11.16):
+ * <ul>
+ *   <li><b>Penalty shoot-out kicks are not events.</b> In the 2026 Champions League final (fixture
+ *       1544371, status {@code PEN}, {@code goals} 1-1, {@code score.penalty} 4-3, ten kicks taken) the
+ *       last event is a card at 118'; no kick, scored or missed, appears. The shoot-out is only in
+ *       {@code score.penalty}. Summing {@link #isGoal()} events per team therefore gives
+ *       {@code goals} (extra time included, shoot-out excluded), as the API does.</li>
+ *   <li><b>An own goal is listed under the team it counts for</b>, with {@link #getPlayer()} = the
+ *       player of the <em>other</em> team who put it in (Getafe 0-1 Atletico Madrid, fixture 1390944:
+ *       {@code team} Atletico Madrid, {@code player} D. Duarte of Getafe). Use
+ *       {@link #getTeamGoalCountsFor()} to attribute goals.</li>
+ *   <li>Events are not strictly sorted by minute ({@code 90+6} has been listed before {@code 90}),
+ *       and the same player can carry different spellings in different events ({@code "Julian
+ *       Alvarez"} / {@code "J. Alvarez"}): order by {@link #getTime()} and match players by id.</li>
+ * </ul>
  */
 public class FixtureEvent {
     private Time time;
@@ -39,13 +55,20 @@ public class FixtureEvent {
         return time;
     }
 
+    /**
+     * Team the event belongs to. For a goal this is the team the goal <b>counts for</b>, also for an
+     * <b>own goal</b> (verified: the own goal is listed under the benefiting team, while
+     * {@link #getPlayer()} plays for the other team). For a substitution, card or missed penalty it is
+     * the team of {@link #getPlayer()}. See {@link #getTeamGoalCountsFor()}.
+     */
     public TeamRef getTeam() {
         return team;
     }
 
     /**
-     * Player of the event: the scorer, the penalty taker (also for a missed penalty), the booked
-     * player, the player a VAR decision concerns &mdash; and, for a <b>substitution, the player going
+     * Player of the event: the scorer (for an <b>own goal, the player who put the ball into his own
+     * net, who plays for the team that is <em>not</em> {@link #getTeam()}</b>), the penalty taker
+     * (also for a missed penalty), the booked player, the player a VAR decision concerns &mdash; and, for a <b>substitution, the player going
      * off</b> (see {@link #getPlayerOut()}). Its members can be {@code null}, typically for a few
      * polls right after a live event appears.
      */
@@ -101,11 +124,12 @@ public class FixtureEvent {
      * <p>A {@code "Goal"} event whose {@code detail} is missing or not one of the documented values
      * counts as a goal, because the {@code type} says so and the API has added values before.
      *
-     * <p><b>Penalty shoot-outs.</b> Neither the documentation nor any captured response shows whether
-     * or how shoot-out kicks appear in the events (the captured {@code PEN} fixtures carry no events),
-     * so this method cannot be said to exclude them. The shoot-out result is in
-     * {@code score.penalty}, and {@code goals} does not include it. To count goals of the match,
-     * prefer the API's own {@code goals} / {@code score}.
+     * <p><b>Penalty shoot-outs.</b> Shoot-out kicks are not in the events at all (verified on a real
+     * {@code PEN} fixture, see the class comment), so this method never sees one and counting
+     * {@code isGoal()} events per {@link #getTeamGoalCountsFor() team} gives the API's {@code goals}
+     * (extra time included, shoot-out excluded). The shoot-out result is only in
+     * {@code score.penalty}. The API's own {@code goals} / {@code score} remain the authoritative
+     * score: events can briefly appear and vanish during a live match.
      *
      * <p>A goal later cancelled by VAR was, in the one real case observed, removed from the events and
      * replaced by a {@code "Var"} / {@code "Goal cancelled"} event, so it no longer counts here.
@@ -121,8 +145,10 @@ public class FixtureEvent {
 
     /**
      * {@code true} for an own goal: {@code type "Goal"}, {@code detail "Own Goal"}. A subset of
-     * {@link #isGoal()}. Which team the API puts in {@link #getTeam()} for an own goal (the scorer's
-     * or the beneficiary's) has not been verified against real data.
+     * {@link #isGoal()}. Verified on a real own goal: {@link #getTeam()} is the team the goal
+     * <b>counts for</b> (the beneficiary), {@link #getPlayer()} is the player of the <b>other</b>
+     * team who scored it, {@link #getAssist()} has {@code null} members and {@link #getComments()} is
+     * {@code null}. The player is not credited with a goal in the per-player statistics.
      */
     public boolean isOwnGoal() {
         return typeIs(EventTypes.GOAL) && detailIs(EventTypes.OWN_GOAL);
@@ -135,6 +161,16 @@ public class FixtureEvent {
      */
     public boolean isMissedPenalty() {
         return typeIs(EventTypes.GOAL) && detailIs(EventTypes.MISSED_PENALTY);
+    }
+
+    /**
+     * For a goal ({@link #isGoal()}), the team the goal counts for &mdash; the API's {@code team},
+     * which for an <b>own goal is the benefiting team, not the team of {@link #getPlayer()}</b>
+     * (verified on real data). {@code null} for every other event, including a missed penalty.
+     * Counting events by this team reproduces the API's {@code goals}.
+     */
+    public TeamRef getTeamGoalCountsFor() {
+        return isGoal() ? team : null;
     }
 
     /** {@code true} for any card ({@code type "Card"}); see {@link #isYellowCard()} and {@link #isRedCard()}. */

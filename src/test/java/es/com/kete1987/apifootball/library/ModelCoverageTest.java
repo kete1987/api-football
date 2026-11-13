@@ -116,7 +116,7 @@ class ModelCoverageTest {
                 "fixtures_by_date.json", "fixtures_by_date_sunday.json", "fixtures_last.json",
                 "fixtures_next.json", "fixtures_status_multi.json", "fixtures_empty.json",
                 "fixtures_invalid_date_overflow.json", "fixtures_invalid_timezone_fallback.json",
-                "fixtures_headtohead.json");
+                "fixtures_headtohead.json", "fixtures_by_id_penalty_shootout.json", "fixtures_by_id_own_goal.json");
         map(FixtureStatistics.class, "fixtures_statistics.json", "fixtures_statistics_half.json");
         map(FixtureEvent.class, "fixtures_events.json");
         map(FixtureLineup.class, "fixtures_lineups.json");

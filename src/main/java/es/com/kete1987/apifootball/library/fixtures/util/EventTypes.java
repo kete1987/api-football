@@ -9,7 +9,10 @@ package es.com.kete1987.apifootball.library.fixtures.util;
  * {@code FixtureEvent} ({@code isGoal()}, {@code isMissedPenalty()}...), not by {@code type} alone.
  *
  * <p>Real responses mix casing ({@code "Goal"}, {@code "Card"}, {@code "subst"}, {@code "Var"}), so
- * compare case-insensitively. The {@code type} <em>filter</em> takes lower case ({@code goal},
+ * compare case-insensitively.
+ *
+ * <p>There is no shoot-out detail: penalty shoot-out kicks are not events at all (verified on a real
+ * {@code PEN} fixture); the shoot-out result is only in {@code score.penalty}. The {@code type} <em>filter</em> takes lower case ({@code goal},
  * {@code card}, {@code subst}, {@code var}); use the {@code FILTER_*} constants for it.
  */
 public final class EventTypes {
@@ -34,7 +37,10 @@ public final class EventTypes {
 
     /** Goal detail: a goal from open play or a set piece. */
     public static final String NORMAL_GOAL = "Normal Goal";
-    /** Goal detail: an own goal (counts as a goal). */
+    /**
+     * Goal detail: an own goal (counts as a goal). The event's {@code team} is the team the goal counts
+     * for and its {@code player} plays for the other team (verified on real data).
+     */
     public static final String OWN_GOAL = "Own Goal";
     /** Goal detail: a <em>scored</em> penalty. */
     public static final String PENALTY = "Penalty";

@@ -184,6 +184,12 @@ public class FixturePlayers {
         }
     }
 
+    /**
+     * Goal statistics of the player. {@code total} counts goals for the player's own team: an own goal
+     * is not credited to anyone (real fixture 1390944, won 1-0 by an own goal: no player of either
+     * side had a goal in {@code total}, and the own-goal scorer had {@code null}), so summing
+     * {@code total} need not give the score.
+     */
     public static class GoalStats {
         private Integer total;
         private Integer conceded;
@@ -317,7 +323,12 @@ public class FixturePlayers {
         }
     }
 
-    /** Penalty statistics (the API spells {@code commited} with one {@code t}). */
+    /**
+     * Penalty statistics (the API spells {@code commited} with one {@code t}). They count penalties
+     * during play only: in a real {@code PEN} fixture no shoot-out kick was counted in
+     * {@code scored}, {@code missed} or {@code saved} (the goalkeeper who saved a shoot-out kick had
+     * {@code saved 0}).
+     */
     public static class Penalty {
         private Integer won;
         private Integer commited;

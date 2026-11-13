@@ -1,6 +1,10 @@
 package es.com.kete1987.apifootball.library;
 
+import es.com.kete1987.apifootball.library.common.model.TeamRef;
+import es.com.kete1987.apifootball.library.fixtures.model.Fixture;
 import es.com.kete1987.apifootball.library.fixtures.model.FixtureEvent;
+import es.com.kete1987.apifootball.library.fixtures.model.FixtureLineup;
+import es.com.kete1987.apifootball.library.fixtures.model.FixturePlayers;
 import es.com.kete1987.apifootball.library.fixtures.util.EventTypes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,26 +20,35 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Semantics of the {@link FixtureEvent} helpers: what each one answers for every documented
  * {@code type}/{@code detail} pair and for the real shapes seen live.
  *
- * <p>The captured fixtures contain only "Normal Goal", "Yellow Card" and "Substitution N" events, so
- * the bodies here are inline:
+ * <p>Most bodies here are inline:
  * <ul>
  *   <li>events marked <b>hand-written</b> are built from the documented shape (docs/API_CATALOG.md
  *       sections 9 and 11.16), not captured from the API;</li>
  *   <li>events marked <b>real</b> were recorded from {@code /fixtures?live=all} during the
  *       2026-11-12 comparison run (fixtures 1644363 Navalcarnero - Real Betis and 1528961 Czech
  *       Republic - Spain). They were stored after parsing, with {@code null} members dropped, so
- *       they are real values but not byte-for-byte API responses, and therefore not fixture files.</li>
+ *       they are real values but not byte-for-byte API responses, and therefore not fixture files;</li>
+ *   <li>events marked <b>real (fixture file)</b> are copied verbatim from
+ *       {@code fixtures_by_id_penalty_shootout.json} (fixture 1544371, Champions League final
+ *       2026-05-30, PSG 1-1 Arsenal, 4-3 on penalties) and {@code fixtures_by_id_own_goal.json}
+ *       (fixture 1390944, La Liga 2025-11-23, Getafe 0-1 Atletico Madrid by an own goal). The last
+ *       two tests parse those files whole and rebuild the score from their events.</li>
  * </ul>
  */
 class FixtureEventSemanticsTest extends BaseApiTest {
 
     private static final String BETIS = "{\"id\":543,\"name\":\"Real Betis\",\"logo\":\"https://media.api-sports.io/football/teams/543.png\"}";
+    private static final String PSG = "{\"id\":85,\"name\":\"Paris Saint Germain\",\"logo\":\"https://media.api-sports.io/football/teams/85.png\"}";
+    private static final String ARSENAL = "{\"id\":42,\"name\":\"Arsenal\",\"logo\":\"https://media.api-sports.io/football/teams/42.png\"}";
+    private static final String ATLETICO = "{\"id\":530,\"name\":\"Atletico Madrid\",\"logo\":\"https://media.api-sports.io/football/teams/530.png\"}";
     private static final String CZE = "{\"id\":770,\"name\":\"Czech Republic\",\"logo\":\"https://media.api-sports.io/football/teams/770.png\"}";
 
     /** One row per event: the JSON of the event and the expected answer of every helper. */
@@ -126,7 +139,20 @@ class FixtureEventSemanticsTest extends BaseApiTest {
             new Row("real Var without detail yet", "{\"time\":{\"elapsed\":69},\"team\":" + CZE + ",\"player\":{\"id\":66407,\"name\":\"Ladislav Krej\u010d\u00ed\"},\"assist\":{},\"type\":\"Var\"}",
                     false, false, false, false, false, false, false, false, true),
             new Row("real Var Card upgrade confirmed", "{\"time\":{\"elapsed\":69},\"team\":" + CZE + ",\"player\":{\"id\":66407,\"name\":\"Ladislav Krej\u010d\u00ed\"},\"assist\":{},\"type\":\"Var\",\"detail\":\"Card upgrade confirmed\"}",
-                    false, false, false, false, false, false, false, false, true));
+                    false, false, false, false, false, false, false, false, true),
+
+            // ---- real (fixture file), fixture 1390944: the own goal, listed under the team it counts for
+            //      (Atletico Madrid); the player, D. Duarte, plays for Getafe
+            new Row("real Own Goal", "{\"time\":{\"elapsed\":82,\"extra\":null},\"team\":" + ATLETICO + ",\"player\":{\"id\":46795,\"name\":\"D. Duarte\"},\"assist\":{\"id\":null,\"name\":null},\"type\":\"Goal\",\"detail\":\"Own Goal\",\"comments\":null}",
+                    true, false, true, false, false, false, false, false, false),
+            // ---- real (fixture file), fixture 1544371: a penalty scored during play in a match later
+            //      decided on penalties (the shoot-out kicks themselves are not events)
+            new Row("real Penalty during play", "{\"time\":{\"elapsed\":65,\"extra\":null},\"team\":" + PSG + ",\"player\":{\"id\":153,\"name\":\"Ousmane Dembélé\"},\"assist\":{\"id\":null,\"name\":null},\"type\":\"Goal\",\"detail\":\"Penalty\",\"comments\":null}",
+                    true, true, false, false, false, false, false, false, false),
+            new Row("real Normal Goal with assist", "{\"time\":{\"elapsed\":6,\"extra\":null},\"team\":" + ARSENAL + ",\"player\":{\"id\":978,\"name\":\"Kai Havertz\"},\"assist\":{\"id\":1946,\"name\":\"Leandro Trossard\"},\"type\":\"Goal\",\"detail\":\"Normal Goal\",\"comments\":null}",
+                    true, false, false, false, false, false, false, false, false),
+            new Row("real Yellow Card in added time, with comments", "{\"time\":{\"elapsed\":90,\"extra\":6},\"team\":" + PSG + ",\"player\":{\"id\":335051,\"name\":\"João Neves\"},\"assist\":{\"id\":null,\"name\":null},\"type\":\"Card\",\"detail\":\"Yellow Card\",\"comments\":\"Foul\"}",
+                    false, false, false, false, true, true, false, false, false));
 
     private FixturesApi api;
 
@@ -167,6 +193,9 @@ class FixtureEventSemanticsTest extends BaseApiTest {
             assertFalse(e.isGoal() && e.isMissedPenalty(), r.label);
             if (e.isPenaltyGoal() || e.isOwnGoal()) assertTrue(e.isGoal(), r.label);
             if (e.isYellowCard() || e.isRedCard()) assertTrue(e.isCard(), r.label);
+            // the team a goal counts for is the event's team for every goal, and nothing otherwise
+            if (e.isGoal()) assertSame(e.getTeam(), e.getTeamGoalCountsFor(), r.label);
+            else assertNull(e.getTeamGoalCountsFor(), r.label);
         }
     }
 
@@ -227,5 +256,134 @@ class FixtureEventSemanticsTest extends BaseApiTest {
         }
         assertEquals(2, home);
         assertEquals(3, away); // the missed penalty does not make it 2-4
+    }
+
+    private static int[] scoreFromEvents(Fixture fixture) {
+        int home = 0, away = 0;
+        int homeId = fixture.getTeams().getHome().getId();
+        int awayId = fixture.getTeams().getAway().getId();
+        for (FixtureEvent e : fixture.getEvents()) {
+            TeamRef team = e.getTeamGoalCountsFor();
+            if (team == null) continue;
+            if (team.getId() == homeId) home++;
+            else if (team.getId() == awayId) away++;
+            else fail("goal for a team that is not playing: " + team.getId());
+        }
+        return new int[]{home, away};
+    }
+
+    private Fixture realFixture(String file, int id) throws Exception {
+        enqueue(file);
+        Fixture fixture = api.getFixtureById(id);
+        assertEquals("/fixtures?id=" + id, takeRequest().getPath());
+        return fixture;
+    }
+
+    /**
+     * Real fixture 1544371 (status PEN, 1-1 after extra time, 4-3 on penalties; ten shoot-out kicks
+     * were taken, per Sportmonks): no shoot-out kick is an event, so counting goals from the events
+     * gives {@code goals}, and the shoot-out is only in {@code score.penalty}.
+     */
+    @Test
+    void realPenaltyShootoutFixture_kicksAreNotEvents_andEventsRebuildTheScore() throws Exception {
+        Fixture f = realFixture("fixtures_by_id_penalty_shootout.json", 1544371);
+
+        assertEquals("PEN", f.getFixture().getStatus().getShort());
+        assertEquals("Match Finished", f.getFixture().getStatus().getLong());
+        assertEquals(120, f.getFixture().getStatus().getElapsed());
+        assertEquals(1, f.getGoals().getHome());
+        assertEquals(1, f.getGoals().getAway());
+        assertEquals(1, f.getScore().getFulltime().getHome());
+        assertEquals(1, f.getScore().getFulltime().getAway());
+        assertEquals(0, f.getScore().getExtratime().getHome()); // 0-0, not null: extra time was played
+        assertEquals(0, f.getScore().getExtratime().getAway());
+        assertEquals(4, f.getScore().getPenalty().getHome());
+        assertEquals(3, f.getScore().getPenalty().getAway());
+
+        assertEquals(19, f.getEvents().size());
+        int[] score = scoreFromEvents(f);
+        assertEquals(f.getGoals().getHome(), score[0]);
+        assertEquals(f.getGoals().getAway(), score[1]);
+        assertEquals(2, f.getEvents().stream().filter(FixtureEvent::isGoal).count()); // Havertz 6', Dembele pen. 65'
+        assertEquals(1, f.getEvents().stream().filter(FixtureEvent::isPenaltyGoal).count());
+        // three shoot-out kicks were missed, none of them is an event
+        assertEquals(0, f.getEvents().stream().filter(FixtureEvent::isMissedPenalty).count());
+        FixtureEvent last = f.getEvents().get(f.getEvents().size() - 1);
+        assertEquals(118, last.getTime().getElapsed());
+        assertTrue(last.isYellowCard());
+
+        // per-player penalty statistics count only the penalty during play
+        int checked = 0;
+        for (FixturePlayers team : f.getPlayers()) {
+            for (FixturePlayers.PlayerEntry p : team.getPlayers()) {
+                FixturePlayers.Penalty pen = p.getFirstStatistics().getPenalty();
+                switch (p.getPlayer().getId()) {
+                    case 153:   // Dembele: the 65' penalty only (he did not take a shoot-out kick)
+                        assertEquals(1, pen.getScored());
+                        checked++;
+                        break;
+                    case 19465: // Raya saved Nuno Mendes' shoot-out kick
+                    case 2068:  // Safonov
+                        assertEquals(0, pen.getSaved());
+                        checked++;
+                        break;
+                    default:
+                }
+            }
+        }
+        assertEquals(3, checked);
+    }
+
+    /**
+     * Real fixture 1390944 (Getafe 0-1 Atletico Madrid): the only goal is an own goal by a Getafe
+     * player, listed under Atletico Madrid, the team it counts for.
+     */
+    @Test
+    void realOwnGoalFixture_ownGoalIsListedUnderTheTeamItCountsFor() throws Exception {
+        Fixture f = realFixture("fixtures_by_id_own_goal.json", 1390944);
+        int getafe = f.getTeams().getHome().getId();
+        int atletico = f.getTeams().getAway().getId();
+        assertEquals(546, getafe);
+        assertEquals(530, atletico);
+        assertEquals("FT", f.getFixture().getStatus().getShort());
+        assertEquals(0, f.getGoals().getHome());
+        assertEquals(1, f.getGoals().getAway());
+        assertNull(f.getScore().getPenalty().getHome());
+        assertNull(f.getScore().getExtratime().getHome());
+
+        List<FixtureEvent> ownGoals = new ArrayList<>();
+        for (FixtureEvent e : f.getEvents()) if (e.isOwnGoal()) ownGoals.add(e);
+        assertEquals(1, ownGoals.size());
+        FixtureEvent og = ownGoals.get(0);
+        assertTrue(og.isGoal());
+        assertEquals(82, og.getTime().getElapsed());
+        assertEquals(atletico, og.getTeam().getId());
+        assertEquals(atletico, og.getTeamGoalCountsFor().getId());
+        assertEquals(46795, og.getPlayer().getId());
+        assertEquals("D. Duarte", og.getPlayer().getName());
+        assertNull(og.getAssist().getId());
+        assertNull(og.getComments());
+
+        // the player is in Getafe's starting XI, not Atletico's
+        for (FixtureLineup lineup : f.getLineups()) {
+            boolean inXI = lineup.getStartXI().stream().anyMatch(x -> x.getPlayer().getId() == 46795);
+            assertEquals(lineup.getTeam().getId() == getafe, inXI, "lineup of " + lineup.getTeam().getId());
+        }
+        // and is not credited with a goal in the player statistics
+        boolean found = false;
+        for (FixturePlayers team : f.getPlayers()) {
+            for (FixturePlayers.PlayerEntry p : team.getPlayers()) {
+                if (p.getPlayer().getId() == 46795) {
+                    assertEquals(getafe, team.getTeam().getId());
+                    assertNull(p.getFirstStatistics().getGoals().getTotal());
+                    found = true;
+                }
+            }
+        }
+        assertTrue(found);
+
+        int[] score = scoreFromEvents(f);
+        assertEquals(0, score[0]);
+        assertEquals(1, score[1]);
     }
 }
