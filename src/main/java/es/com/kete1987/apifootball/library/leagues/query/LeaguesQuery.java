@@ -48,9 +48,9 @@ public class LeaguesQuery extends Query<LeaguesQuery> {
         return param("current", current);
     }
 
-    /** Free text matched against league name or country; at least 3 characters. */
+    /** Free text matched against league name or country; at least 3 characters. Letters A-Z, digits and spaces only; throws {@link IllegalArgumentException} otherwise (see {@link QueryValidation#toSearchTerm}); {@code null} removes it. */
     public LeaguesQuery search(String search) {
-        return param("search", search);
+        return param("search", search == null ? null : QueryValidation.search(search));
     }
 
     /**

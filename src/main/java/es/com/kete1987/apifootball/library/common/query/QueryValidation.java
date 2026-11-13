@@ -1,5 +1,6 @@
 package es.com.kete1987.apifootball.library.common.query;
 
+import java.text.Normalizer;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -19,6 +20,12 @@ public final class QueryValidation {
 
     /** Maximum number of ids of the plural id parameters ({@code ids}, {@code players}, {@code coachs}). */
     public static final int MAX_IDS = 20;
+
+    /** Minimum length of a {@code search} term (catalog: "min 3"). */
+    public static final int SEARCH_MIN_LENGTH = 3;
+
+    /** Minimum length of the {@code search} term of {@code /players} (catalog section 11.24: "min 4 chars"). */
+    public static final int PLAYERS_SEARCH_MIN_LENGTH = 4;
 
     private QueryValidation() {
         // utility class
@@ -135,5 +142,67 @@ public final class QueryValidation {
             throw new IllegalArgumentException("At most " + MAX_IDS + " " + name + " are allowed");
         }
         return joined;
+    }
+
+    /**
+     * Validates a {@code search} term with the general minimum of {@value #SEARCH_MIN_LENGTH}
+     * characters; see {@link #search(String, int)}.
+     *
+     * @throws IllegalArgumentException when the API would reject the term
+     */
+    public static String search(String value) {
+        return search(value, SEARCH_MIN_LENGTH);
+    }
+
+    /**
+     * Returns the {@code search} term unchanged when API-Football accepts it, so a request that
+     * would only come back as an error (and still cost quota) is never sent.
+     *
+     * <p>The rule, taken from the API's own error messages: the term may only contain ASCII letters
+     * ({@code A-Z}, {@code a-z}), digits and spaces ("The Search field may only contain
+     * alpha-numeric characters and spaces.", observed for {@code Leganés}), and must have at least
+     * {@code minLength} characters ("The Search field must be at least 3 characters in length.").
+     * The minimum is 3 everywhere except {@code /players} (4, see {@link #PLAYERS_SEARCH_MIN_LENGTH}).
+     * Leading and trailing spaces do not count towards the length (conservative: the API's
+     * treatment of them is not documented). Digits are allowed: the API names its rule
+     * "alpha-numeric".
+     *
+     * <p>To search a name with accents or punctuation use {@link #toSearchTerm(String)} first.
+     *
+     * @param value     the term; {@code null} is rejected here (query setters treat {@code null}
+     *                  as "remove the parameter" before calling this)
+     * @param minLength minimum length required by the endpoint
+     * @throws IllegalArgumentException when the term is {@code null}, too short or has other characters
+     */
+    public static String search(String value, int minLength) {
+        if (value == null) {
+            throw new IllegalArgumentException("search must not be null");
+        }
+        if (!value.matches("[A-Za-z0-9 ]*")) {
+            throw new IllegalArgumentException("Invalid search '" + value
+                    + "': only letters A-Z, digits and spaces are accepted (no accents or symbols); "
+                    + "see QueryValidation.toSearchTerm");
+        }
+        if (value.trim().length() < minLength) {
+            throw new IllegalArgumentException("Invalid search '" + value + "': at least " + minLength
+                    + " characters are required");
+        }
+        return value;
+    }
+
+    /**
+     * Turns arbitrary text into a term {@link #search(String, int)} accepts: diacritics are removed
+     * ({@code "Leganés"} becomes {@code "Leganes"}), any other character the API rejects is
+     * dropped, runs of spaces collapse into one and the ends are trimmed. This is an explicit
+     * opt-in; the query setters never apply it silently. Characters with no ASCII decomposition
+     * ({@code ø}, {@code ß}, {@code đ}) are dropped, so check the result still has the minimum
+     * length. The result may be empty or too short; the setter will then reject it.
+     *
+     * @return the cleaned term, or an empty string for {@code null}
+     */
+    public static String toSearchTerm(String text) {
+        if (text == null) return "";
+        String decomposed = Normalizer.normalize(text, Normalizer.Form.NFD);
+        return decomposed.replaceAll("\\p{M}+", "").replaceAll("[^A-Za-z0-9 ]", "").replaceAll(" +", " ").trim();
     }
 }

@@ -101,7 +101,10 @@ class TeamsApiTest extends BaseApiTest {
     void searchTeams_tooShort_throwsWithErrors() throws Exception {
         enqueue("error_search_too_short.json");
 
-        ApiFootballException e = assertThrows(ApiFootballException.class, () -> api.searchTeams("ma"));
+        // the validated setter would reject "ma" before any request; the raw param() escape hatch
+        // still lets the real API error fixture be parsed
+        ApiFootballException e = assertThrows(ApiFootballException.class,
+                () -> api.getTeams(new TeamsQuery().param("search", "ma")));
 
         assertEquals("The Search field must be at least 3 characters in length.", e.getErrors().get("search"));
         assertEquals("/teams?search=ma", takeRequest().getPath());

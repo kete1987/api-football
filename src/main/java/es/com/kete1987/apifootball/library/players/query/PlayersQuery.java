@@ -1,6 +1,7 @@
 package es.com.kete1987.apifootball.library.players.query;
 
 import es.com.kete1987.apifootball.library.common.query.Query;
+import es.com.kete1987.apifootball.library.common.query.QueryValidation;
 
 /**
  * Parameters of {@code /players} (paginated, 20 per page; the {@code page} parameter is supplied
@@ -29,8 +30,8 @@ public class PlayersQuery extends Query<PlayersQuery> {
         return param("season", season);
     }
 
-    /** Player name search, at least 4 characters. Requires {@code league} or {@code team}. */
+    /** Player name search, at least 4 characters. Requires {@code league} or {@code team}. Letters A-Z, digits and spaces only; throws {@link IllegalArgumentException} otherwise (see {@link QueryValidation#toSearchTerm}); {@code null} removes it. */
     public PlayersQuery search(String search) {
-        return param("search", search);
+        return param("search", search == null ? null : QueryValidation.search(search, QueryValidation.PLAYERS_SEARCH_MIN_LENGTH));
     }
 }

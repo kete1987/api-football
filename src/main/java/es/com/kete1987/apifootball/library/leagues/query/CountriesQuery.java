@@ -1,6 +1,7 @@
 package es.com.kete1987.apifootball.library.leagues.query;
 
 import es.com.kete1987.apifootball.library.common.query.Query;
+import es.com.kete1987.apifootball.library.common.query.QueryValidation;
 
 /** Parameters of {@code /countries}. All are optional and combinable. */
 public class CountriesQuery extends Query<CountriesQuery> {
@@ -15,8 +16,8 @@ public class CountriesQuery extends Query<CountriesQuery> {
         return param("code", code);
     }
 
-    /** Free text; at least 3 characters. */
+    /** Free text; at least 3 characters. Letters A-Z, digits and spaces only; throws {@link IllegalArgumentException} otherwise (see {@link QueryValidation#toSearchTerm}); {@code null} removes it. */
     public CountriesQuery search(String search) {
-        return param("search", search);
+        return param("search", search == null ? null : QueryValidation.search(search));
     }
 }

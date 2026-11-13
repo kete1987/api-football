@@ -1,6 +1,7 @@
 package es.com.kete1987.apifootball.library.teams.query;
 
 import es.com.kete1987.apifootball.library.common.query.Query;
+import es.com.kete1987.apifootball.library.common.query.QueryValidation;
 
 /** Parameters of {@code /venues}. At least one must be set; all are combinable. */
 public class VenuesQuery extends Query<VenuesQuery> {
@@ -25,8 +26,8 @@ public class VenuesQuery extends Query<VenuesQuery> {
         return param("country", country);
     }
 
-    /** Free text matched against name, city or country; at least 3 characters. */
+    /** Free text matched against name, city or country; at least 3 characters. Letters A-Z, digits and spaces only; throws {@link IllegalArgumentException} otherwise (see {@link QueryValidation#toSearchTerm}); {@code null} removes it. */
     public VenuesQuery search(String search) {
-        return param("search", search);
+        return param("search", search == null ? null : QueryValidation.search(search));
     }
 }

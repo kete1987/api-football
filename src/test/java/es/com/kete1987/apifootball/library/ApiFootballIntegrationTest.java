@@ -80,10 +80,10 @@ class ApiFootballIntegrationTest {
 
     @Test
     void logicalError_isReportedAsException() {
-        // The library does not validate the length of "search": this call simply provokes the
-        // API's own error envelope (HTTP 200 with an "errors" object).
+        // searchTeams("ma") would be rejected client-side, so the raw param() escape hatch provokes
+        // the API's own error envelope (HTTP 200 with an "errors" object).
         ApiFootballException e = assertThrows(ApiFootballException.class,
-                () -> api.teams().searchTeams("ma"));
+                () -> api.teams().getTeams(new es.com.kete1987.apifootball.library.teams.query.TeamsQuery().param("search", "ma")));
 
         assertEquals(200, e.getHttpCode());
         assertTrue(e.getErrors().containsKey("search"));
