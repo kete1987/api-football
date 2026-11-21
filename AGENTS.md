@@ -196,8 +196,4 @@ The API key never enters the repository: not in code, tests, fixtures, docs or c
 
 ## Publishing a new version
 
-1. Update `<version>` in `pom.xml`.
-2. Run `mvn clean deploy` from IntelliJ (Maven panel → Lifecycle → deploy) or terminal.
-3. Enter the GPG passphrase when prompted.
-4. Wait for `BUILD SUCCESS` — the plugin polls Maven Central until the artifact is published.
-5. Published at: https://central.sonatype.com/artifact/es.com.kete1987/apifootball.library
+Use **Actions → Maven release** for a normal release. Start in `check` mode and use **Release dry run** to verify the signed bundle without uploading. The [release guide](docs/releasing.md) covers credentials, publication and how to resume a failed run.
