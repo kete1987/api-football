@@ -7,10 +7,10 @@ permissions:
   contents: read
 
 jobs:
-  dry-run:
+  verify-app:
     if: github.ref == 'refs/heads/master' && github.actor == 'kete1987' && github.triggering_actor == 'kete1987'
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 5
     environment: maven-central
     steps:
       - name: Verify the release app installation
@@ -21,6 +21,11 @@ jobs:
           permission-contents: write
           permission-pull-requests: write
 
+  build-bundle:
+    if: github.ref == 'refs/heads/master' && github.actor == 'kete1987' && github.triggering_actor == 'kete1987'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           persist-credentials: false
